@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/userLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>캠페인</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" class="auto d-flex jc-space-bt a-start campaign-join-wrap">
+        <h1 class="d-none">Campaign (/user/campaign/join.html)</h1>
+        <div id="image_div">
+            <div class="swiper gallery-top">
+                <div id="img_view" class="swiper-wrapper"></div>
+                <div class="swiper-button-next" style="color: #fff;"></div>
+                <div class="swiper-button-prev" style="color: #fff;"></div>
+            </div>
+            <div class="swiper gallery-thumbs">
+                <div id="img_list" class="swiper-wrapper"></div>
+            </div>
+        </div>
+        <div class="join-contents-wrap">
+            <div id="contents">
+                <div><span id="campaign_title"></span></div>
+
+                <div class="memberPic-wrap">
+                    <div id="memberPictureDiv"></div>
+                    <div class="campaignList-btn-wrap">
+<!--                        <button class="list">List</button>-->
+                        <!--<button class="closed">Closed</button>-->
+                    </div>
+                </div>
+                <script id="memberPictureScript" type="/text/x=handlebars-template">
+                    {{#each mList}}
+                        {{{pic member_seq member_picture}}}
+<!--                        <img src="/displayFile?fullName=/member/{{member_seq}}/{{member_picture}}">-->
+                    {{/each}}
+                </script>
+
+
+
+                <div id="campaign_information">
+                    <div class="campaign-info-title">Campaign Information</div>
+                    <div class="campaign-info-textBox">
+                        <div><span class="campaign-info-subTitle">Country</span><span id="campaign_country"></span></div>
+                        <div><span class="campaign-info-subTitle">Original_price </span><span id="original_price"></span></div>
+                        <div><span class="campaign-info-subTitle">Type</span><span id="type"></span></div>
+                        <div>
+                            <p class="campaign-info-subTitle">[Description]</p>
+                            <span id="campaign_description"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="button_div">
+                    <button id="btn_join" disabled>Join</button>
+                </div>
+            </div>
+
+            <div id="screenShot_div" style="display: none;">
+
+                <div id="payment_div">
+                    <form name="frm_payment" id="frm_payment" enctype="multipart/form-data" method="post">
+                        <input type="hidden" name="dir"/>
+                        <input type="hidden" name="member_seq"/>
+                        <input type="hidden" name="campaign_seq"/>
+                        <input type="hidden" name="img_type"/>
+                        <span class="campaign-info-title">Payment Screenshot</span>
+                        <div class="screenShot-btn">
+                            <button id="payment_insert" disabled>Submit</button>
+                            <input type="reset" value="Cancel" id="payment_reset" disabled/>
+                        </div>
+                        <div id="pImage_div">
+                            <div class="d-none">이미지 미리보기</div>
+                            <div id="pImg_div" class="screenShot-img">
+                                <span class="click_img">
+                                    <img class="click_img" num="payment_img1" idx="0" src="/displayFile?fullName=/img/blank_img.png"></span>
+
+                                <span><img class="click_img" num="payment_img2" idx="1" src="/displayFile?fullName=/img/blank_img.png" ></span>
+
+                                <span><img class="click_img" num="payment_img3" idx="2" src="/displayFile?fullName=/img/blank_img.png"></span>
+
+                                <span><img class="click_img" num="payment_img4" idx="3" src="/displayFile?fullName=/img/blank_img.png"></span>
+
+                                <input type="file" class="file_img" num="payment_img1" name="payment_img1" attr="pay" style="display: none;">
+                                <input type="file" class="file_img" num="payment_img2" name="payment_img2" attr="pay" style="display: none;">
+                                <input type="file" class="file_img" num="payment_img3" name="payment_img3" attr="pay" style="display: none;">
+                                <input type="file" class="file_img" num="payment_img4" name="payment_img4" attr="pay" style="display: none;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="review_div">
+                    <form name="frm_review" id="frm_review" enctype="multipart/form-data" method="post">
+                        <input type="hidden" name="dir"/>
+                        <input type="hidden" name="member_seq"/>
+                        <input type="hidden" name="campaign_seq"/>
+                        <input type="hidden" name="img_type"/>
+                        <span class="campaign-info-title">Review Screenshot</span>
+                        <div class="screenShot-btn">
+                            <button id="review_insert" disabled>Submit</button>
+                            <input type="reset" value="Cancel" id="review_reset" disabled/>
+                        </div>
+                        <div id="rImage_div">
+                            <div class="d-none">이미지 미리보기</div>
+                            <div id="rImg_div" class="screenShot-img">
+                                <span><img class="click_img" num="review_img1" idx="0" src="/displayFile?fullName=/img/blank_img.png" width="50" height="50"/></span>
+
+                                <span><img class="click_img" num="review_img2" idx="1" src="/displayFile?fullName=/img/blank_img.png" width="50" height="50"/></span>
+
+                                <span><img class="click_img" num="review_img3" idx="2" src="/displayFile?fullName=/img/blank_img.png" width="50" height="50"/></span>
+
+                                <span><img class="click_img" num="review_img4" idx="3" src="/displayFile?fullName=/img/blank_img.png" width="50" height="50"/></span>
+
+                                <input type="file" class="file_img" num="review_img1" name="review_img1" attr="re" style="display: none;">
+                                <input type="file" class="file_img" num="review_img2" name="review_img2" attr="re" style="display: none;">
+                                <input type="file" class="file_img" num="review_img3" name="review_img3" attr="re" style="display: none;">
+                                <input type="file" class="file_img" num="review_img4" name="review_img4" attr="re" style="display: none;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script th:inline="javascript">
+        var campaign_seq = [[${param.campaign_seq}]][0];
+        //console.log(campaign_seq);
+        var member_seq = [[${session.member_seq}]];
+        //console.log(member_seq);
+        var joined_campaign_seq="";
+        chkStatus();
+        /***************************** 이미지 스크립트 *****************************/
+
+        var arrPayImg = new Array();
+        var arrReImg = new Array();
+
+
+        // (Payment) Submit 클릭 시
+        $("#payment_insert").on("click", function(e){
+            e.preventDefault();
+
+            $(frm_payment.dir).val("joined/");
+            $(frm_payment.member_seq).val(member_seq);
+            $(frm_payment.campaign_seq).val(campaign_seq);
+            $(frm_payment.img_type).val("payment");
+
+            if(!confirm("Do you want to those screenshots?")) return;
+
+            frm_payment.action="/user/api/joined_campaign/update/image";
+            frm_payment.method="post";
+            frm_payment.submit();
+
+        });
+
+        //  Payment - Cancel 버튼 클릭 시
+        $("#payment_reset").on("click", function(e){
+            e.preventDefault();
+            $(frm_payment)[0].reset();
+
+            $("#payment_insert").prop("disabled", true);
+            $("#payment_reset").prop("disabled", true);
+
+            $("#pImg_div .file_img").each(function(){
+                var img = $(this)[0].files[0];
+                var fNum = $(this).attr("num");
+
+                if(img==null){
+                    $("#pImage_div .click_img").each(function(){
+                        var cNum = $(this).attr("num");
+                        var idx = $(this).attr("idx");
+                        if(cNum==fNum) {
+                            $(this).attr("src", "/displayFile?fullName=/img/blank_img.png");
+                        }
+                        if(arrPayImg[idx]!=null){
+                            $(this).attr("src", "/displayFile?fullName=/joined/"+joined_campaign_seq+"/"+arrPayImg[idx]);
+                        }
+                    });
+                }
+            });
+        });
+
+        // (Review) Submit 클릭 시
+        $("#review_insert").on("click", function(e){
+            e.preventDefault();
+
+            $(frm_review.dir).val("joined/");
+            $(frm_review.member_seq).val(member_seq);
+            $(frm_review.campaign_seq).val(campaign_seq);
+            $(frm_review.img_type).val("review");
+
+            if(!confirm("Do you want to those screenshots?")) return;
+
+            frm_review.action="/user/api/joined_campaign/update/image";
+            frm_review.method="post";
+            frm_review.submit();
+
+        });
+
+        //  Review - Cancel 버튼 클릭 시
+        $("#review_reset").on("click", function(e){
+            e.preventDefault();
+            $(frm_review)[0].reset();
+
+            $("#review_insert").prop("disabled", true);
+            $("#review_reset").prop("disabled", true);
+
+            $("#rImg_div .file_img").each(function(){
+                var img = $(this)[0].files[0];
+                var fNum = $(this).attr("num");
+
+                if(img==null){
+                    $("#rImage_div .click_img").each(function(){
+                        var cNum = $(this).attr("num");
+                        var idx = $(this).attr("idx");
+                        if(cNum==fNum) {
+                            $(this).attr("src", "/displayFile?fullName=/img/blank_img.png");
+                        }
+                        if(arrReImg[idx]!=null){
+                            $(this).attr("src", "/displayFile?fullName=/joined/"+joined_campaign_seq+"/"+arrReImg[idx]);
+                        }
+                    });
+                }
+            });
+        });
+
+        // 미리보기 이미지 클릭 시
+        $("#screenShot_div").on("click", ".click_img", function(){
+            var pNum=$(this).attr("num");
+            $("#screenShot_div .file_img").each(function(){
+                var fNum=$(this).attr("num");
+                if(pNum==fNum){
+                    $(this).click();
+                }
+            });
+        });
+
+        // 이미지 첨부 시
+        $("#screenShot_div").on("change", ".file_img", function(){
+            var img = $(this)[0].files[0];
+            var fAttr = $(this).attr("num");
+            var type = "";
+            if(img!=null){
+                type=$(this).attr("attr");
+            }
+
+            if(img==null){
+                $("#screenShot_div .click_img").each(function(){
+                    var cAttr = $(this).attr("num");
+                    if(fAttr == cAttr) {
+                        $(this).attr("src","http://placehold.it/50x50");
+                    }
+                });
+            }else{
+                $("#screenShot_div .click_img").each(function(){
+                    var cAttr = $(this).attr("num");
+                    if(fAttr == cAttr) {
+                        $(this).attr("src", URL.createObjectURL(img));
+                        $(this).attr("fileName", img.name);
+                    }
+                });
+            }
+            if(type=="pay"){
+                $("#payment_insert").removeProp("disabled");
+                $("#payment_reset").removeProp("disabled");
+            }else if(type=="re"){
+                $("#review_insert").removeProp("disabled");
+                $("#review_reset").removeProp("disabled");
+            }
+        });
+
+        // 작은 이미지 리스트 선택 시 큰 이미지 변경
+        $("#image_list").on("click", ".preview_img", function(){
+            alert("");
+            src=$(this).attr("src");
+            $("#view_img").attr("src", src);
+        });
+
+
+
+        /***************************** 이미지 스크립트 *****************************/
+
+        // Join 버튼 클릭 시
+        $("#btn_join").on("click", function(){
+            if(!confirm("Do you want to join this campaign?")) return;
+
+            $.ajax({
+                type:"post",
+                url:"/common/api/joined_campaign/insert",
+                data:{
+                    "campaign_seq":campaign_seq,
+                    "member_seq":member_seq
+                },
+                success:function(result){
+                    if(result==1){
+                        alert("Join success");
+                        location.reload();
+                    }else if(result==0){
+                        alert("The number of applicants is full.");
+                        location.reload();
+                    }else if(result==2){
+                        alert("no member");
+                        location.href="/join";
+                    }else if(result==3){
+                        alert("You are joined already.");
+                        location.reload();
+                    }else if(result==4){
+                        alert("You can't apply for this campaign.");
+                        location.reload();
+                    }else if(result==5){
+                        alert("You can only apply for campaigns in your country.");
+                        location.reload();
+                    // }else if(result==6){
+                    //     alert("Your account can't join the same brand in duplicate.\n※ Once the campaign for the same brand in progress\nis over, You can join campaign of the same brand.");
+                    //     location.reload();
+                    }else if(result==7) {
+                        alert("Before you join campaigns, you must enter phone number in My page (More tap)");
+                        location.href="/mypage";
+                    }
+
+                }
+            });
+        });
+
+        // Join 버튼 활성화 여부
+        function chkStatus(){
+            $.ajax({
+                type:"get",
+                url:"/common/api/joined_campaign/read/status_check",
+                data: {
+                    "campaign_seq":campaign_seq,
+                    "member_seq":member_seq
+                },
+                async:false,
+                success:function(result){
+                    //console.log("chkStatus="+result);
+                    if(result==0 || result==4){
+                        $("#btn_join").html("Closed");
+                        $("#btn_join").prop("disabled", true);
+                        $("#btn_join").css("cursor", "inherit");
+                    }else if(result==1){
+                        $("#btn_join").html("Joined");
+                    }else if(result==2){
+                        $("#btn_join").removeProp("disabled");
+                    }else if(result==3){
+                        $("#button_div").hide();
+                        $("#screenShot_div").show();
+                    }else{
+                        $("#btn_join").html("Closed");
+                        $("#btn_join").prop("disabled", true);
+                        $("#btn_join").css("cursor", "inherit");
+                    }
+                }
+            });
+        }
+
+        getCampaign();
+        function getCampaign(){
+            $.ajax({
+                type:"get",
+                url:"/common/api/campaign/read",
+                // async:false,
+                data:
+                    {
+                        "campaign_seq":campaign_seq,
+                        "member_seq":member_seq
+                    },
+                success:function(data){
+                    var cvo = data.cvo;
+                    $("#campaign_title").html(cvo.campaign_title);
+                    $("#campaign_country").html(cvo.campaign_country);
+                    var original_price = cvo.original_price;
+                    var strPrice = original_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    $("#original_price").html("$"+strPrice);
+                    $("#type").html(cvo.type);
+                    var campaign_desc = cvo.campaign_description;
+                    campaign_desc=campaign_desc.replace("<", "&lt;");
+                    campaign_desc=campaign_desc.replace(">", "&gt;");
+                    campaign_desc=campaign_desc.replace(/(?:\r\n|\r|\n)/g,'<br/>');
+
+                    $("#campaign_description").html(campaign_desc);
+
+                    /*var strView = "<div class='swiper-slide'>"+"<img id='view_img' src='/displayFile?fullName=/campaign/"+cvo.campaign_img1+"' width='auto' height='auto'/></div>";
+                    $("#img_view").append(strView);*/
+
+                    var strView=new Array(cvo.campaign_img1, cvo.campaign_img2, cvo.campaign_img3, cvo.campaign_img4, cvo.campaign_img5, cvo.campaign_img6, cvo.campaign_img7, cvo.campaign_img8);
+                    strView.forEach(function (arg, index){
+                        if(arg!=null && arg!=""){
+                            var strView = "<div class='swiper-slide'>"+"<img class='preview_img' src='/displayFile?fullName=/campaign/"+arg+"' width='auto' height='50'/></div>";
+                            $("#img_view").append(strView);
+                        }
+                    });
+
+                    var arrCamImg=new Array(cvo.campaign_img1, cvo.campaign_img2, cvo.campaign_img3, cvo.campaign_img4, cvo.campaign_img5, cvo.campaign_img6, cvo.campaign_img7, cvo.campaign_img8);
+                    arrCamImg.forEach(function (arg){
+                        if(arg!=null && arg!=""){
+                            var strList = "<div class='swiper-slide'>"+"<img class='preview_img' src='/displayFile?fullName=/campaign/"+arg+"' width='auto' height='50'/></div>";
+                            $("#img_list").append(strList);
+                        }
+                    });
+                    var template = Handlebars.compile($("#memberPictureScript").html());
+                    $("#memberPictureDiv").html(template(data));
+
+                    if(data.jvo == null || data.jvo == undefined) return;
+
+                    var jvo=data.jvo;
+                    joined_campaign_seq=jvo.joined_campaign_seq;
+
+                    arrPayImg=new Array(jvo.payment_img1, jvo.payment_img2, jvo.payment_img3, jvo.payment_img4);
+                    for(i=0; i<arrPayImg.length; i++){
+                        $("#pImage_div .click_img").each(function(){
+                            var idx=$(this).attr("idx");
+                            if(i==idx){
+                                if(arrPayImg[i]!=null){
+                                    $(this).attr("src", "/displayFile?fullName=/joined/"+joined_campaign_seq+"/"+arrPayImg[i]);
+                                }else{
+                                    $(this).attr("src", "/displayFile?fullName=/img/blank_img.png");
+                                }
+                            }
+                        });
+                    }
+                    arrReImg=new Array(jvo.review_img1, jvo.review_img2, jvo.review_img3, jvo.review_img4);
+                    for(i=0; i<arrReImg.length; i++){
+                        $("#rImage_div .click_img").each(function(){
+                            var idx=$(this).attr("idx");
+                            if(i==idx){
+                                if(arrReImg[i]!=null){
+                                    $(this).attr("src", "/displayFile?fullName=/joined/"+joined_campaign_seq+"/"+arrReImg[i]);
+                                }else{
+                                    $(this).attr("src", "/displayFile?fullName=/img/blank_img.png");
+                                }
+                            }
+                        });
+                    }
+                    btnStatus(arrPayImg, arrReImg);
+                }
+            });
+        }
+
+        function btnStatus(arrPayImg, arrReImg){
+            var payNullChk=false;
+            arrPayImg.forEach(function(args){
+                if(args!=null){
+                    payNullChk=true;
+                }
+            });
+            if(payNullChk){
+                $("#payment_insert").html("Edit");
+            }
+
+            var reNullChk=false;
+            arrReImg.forEach(function(args){
+                if(args!=null){
+                    reNullChk=true;
+                }
+            });
+            if(reNullChk){
+                $("#review_insert").html("Edit");
+            }
+        }
+
+        Handlebars.registerHelper("pic", function(member_seq, member_picture) {
+            if(member_picture!=null) {
+                return "<div class='campaign-user-img'><img src='/displayFile?fullName=/member/"+member_seq+"/"+member_picture+"' width='30' height='30'/></div>";
+            }else {
+                return "<div class='campaign-user-img'><img src='/displayFile?fullName=/img/profile_basic.png' width='30' height='30'/></div>";
+            }
+        });
+
+
+        /*swiper js*/
+        var swiper = new Swiper(".gallery-thumbs", {
+            slidesPerView: 'auto',
+            freeMode: true,
+            slideToClickedSlide: true,
+        });
+        var swiper2 = new Swiper(".gallery-top", {
+            // loop: true,
+            spaceBetween: 1,
+            slidesPerView: 1,
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            thumbs: {
+                swiper: swiper,
+            }
+
+        });
+    </script>
+</th:block>
+</body>
+</html>

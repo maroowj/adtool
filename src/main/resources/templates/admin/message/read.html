@@ -1,0 +1,77 @@
+<html xmlns="http://www.w3.org/1999/xhtml"xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <title>Messgae Read</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+    <!--<style>
+        .cursorPoint {
+            cursor: pointer;
+        }
+    </style>-->
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div class="auto">
+
+        <div id="page_title">
+            <h1 class="d-none">Message (/admin/message/read.html)</h1>
+        </div>
+
+        <div id="message_read_div" class="notice-read-wrap">
+            <div id="title_div">
+                <span class="notice-title">[title]</span><span id="title" class="notice-title"></span>
+            </div>
+            <div id="sender_div">
+                <div class="notice-writer">
+                    <span class="title">받은 사람</span><span id="receiver"></span>
+                </div>
+                <span id="message_date"></span>
+            </div>
+
+            <div id="content" class="admin-msg-read-cont"></div>
+
+            <div class="notice-btn-List">
+                <div id="btn_List" class="cursorPoint" onclick="location.href='/admin/message_box'">List</div>
+            </div>
+        </div>
+
+    </div>
+    <script th:inline="javascript">
+        var member_seq = [[${session.member_seq}]];
+        let message_seq= [[${param.mno}]][0];
+
+
+        getMessage();
+        function getMessage(){
+            $.ajax({
+                type:"get",
+                url:"/admin/api/message/read",
+                data:{"message_seq":message_seq},
+                success:function(data){
+                    var title=data.title;
+                    var message_date=data.message_date;
+                    var content=data.content;
+                    var receiver=data.member_name;
+                    $("#title").html(title);
+                    $("#message_date").html(message_date);
+                    $("#content").html(content);
+                    $("#receiver").html(receiver);
+                },
+                error:function (){
+                    alert("ajax error!");
+                }
+            });
+        }
+
+        Handlebars.registerHelper("date", function(joined_date){
+            var yyyy=joined_date.substring(0,4);
+            var MM=joined_date.substring(5,7);
+            var dd=joined_date.substring(8,10);
+
+            return yyyy+"."+MM+"."+dd;
+        });
+    </script>
+</th:block>
+</body>
+</html>

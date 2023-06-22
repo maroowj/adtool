@@ -1,0 +1,85 @@
+<html xmlns="http://www.w3.org/1999/xhtml"xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/myPageLayout}">
+<head>
+    <title>Messgae Read</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+    <style>
+        .cursorPoint {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<th:block layout:fragment="userContent">
+    <div>
+
+        <div id="page_title" class="msgRead-title-wrap">
+            <h1 class="page-title message-title b-bottom">Message <span class="d-none">(/user/mypage/msg_read.html)</span></h1>
+            <div id="btn_List" class="cursorPoint" onclick="location.href='/mypage/message_list'">List</div>
+        </div>
+
+        <div id="message_read_div">
+            <div class="msgRead-contTitle-wrap">
+                <div id="title_div">
+                    <div class="title"><span>[title]</span><span id="title"></span></div>
+                    <span id="message_date"></span>
+                </div>
+                <div id="sender_div">
+                    <span>SENDER</span><span id="sender"></span>
+                </div>
+            </div>
+
+            <div id="content" style="padding: 10px; overflow-x: scroll;"></div>
+        </div>
+
+    </div>
+    <script th:inline="javascript">
+        var member_seq = [[${session.member_seq}]];
+        var message_seq= [[${mno}]];
+
+        getMessage();
+        function getMessage(){
+            $.ajax({
+                type:"get",
+                url:"/user/api/message/read",
+                data:{
+                    "message_seq":message_seq,
+                    "member_seq":member_seq
+                },
+                success:function(data){
+                    var title=data.title;
+                    var message_date=data.message_date;
+                    let content=data.content;
+                    var sender=data.member_name;
+                    $("#title").html(title);
+                    $("#message_date").html(message_date);
+                    $("#content").html(content);
+                    $("#sender").html(sender);
+                },
+                error:function (){
+                    alert("ajax error!");
+                }
+            });
+        }
+
+        Handlebars.registerHelper("date", function(joined_date){
+            var yyyy=joined_date.substring(0,4);
+            var MM=joined_date.substring(5,7);
+            var dd=joined_date.substring(8,10);
+
+            return yyyy+"."+MM+"."+dd;
+        });
+
+        $("#content").on("click", "a", function(e){
+            e.preventDefault();
+            let link = $(this).attr("href");
+            if(!link.includes("http://")){
+                link = "http://"+link;
+            }
+            window.open(link);
+        });
+    </script>
+</th:block>
+</body>
+</html>

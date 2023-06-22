@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MessageMapper">
+    <select id="message_list_by_member_seq" resultType="com.muzi.adtool.domain.MessageVO">
+        select * from message where receiver=#{member_seq}
+        order by message_date desc
+        limit #{pageStart}, #{perPageNum}
+    </select>
+
+    <select id="message_totalCount_by_member_seq" resultType="int">
+        select count(*) from message where receiver=#{member_seq}
+    </select>
+
+    <select id="message_count_for_notRead_by_member_seq" resultType="int">
+        select count(*) from message where receiver=#{member_seq} and read_check=0
+    </select>
+    
+    <select id="message_read_by_message_seq" resultType="com.muzi.adtool.domain.MessageVO">
+        select msg.*, mi.member_name from message msg left join member_information mi on msg.sender=mi.member_seq
+        where message_seq=#{message_seq} and receiver=#{member_seq}
+    </select>
+    
+    <insert id="insert_message">
+        insert into message(message_seq, title, content, receiver, sender)
+        values(#{message_seq}, #{title}, #{content}, #{receiver}, #{sender})
+    </insert>
+
+    <update id="update_read_check">
+        update message set read_check=1 where message_seq=#{message_seq}
+    </update>
+
+    <select id="message_list_all" resultType="com.muzi.adtool.domain.MessageVO">
+        select msg.*, mi.member_name from message msg left join member_information mi
+        on msg.receiver=mi.member_seq
+        <if test="searchType=='title'">
+            where title like concat('%', #{keyword}, '%')
+        </if>
+        <if test="searchType=='receiver'">
+            where member_name like concat('%', #{keyword}, '%')
+        </if>
+        order by message_date desc
+        limit #{pageStart}, #{perPageNum}
+    </select>
+
+    <select id="totalCount" resultType="int">
+        select count(*) from message msg left join member_information mi
+        on msg.receiver=mi.member_seq
+        <if test="searchType=='title'">
+            where title like concat('%', #{keyword}, '%')
+        </if>
+        <if test="searchType=='receiver'">
+            where member_name like concat('%', #{keyword}, '%')
+        </if>
+    </select>
+
+    <select id="message_read" resultType="com.muzi.adtool.domain.MessageVO">
+        select msg.*, mi.member_name from message msg left join member_information mi
+            on msg.receiver=mi.member_seq where message_seq=#{message_seq}
+    </select>
+</mapper>

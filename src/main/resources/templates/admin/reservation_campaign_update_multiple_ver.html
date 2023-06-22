@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>예약 캠페인 업데이트</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+
+    <!--<style>
+	div {
+	        margin-bottom:10px;
+	    }
+    .input {
+            margin-left: 5px;
+            }
+	</style>-->
+
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <div class="d-flex jc-space-bt a-center">
+            <h2 class="page-title message-title">예약 캠페인 <span class="d-none">(/admin/campaign_update_multiple.html)</span></h2>
+        </div>
+
+        <div class="admin-camUpdate-wrap">
+            <div id="image_form">
+                <form name="frm" id="frm" enctype="multipart/form-data" method="post">
+                    <div><img id="preview_img" src="/displayFile?fullName=/img/blank_img.png" ></div>
+                    <div>
+                        <div class="thum-img">
+                            <span><img id="click_img1" class="click_img" num="0" src="/displayFile?fullName=/img/blank_img.png" width="50" height="50"/></span>
+                            <span><img id="click_img2" class="click_img" num="1" src="/displayFile?fullName=/img/blank_img.png" width="50" height="50"/></span>
+                            <span><img id="click_img3" class="click_img" num="2" src="/displayFile?fullName=/img/blank_img.png" width="50" height="50"/></span>
+                            <span><img id="click_img4" class="click_img" num="3" src="/displayFile?fullName=/img/blank_img.png" width="50" height="50"/></span>
+                            <span><img id="click_img5" class="click_img" num="4" src="/displayFile?fullName=/img/blank_img.png" width="50" height="50"/></span>
+                        </div>
+                    </div>
+                    <div class="hidden_div d-none">
+                    <input type="file" class="file_img" num="0" name="image1" >
+                    <input type="file" class="file_img" num="1" name="image2" >
+                    <input type="file" class="file_img" num="2" name="image3" >
+                    <input type="file" class="file_img" num="3" name="image4" >
+                    <input type="file" class="file_img" num="4" name="image5" >
+                    </div>
+                </form>
+            </div>
+
+            <div id="text_form" class="login-page-wrap">
+                <div class="login-id-title"><div>Title</div><input type="text" name="campaign_title" id="campaign_title" style="cursor: inherit;" readonly></div>
+                <div class="login-id-title ">
+                    <div>Brand / Project</div>
+                    <div class="">
+                        <input type="text" name="brand_name" id="brand_name" style="cursor: inherit;" readonly/>
+                        <input type="text" name="brand_seq" id="brand_seq" placeholder="brand_seq (나중에 히든처리)"  class="d-none"  readonly/>
+                    </div>
+                </div>
+                <div class="login-id-title">
+                    <div>Country</div>
+                    <div class="select_box">
+                        <select id="campaign_country" style="cursor: inherit;" disabled>
+                            <option value="Singapore">Singapore</option>
+                            <option value="Malaysia">Malaysia</option>
+                            <option value="Philippines">Philippines</option>
+                            <option value="Taiwan">Taiwan</option>
+                            <option value="Japan">Japan</option>
+                            <option value="South Korea">South Korea</option>
+                        </select>
+                        <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                    </div>
+                </div>
+                <div class="login-id-title"><div>Original Price</div><input type="text" name="original_price" id="original_price" class="input" style="cursor: inherit;" readonly/></div>
+                <div class="login-id-title"><div>Discount Price</div><input type="text" name="discount_price" id="discount_price" class="input" style="cursor: inherit;" readonly/></div>
+                <div class="login-id-title">
+                    <div>Type</div>
+                    <div class="select_box">
+                        <select id="type" style="cursor: inherit;" disabled>
+                            <option value="Regular">Regular</option>
+                            <option value="Offer">Offer</option>
+                            <option value="Voucher">Voucher</option>
+                            <option value="None">None</option>
+                        </select>
+                        <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                    </div>
+                </div>
+                <div class="login-id-title">
+                    <div>Need number</div>
+                    <div class="camUpdate-needNum-wrap">
+                        <input type="text" name="need_number" id="need_number" class="input" style="cursor: inherit;" readonly/>
+                        <input type="text" id="multiple_number" class="input" style="cursor: inherit;" readonly placeholder="1.5배수"/>
+                    </div>
+                </div>
+                <div class="login-id-title">
+                    <div>Description</div>
+                    <textarea id="campaign_description" style="cursor: inherit;" readonly></textarea>
+                </div>
+                <div class="admin-insert-time-wrap">
+                    <p class="title">발행시간</p>
+                    <div class="time-select-wrap">
+                        <div id="reservation_div" style="display: flex; margin-bottom: 27px;">
+                            <input type="date" id="publish_date" disabled>
+                            <div class="select_box">
+                                <select id="hour" disabled style="cursor: inherit;"></select>
+<!--                                <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>-->
+                            </div>
+                            <span class="time-bar">:</span>
+                            <div class="select_box">
+                                <select id="minute" disabled style="cursor: inherit;"></select>
+<!--                                <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>-->
+                            </div>
+                            <button id="consoleChk" class="d-none">chk</button>
+                        </div>
+                    </div>
+                </div>
+
+<!--                <div class="loginP-loginBtn ">-->
+<!--                    <button id="btnReservationCancel" style="background:#e70012; color:#fff;">예약 취소</button>-->
+<!--                </div>-->
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Image FileName Hidden Input -->
+    <div class="hidden_div d-none" >
+        <input type="text" id="img1" class="original_img hidden-input" num="0"/>
+        <input type="text" id="img2" class="original_img hidden-input" num="1"/>
+        <input type="text" id="img3" class="original_img hidden-input" num="2"/>
+        <input type="text" id="img4" class="original_img hidden-input" num="3"/>
+        <input type="text" id="img5" class="original_img hidden-input" num="4"/>
+    </div>
+
+    <script th:inline="javascript">
+
+        /**************************** 시작 스크립트 ****************************/
+        var re_campaign_seq = [[${re_campaign_seq}]];
+        var arrImage = new Array([[${vo.campaign_img1}]], [[${vo.campaign_img2}]], [[${vo.campaign_img3}]], [[${vo.campaign_img4}]], [[${vo.campaign_img5}]]); // db에서 가져온 이미지
+        var formData=new FormData();
+        var arrDel=new Array();
+        var className=".hidden-input";
+        getCampaignRead();
+
+        // select box 변경 시 이동
+        $("#move_menu").on('change', function (){
+            var aim = $(this).val();
+            if(aim=="update"){
+                location.href="/admin/campaign_update?campaign_seq="+campaign_seq;
+            }else if(aim=="member"){
+                location.href="/admin/member_in_campaign?campaign_seq="+campaign_seq;
+            }else if(aim=="review"){
+                location.href="/admin/campaign_review?campaign_seq="+campaign_seq;
+            }else if(aim=="calculate"){
+                location.href="/admin/campaign_calculate?campaign_seq="+campaign_seq;
+            }
+        });
+
+        // db에 저장된 이미지 불러와서 뿌려주기
+        $(document).ready(function(){
+            if(arrImage[0]!=null && arrImage[0]!=""){
+                $("#preview_img").attr("src", "/displayFile?fullName=/campaign/"+arrImage[0]);
+            }
+
+            $(".click_img").each(function(){
+                var idx = $(this).attr("num");
+                var pSpan = $(this).parent();
+
+                for(i=0; i<$(".click_img").length; i++){
+                    if(arrImage[i]!=null && arrImage[i]!=""){
+                        if(idx==i){
+                            $(this).attr("src", "/displayFile?fullName=/campaign/"+arrImage[i]);
+                            $(this).attr("fileName", arrImage[i]);
+                            $(this).addClass("yesImg");
+                            $(this).removeClass("noImg");
+                        }
+                    }else{
+                        if(idx==i){
+                            $(this).attr("src", "/displayFile?fullName=/img/blank_img.png");
+                            $(this).addClass("noImg");
+                            $(this).removeClass("yesImg");
+                        }
+                    }
+                }
+            });
+
+            $("#img1").val($("#click_img1").attr("fileName"));
+            $("#img2").val($("#click_img2").attr("fileName"));
+            $("#img3").val($("#click_img3").attr("fileName"));
+            $("#img4").val($("#click_img4").attr("fileName"));
+            $("#img5").val($("#click_img5").attr("fileName"));
+
+
+        });
+
+        // 작은 이미지 클릭시 큰 이미지 변경
+        $(frm).on("click", " .click_img", function(){
+            src=$(this).attr("src");
+            $("#preview_img").attr("src", src);
+        });
+
+        /**************************** 캠페인 스크립트 ****************************/
+
+        // db (Campaign) 정보 불러오기
+        function getCampaignRead(){
+            $.ajax({
+                type: "get",
+                url: "/admin/api/reservation_campaign/read",
+                data:
+                    {
+                        "re_campaign_seq":re_campaign_seq
+                    },
+                success:function(data){
+                    // console.log(data);
+                    $("#campaign_title").val(data.campaign_title);
+                    $("#campaign_country").val(data.campaign_country);
+                    $("#brand_seq").val(data.brand_seq);
+                    $("#brand_name").val(data.brand_name);
+                    $("#original_price").val(data.original_price);
+                    $("#discount_price").val(data.discount_price);
+                    $("#type").val(data.type);
+                    $("#need_number").val(data.need_number);
+                    $("#multiple_number").val(data.multiple_number);
+                    $("#campaign_description").val(data.campaign_description);
+
+                    var publishDate = data.publish_date;
+                    console.log(publishDate.substring(11, 13));
+                    $("#publish_date").val(publishDate.substring(0, 10));
+                    $("#hour").html("<option>"+publishDate.substring(11, 13)+"</option>");
+                    $("#minute").html("<option>"+publishDate.substring(14, 16)+"</option>");
+                }
+            });
+        }
+
+        $("#btnReservationCancel").on("click", function(){
+            if(!confirm("예약을 취소하시겠습니까?")) return;
+
+            $.ajax({
+                type:"delete",
+                url:"/admin/api/reservation_campaign/delete",
+                data:{
+                    "re_campaign_seq":re_campaign_seq
+                },
+                success:function(data) {
+                    alert("예약이 취소되었습니다.");
+                    location.href="/admin/reservation_campaign";
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

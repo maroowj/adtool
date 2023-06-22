@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/userLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <div style="margin-bottom: 25px; padding-top:50px;">
+            <div class="main-title ongoing-div" style="display:block;">Now Ongoing</div>
+            <!--            <ul class="campaign-country-list">-->
+            <!--                <li class="on"><a class="country" country=""><span><img src="/displayFile?fullName=/img/country_all.png" alt="all"></span>All</a></li>-->
+            <!--                <li><a class="country" country="Singapore"><span><img src="/displayFile?fullName=/img/country_sg.png" alt="Singapore"></span>Singapore</a></li>-->
+            <!--                <li><a class="country" country="Malaysia"><span><img src="/displayFile?fullName=/img/country_my.png" alt="Malaysia"></span>Malaysia</a></li>-->
+            <!--                <li><a class="country" country="Philippines"><span><img src="/displayFile?fullName=/img/country_ph.png" alt="Philippines"></span>Philippines</a></li>-->
+            <!--            </ul>-->
+        </div>
+
+        <div id="campaignListDiv"></div>
+        <script id="campaignListScript" type="/text/x=handlebars-template">
+            {{#list}}
+            <div class="contentsDiv po-r">
+                <div class="country-circle"><span>{{{country campaignVO.campaign_country}}}</span></div>
+                <div class="before"
+                     style="overflow:hidden;  background-image:url('/displayFile?fullName=/campaign/{{campaignVO.campaign_img1}}')">
+                    <!--<div><img src="/displayFile?fullName=/campaign/{{campaignVO.campaign_img1}}" width="30" height="30"/></div>-->
+                    <div class="contentsDiv-text-wrap t-center">
+                        <div class="discount-price"><span class="bold">$ {{campaignVO.discount_price}}</span></div>
+                        <div class="original-price"><span>$ {{campaignVO.original_price}}</span></div>
+
+                    </div>
+                    <div class="campaign-userImg-wrap">
+                        {{#each jList}}
+                        {{{pic member_seq member_picture}}}
+                        <!--                        <div class="campaign-user-img"><img src="/displayFile?fullName=/member/{{member_seq}}/{{member_picture}}" width="30" height="30"/></div>-->
+                        {{/each}}
+                    </div>
+
+                </div>
+                <div class="after">
+                    <!--<div><img src="/displayFile?fullName=/campaign/{{campaignVO.campaign_img1}}" width="30" height="30"/></div>-->
+                    <div>
+                        <button class="btnJoin"
+                                onClick="location.href='/campaign/join?campaign_seq={{campaignVO.campaign_seq}}'">JOIN
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {{/list}}
+        </script>
+
+        <div style="margin-bottom: 25px; padding-top:50px;">
+            <div class="main-title ongoing-div" style="display:block;">Completed</div>
+            <!--            <ul class="campaign-country-list">-->
+            <!--                <li class="on"><a class="country" country=""><span><img src="/displayFile?fullName=/img/country_all.png" alt="all"></span>All</a></li>-->
+            <!--                <li><a class="country" country="Singapore"><span><img src="/displayFile?fullName=/img/country_sg.png" alt="Singapore"></span>Singapore</a></li>-->
+            <!--                <li><a class="country" country="Malaysia"><span><img src="/displayFile?fullName=/img/country_my.png" alt="Malaysia"></span>Malaysia</a></li>-->
+            <!--                <li><a class="country" country="Philippines"><span><img src="/displayFile?fullName=/img/country_ph.png" alt="Philippines"></span>Philippines</a></li>-->
+            <!--            </ul>-->
+        </div>
+
+        <div id="endedCampaignListDiv"></div>
+        <script id="endedCampaignListScript" type="/text/x=handlebars-template">
+            {{#list}}
+            <div class="contentsDiv po-r">
+                <div class="country-circle"><span>{{{country campaignVO.campaign_country}}}</span></div>
+                <div class="before"
+                     style="overflow:hidden;  background-image:url('/displayFile?fullName=/campaign/{{campaignVO.campaign_img1}}')">
+                    <!--<div><img src="/displayFile?fullName=/campaign/{{campaignVO.campaign_img1}}" width="30" height="30"/></div>-->
+                    <div class="contentsDiv-text-wrap t-center">
+                        <div class="discount-price"><span class="bold">$ {{campaignVO.discount_price}}</span></div>
+                        <div class="original-price"><span>$ {{campaignVO.original_price}}</span></div>
+                        <div class="d-none"><span>{{campaignVO.campaign_country}}</span></div>
+                    </div>
+                    <div class="campaign-userImg-wrap">
+                        {{#each jList}}
+                        {{{pic member_seq member_picture}}}
+                        <!--                        <div class="campaign-user-img"><img src="/displayFile?fullName=/member/{{member_seq}}/{{member_picture}}" width="30" height="30"/></div>-->
+                        {{/each}}
+                    </div>
+
+                </div>
+                <div class="after">
+                    <!--<div><img src="/displayFile?fullName=/campaign/{{campaignVO.campaign_img1}}" width="30" height="30"/></div>-->
+                    <div>
+                        <button class="btnJoin"
+                                onClick="location.href='/campaign/join?campaign_seq={{campaignVO.campaign_seq}}'">JOIN
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {{/list}}
+        </script>
+    </div>
+    <script th:inline="javascript">
+        let page = 1;
+        var campaign_country = "";
+        var keyword = "";
+        if ([[${param.keyword}]] != null) {
+            keyword = [[${param.keyword}]][0];
+            $("#keyword").val(keyword);
+            page = 1;
+        }
+        onGoingList();
+        completedList();
+
+        // 국가 클릭(선택) 시
+        // $(".country").on("click", function(){
+        //     campaign_country = $(this).attr("country");
+        //     getList();
+        // });
+
+        // 진행 중 캠페인 목록
+        function onGoingList() {
+            $.ajax({
+                type: "get",
+                url: "/common/api/campaign/list",
+                // async:false,
+                data: {
+                    // "campaign_country":campaign_country,
+                    "status": "recruit",
+                    "keyword": keyword
+                },
+                success: function (data) {
+                    // console.log(data);
+                    var template = Handlebars.compile($("#campaignListScript").html());
+                    $("#campaignListDiv").html(template(data));
+
+                    /******** 마우스 오버 할 때 div가 show hide 되는 부분 ********/
+                    // $(".after").hide();
+                    // $('.contentsDiv').hover(function() {
+                    //     $(this).find(".before").hide();
+                    //     $(this).find(".after").show();
+                    // }, function(){
+                    //     $(this).find(".before").show();
+                    //     $(this).find(".after").hide();
+                    // });
+
+                }
+            });
+        };
+
+        // 종료된 캠페인 목록
+        function completedList() {
+            $.ajax({
+                type: "get",
+                url: "/common/api/campaign/list",
+                // async:false,
+                data: {
+                    // "campaign_country":campaign_country,
+                    "status": "end",
+                    "keyword": keyword,
+                    "page": page,
+                    "perPageNum":6
+                },
+                success: function (data) {
+                    // console.log(data);
+                    var temp = Handlebars.compile($("#endedCampaignListScript").html());
+                    if (page == 1) {
+                        $("#endedCampaignListDiv").html(temp(data));
+                    } else {
+                        $("#endedCampaignListDiv").append(temp(data));
+                    }
+
+
+                    /******** 마우스 오버 할 때 div가 show hide 되는 부분 ********/
+                    // $(".after").hide();
+                    // $('.contentsDiv').hover(function() {
+                    //     $(this).find(".before").hide();
+                    //     $(this).find(".after").show();
+                    // }, function(){
+                    //     $(this).find(".before").show();
+                    //     $(this).find(".after").hide();
+                    // });
+
+                }
+            });
+        };
+
+        window.onscroll = function (e) {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                setTimeout(function () {
+                    page++;
+                    completedList();
+                }, 500)
+            }
+        }
+
+
+        /*country 선택시 해당 나라 class 추가*/
+        // $('.campaign-country-list li').click(function (){
+        //    $('.campaign-country-list li').removeClass('on');
+        //    $(this).addClass('on');
+        //    $(this).addClass('on');
+        // });
+
+        Handlebars.registerHelper("pic", function (member_seq, member_picture) {
+            if (member_picture != null) {
+                return "<div class='campaign-user-img'><img src='/displayFile?fullName=/member/" + member_seq + "/" + member_picture + "' width='30' height='30'/></div>";
+            } else {
+                return "<div class='campaign-user-img'><img src='/displayFile?fullName=/img/profile_basic.png' width='30' height='30'/></div>";
+            }
+        });
+
+        Handlebars.registerHelper("country", function (country_c) {
+            if (country_c == 'Singapore') {
+                return '<img src="/displayFile?fullName=/img/country_sg.png">';
+            } else if (country_c == 'Malaysia') {
+                return '<img src="/displayFile?fullName=/img/country_my.png">';
+            } else if (country_c == 'Philippines') {
+                return '<img src="/displayFile?fullName=/img/country_ph.png">';
+            } else if (country_c == 'South Korea') {
+                return '<img src="/displayFile?fullName=/img/country_ko.png">';
+            }
+        });
+
+    </script>
+
+</th:block>
+</body>
+
+</html>

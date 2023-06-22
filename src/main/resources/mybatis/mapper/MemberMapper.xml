@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberMapper">
+	
+	<select id="findByMemberId" resultType="com.muzi.adtool.domain.MemberVO">
+		select m.*, t.type from member m left join member_type t on m.member_seq=t.member_seq
+		where m.member_id=#{member_id};
+	</select>
+
+	<select id="infoList" resultType="com.muzi.adtool.domain.Member_informationVO">
+		select * from member_information
+	</select>
+
+	<insert id="insert">
+		insert into member(member_seq, member_id, member_password, access_token, refresh_token, withdrawal, recommend_code)
+		values(#{member_seq}, #{member_id}, #{member_password}, #{access_token}, #{refresh_token}, #{withdrawal}, #{recommend_code})
+	</insert>
+
+	<insert id="insertType">
+		insert into member_type(member_seq, type)
+		values(#{member_seq}, #{type})
+	</insert>
+
+	<insert id="insertInfo">
+		insert into member_information(member_info_seq, member_seq, member_name, member_grade, recommender, recommendation, country)
+		values(#{member_info_seq}, #{member_seq}, #{member_name}, #{member_grade}, #{recommender}, #{recommendation}, #{country})
+	</insert>
+
+	<select id="infoReadByMemberSeq" resultType="com.muzi.adtool.domain.Member_informationVO">
+		select m.member_id, m.recommend_code, mi.* from member_information mi left join member m on mi.member_seq=m.member_seq where mi.member_seq = #{member_seq}
+	</select>
+
+	<update id="updatePreferencesOfInformation">
+		update member_information set preferences=#{preferences}, member_grade=#{member_grade} where member_seq=#{member_seq}
+	</update>
+
+	<update id="updateSnsOfInformation">
+		update member_information set
+		instagram_url=#{instagram_url}, instagram_followers=#{instagram_followers},
+		facebook_url=#{facebook_url}, facebook_followers=#{facebook_followers},
+		youtube_url=#{youtube_url}, youtube_subscribes=#{youtube_subscribes},
+		tiktok_url=#{tiktok_url}, tiktok_followers=#{tiktok_followers},
+		member_grade=#{member_grade}
+		where member_seq=#{member_seq}
+	</update>
+
+	<update id="updateInfo">
+		update member_information set
+		member_name=#{member_name}, member_nickname=#{member_nickname}, preferences=#{preferences},
+		instagram_url=#{instagram_url}, instagram_followers=#{instagram_followers},
+	  	youtube_url=#{youtube_url}, youtube_subscribes=#{youtube_subscribes},
+		facebook_url=#{facebook_url}, facebook_followers=#{facebook_followers},
+		tiktok_url=#{tiktok_url}, tiktok_followers=#{tiktok_followers},
+	  	shopee_id=#{shopee_id}, lazada_id=#{lazada_id},
+		national_number=#{national_number}, phone=#{phone}, address1=#{address1}, address2=#{address2},
+		zipcode=#{zipcode},	city=#{city}, state=#{state}, paypal_id=#{paypal_id}, payoneer_id=#{payoneer_id},
+		country=#{country}, country2=#{country2}, country3=#{country3}
+		where member_seq=#{member_seq}
+	</update>
+
+	<update id="updatePicture">
+		update member_information set
+		member_picture=#{member_picture}
+		where member_seq=#{member_seq}
+	</update>
+
+	<select id="findMemberIdByRecommendCode" resultType="String">
+		select member_id from member where recommend_code=#{recommend_code}
+	</select>
+
+	<!-- 220608 회원 포인트 관련 쿼리 -->
+
+	<insert id="request_point_exchange">
+		insert into point(point_seq, member_seq, point, type, detail, status, request_date)
+		values(#{point_seq}, #{member_seq}, #{point}, #{type}, #{detail}, 0, now())
+	</insert>
+
+	<select id="totalPoint_of_member" resultType="double">
+		select sum(point) from point where member_seq=#{member_seq}
+	</select>
+
+	<select id="list_of_point_by_member_seq" resultType="com.muzi.adtool.domain.PointVO">
+		select * from point where member_seq=#{member_seq}
+		order by point_seq desc
+		limit #{pageStart}, #{perPageNum}
+	</select>
+
+	<select id="totalCountOfMemberPoint" resultType="int">
+		select count(*) from point where member_seq=#{member_seq}
+	</select>
+
+	<update id="password_update">
+		update member set member_password=#{member_password} where member_seq=#{member_seq}
+	</update>
+</mapper>

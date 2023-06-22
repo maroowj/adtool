@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>캠페인 리뷰</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<!--    <script src="https://cdn.ckeditor.com/ckeditor5/26.0.0/classic/ckeditor.js"></script>-->
+    <!--<style>
+	div {
+	        margin-bottom:10px;
+	    }
+    .input {
+            margin-left: 5px;
+            }
+
+    .cursorPoint {
+        cursor: pointer;
+    }
+	</style>-->
+
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <div class="d-flex jc-space-bt a-center">
+            <h2 class="page-title message-title">캠페인 리뷰 <span class="d-none">(/admin/joined_campaign_review.html)</span></h2>
+            <div id="move_menu_div">
+                <select id="move_menu">
+                    <option value="update">캠페인 수정</option>
+                    <option value="member">캠페인 명단</option>
+                    <option value="review" selected>캠페인 리뷰</option>
+                    <option value="calculate">캠페인 정산</option>
+                </select>
+                <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </div>
+        </div>
+        <div id="campaign_info_div">
+            <div class="d-flex jc-space-bt a-start">
+                <div class="admin-joinedCp-img-wrap">
+                    <img class="preview_img" th:if="${cvo.campaign_img1}!=null" th:src="@{/displayFile?fullName=/campaign/}+${cvo.campaign_img1}">
+                </div>
+                <div class="admin-joinedCp-info-wrap">
+                    <div class="info-text">
+                        <div><span class="title">[Campaign]</span><span th:text="${{cvo.campaign_title}}"></span></div>
+                        <div><span class="title">[Brand / Project]</span><span th:text="${{cvo.brand_name}}"></span></div>
+                        <div><span class="title">[모집인원]</span><span th:text="${{cvo.need_number}}"></span></div>
+                        <div><span class="title">[모집인원 1.5배수]</span><span th:text="${{cvo.multiple_number}}"></span></div>
+                        <div class="campaign-progress">
+                            <span th:if="${{cvo.status}}==recruit" th:text="|마감 전 (모집중)|"class="recruit"></span>
+                            <span th:if="${{cvo.status}}==progress" th:text="|마감 완료 (진행중)|"class="progress"></span>
+                            <span th:if="${{cvo.status}}==end" th:text="|캠페인 종료|"class="end"></span>
+                        </div>
+                    </div>
+                    <div id="function_div" class="function_div">
+                        <div id="convert_to_excel" class="cursorPoint" >엑셀 다운로드</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="joined-table-wrap joined-review-table-wrap auto">
+            <table id="campaign_review_list_table">
+                <colgroup>
+                    <col style ="width:5%">
+                    <col style ="width:25%">
+                    <col style ="width:20%">
+                    <col style ="width:10%">
+                    <col style ="width:10%">
+                    <col style ="width:10%">
+                    <col style ="width:10%">
+<!--                    <col style ="width:10%">-->
+
+                </colgroup>
+                <thead>
+                <tr id="order">
+                    <td order="rownum">순번</td>
+                    <td order="member_id">아이디</td>
+                    <td order="phone">연락처</td>
+                    <td colspan="4">리뷰 스크린샷</td>
+<!--                    <td>확인</td>-->
+                </tr>
+                </thead>
+                <tbody class="t-center" id="campaign_review_list_tbody"></tbody>
+            </table>
+        </div>
+        <script id="campaign_review_list_table_script" type="text/x-handlebars-template">
+            {{#each .}}
+            <tr class="row" miSeq={{member_info_seq}} jcSeq={{joined_campaign_seq}} mSeq="{{member_seq}}">
+                <td class="rownum"></td>
+                <td>{{member_id}}</td>
+                <td>{{national_number}} {{phone}}</td>
+                <td>{{{img review_img1 joined_campaign_seq}}}</td>
+                <td>{{{img review_img2 joined_campaign_seq}}}</td>
+                <td>{{{img review_img3 joined_campaign_seq}}}</td>
+                <td>{{{img review_img4 joined_campaign_seq}}}</td>
+<!--                <td>-->
+<!--                    {{{reviewChk review_check}}}-->
+<!--                </td>-->
+            </tr>
+            {{/each}}
+        </script>
+
+
+    </div>
+    <script th:inline="javascript">
+        Handlebars.registerHelper("view", function (chat_check){
+            if(chat_check==1){
+                return "V";
+            }
+        })
+
+        Handlebars.registerHelper("reviewChk", function (review_check){
+            if(review_check==0) {
+                return "<button value='1' class='reviewChk'>확인</button>";
+            }else {
+                return "<button value='0' class='reviewChk'>확인 취소</button>";
+            }
+        });
+
+        Handlebars.registerHelper("img", function (review_img,  joined_campaign_seq){
+            if(review_img!=null) {
+                return "<a href='/displayFile?fullName=/joined/"+joined_campaign_seq+"/"+review_img+"' target='_blank'><img src='/displayFile?fullName=/joined/"+joined_campaign_seq+"/"+review_img+"' width='50px' height='50px'/></a>";
+            }
+        });
+    </script>
+
+    <script th:inline="javascript">
+        var campaign_seq = [[${campaign_seq}]];
+
+        getList();
+
+        // select box 변경 시 이동
+        $("#move_menu").on('change', function (){
+            var aim = $(this).val();
+            if(aim=="update"){
+                location.href="/admin/campaign_update?campaign_seq="+campaign_seq;
+            }else if(aim=="member"){
+                location.href="/admin/member_in_campaign?campaign_seq="+campaign_seq;
+            }else if(aim=="review"){
+                location.href="/admin/campaign_review?campaign_seq="+campaign_seq;
+            }else if(aim=="calculate"){
+                location.href="/admin/campaign_calculate?campaign_seq="+campaign_seq;
+            }
+        });
+
+        function getList(){
+            $.ajax({
+                url : "/admin/api/joined_campaign/list",
+                method :"GET",
+                dataType : "JSON",
+                data:{"campaign_seq": campaign_seq},
+                success : function(result){
+                    //console.log(result);
+                    var template=Handlebars.compile($("#campaign_review_list_table_script").html());
+                    $("#campaign_review_list_tbody").html(template(result));
+                    rowNum();
+                }
+            });
+        }
+
+        $("#convert_to_excel").on("click", function(){
+
+            let url = "/admin/api/joined_campaign/review/excel?" +
+                "campaign_seq=" + campaign_seq;
+
+            window.open(url);
+        })
+
+        // 행에 순번 매기는 function
+        function rowNum(){
+            var cnt= 1;
+            $(".rownum").each(function (){
+                $(this).html(cnt);
+                cnt++;
+            });
+        }
+
+        // 리뷰 확인 했다는 버튼 (기획서에는 기능 없음)
+        /*
+        $("#campaign_review_list_tbody").on("click", ".reviewChk", function(){
+            var pp=$(this).parent().parent();
+            var jcSeq=pp.attr("jcSeq");
+            var chk=$(this).val();
+
+            $.ajax({
+                type:"patch",
+                url:"/admin/api/joined_campaign/update/review_check",
+                data:{
+                    "joined_campaign_seq":jcSeq,
+                    "review_check":chk
+                },
+                success:function (data){
+                    getList();
+                },
+                error:function (){
+                    alert("ajax error!");
+                }
+            });
+        });
+        */
+
+    </script>
+</th:block>
+</body>
+
+
+
+</html>

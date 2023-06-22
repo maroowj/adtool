@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CertificationMapper">
+        <select id="findByCertificationCode" resultType="com.muzi.adtool.domain.CertificationVO">
+            select * from certification where certification_code=#{certification_code}
+        </select>
+
+        <insert id="insertCertification">
+            insert into certification(certification_seq, member_seq, member_id, send_date, certification_code)
+            values(#{certification_seq}, #{member_seq}, #{member_id}, now(), #{certification_code});
+        </insert>
+
+        <update id="updateCertification">
+            update certification set certificate_date=now() where certification_seq=#{certification_seq};
+        </update>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandMapper">
+    <select id="brand_all_list" resultType="com.muzi.adtool.domain.BrandVO">
+        <if test="brand_name==null">
+            select * from brand where withdrawal=0
+            <if test="hidden==0">
+                and hidden=0
+            </if>
+        </if>
+
+        <if test="brand_name!=null">
+            select * from brand where brand_name like concat('%', #{brand_name}, '%') and withdrawal=0
+            <if test="hidden==0">
+                and hidden=0
+            </if>
+        </if>
+
+    </select>
+
+    <select id="brand_read_by_seq" resultType="com.muzi.adtool.domain.BrandVO">
+        select * from brand where brand_seq=#{brand_seq}
+    </select>
+
+    <insert id="brand_insert">
+        insert into brand(brand_seq, brand_name, image, brand_description)
+        values(#{brand_seq}, #{brand_name}, #{image}, #{brand_description})
+
+    </insert>
+
+    <update id="brand_update">
+        update brand set brand_name=#{brand_name}, brand_name=#{brand_name},
+        image=#{image}, brand_description=#{brand_description}
+        where brand_seq=#{brand_seq}
+    </update>
+
+    <update id="brand_delete">
+        update brand set withdrawal=1 where brand_seq=#{brand_seq}
+    </update>
+
+    <select id="campaignCount_by_brand_seq" resultType="int">
+        select count(*) from campaign c left join brand b on c.brand_seq=b.brand_sewq where b.brand_seq=#{brand_seq}
+    </select>
+
+    <!-- 브랜드 숨기기 -->
+    <update id="brand_hidden">
+        update brand set hidden=#{hidden} where brand_seq=#{brand_seq}
+    </update>
+
+</mapper>

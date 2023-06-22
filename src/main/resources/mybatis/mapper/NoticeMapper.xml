@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="NoticeMapper">
+    <insert id="notice_insert">
+        insert notice(notice_seq, title, content, writer, image1, image2, image3, image4, image5, highlight, update_date)
+        values(#{notice_seq}, #{title}, #{content}, #{writer}, #{image1}, #{image2}, #{image3}, #{image4}, #{image5}, #{highlight}, now())
+    </insert>
+
+    <select id="notice_list" resultType="com.muzi.adtool.domain.NoticeVO">
+        select n.*, mi.member_name from notice n left join member_information mi on n.writer=mi.member_seq
+        where (title like concat('%', #{keyword}, '%') or content like concat('%', #{keyword}, '%'))
+        and withdrawal=0
+        order by notice_seq desc
+        limit #{pageStart}, #{perPageNum}
+    </select>
+
+    <select id="notice_totalCount" resultType="int">
+        select count(*) from notice n left join member_information mi on n.writer=mi.member_seq
+        where (title like concat('%', #{keyword}, '%') or content like concat('%', #{keyword}, '%'))
+        and withdrawal=0
+    </select>
+
+    <select id="notice_read" resultType="com.muzi.adtool.domain.NoticeVO">
+        select n.*, mi.member_name from notice n left join member_information mi on n.writer=mi.member_seq
+        where notice_seq=#{notice_seq}
+    </select>
+
+    <update id="readCount_update">
+        update notice set read_count=read_count+1 where notice_seq=#{notice_seq}
+    </update>
+
+    <update id="notice_update">
+        update notice set title=#{title}, content=#{content}, image1=#{image1}, image2=#{image2}, image3=#{image3},
+                          image4=#{image4}, image5=#{image5}, highlight=#{highlight}, update_date=now()
+        where notice_seq=#{notice_seq}
+    </update>
+
+    <update id="notice_update_image_order">
+        update notice set image1=#{image1}, image2=#{image2}, image3=#{image3}, image4=#{image4}, image5=#{image5}
+        where notice_seq=#{notice_seq};
+    </update>
+
+    <select id="highlight_list" resultType="com.muzi.adtool.domain.NoticeVO">
+        select n.*, mi.member_name from notice n left join member_information mi on n.writer=mi.member_seq
+        where highlight=1 and withdrawal=0 order by n.update_date desc;
+    </select>
+
+    <update id="notice_delete">
+        update notice set withdrawal=1 where notice_seq=#{notice_seq}
+    </update>
+</mapper>

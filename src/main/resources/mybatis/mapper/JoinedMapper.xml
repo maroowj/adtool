@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="JoinedMapper">
+
+    <insert id="insert">
+        insert joined_campaign(joined_campaign_seq, campaign_seq, member_seq, accept)
+        values(#{joined_campaign_seq}, #{campaign_seq}, #{member_seq}, #{accept})
+    </insert>
+
+    <select id="chkCount" resultType="int">
+        select count(*) from joined_campaign where campaign_seq=#{campaign_seq}
+    </select>
+
+    <select id="chkDuplicate" resultType="int">
+        select count(*) from joined_campaign where campaign_seq=#{campaign_seq} and member_seq=#{member_seq}
+    </select>
+
+    <select id="list_by_campaign_seq" resultType="com.muzi.adtool.domain.JoinedVO">
+        select jc.joined_campaign_seq, jc.campaign_seq, jc.accept, jc.joined_date,
+               jc.review_img1, jc.review_img2, jc.review_img3, jc.review_img4, jc.review_img5,
+               jc.payment_img1, jc.payment_img2, jc.payment_img3, jc.payment_img4, jc.payment_img5,
+               mi.*
+        from joined_campaign jc left join member_information mi
+        on jc.member_seq=mi.member_seq
+        where campaign_seq=#{campagin_seq}
+    </select>
+
+    <select id="read_by_campaign_seq_and_member_seq" resultType="com.muzi.adtool.domain.JoinedVO">
+        select * from joined_campaign where campaign_seq=#{campaign_seq} and member_seq=#{member_seq}
+    </select>
+
+    <select id="list_by_member_seq_and_status" resultType="com.muzi.adtool.domain.JoinedVO">
+        select jc.* from joined_campaign jc left join campaign ca on jc.campaign_seq=ca.campaign_seq
+        <if test="status=='end'">
+            where jc.member_seq=#{member_seq} and status='end' and withdrawal=0
+        </if>
+        <if test="status!='end'">
+            where jc.member_seq=#{member_seq} and (status='progress' or status='recruit') and withdrawal=0
+        </if>
+        order by joined_campaign_seq desc
+        limit #{pageStart}, #{perPageNum}
+    </select>
+
+    <select id="totalCount_by_member_seq_and_status" resultType="int">
+        select count(*) from joined_campaign jc left join campaign ca on jc.campaign_seq=ca.campaign_seq
+        <if test="status=='end'">
+            where jc.member_seq=#{member_seq} and status='end'
+        </if>
+        <if test="status!='end'">
+            where jc.member_seq=#{member_seq} and (status='progress' or status='recruit')
+        </if>
+    </select>
+
+    <update id="update_payment_img">
+        update joined_campaign set payment_img1=#{payment_img1}, payment_img2=#{payment_img2},
+                                   payment_img3=#{payment_img3}, payment_img4=#{payment_img4},
+                                   payment_img5=#{payment_img5}
+        where joined_campaign_seq=#{joined_campaign_seq} and accept='accept'
+    </update>
+
+    <update id="update_review_img">
+        update joined_campaign set review_img1=#{review_img1}, review_img2=#{review_img2},
+                                   review_img3=#{review_img3}, review_img4=#{review_img4},
+                                   review_img5=#{review_img5}
+        where joined_campaign_seq=#{joined_campaign_seq} and accept='accept'
+    </update>
+
+    <!-- 참여 캠페인 중복 브랜드 조회 -->
+    <select id="findByMemberAndBrand" resultType="int">
+        select count(*) from joined_campaign jc
+            left join campaign c on jc.campaign_seq=c.campaign_seq
+            where jc.member_seq=#{member_seq}
+            and c.brand_seq=#{brand_seq}
+            and (jc.accept='accept' or jc.accept='wait')
+            and (c.status='recruit' or c.status='progress')
+    </select>
+
+</mapper>

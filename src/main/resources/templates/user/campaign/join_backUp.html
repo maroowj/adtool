@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>캠페인신청</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+    <div id="body">
+        <div id="image">
+            <div id="img_view">
+                <img id="view_img" th:if="${cvo.campaign_img1}!=null" th:src="@{/displayFile?fullName=/campaign/}+${cvo.campaign_img1}" width="100" height="100"/>
+            </div>
+            <div id="img_list">
+                <img class="preview_img" th:if="${cvo.campaign_img1}!=null" th:src="@{/displayFile?fullName=/campaign/}+${cvo.campaign_img1}" width="50" height="50"/>
+                <img class="preview_img" th:if="${cvo.campaign_img2}!=null" th:src="@{/displayFile?fullName=/campaign/}+${cvo.campaign_img2}" width="50" height="50"/>
+                <img class="preview_img" th:if="${cvo.campaign_img3}!=null" th:src="@{/displayFile?fullName=/campaign/}+${cvo.campaign_img3}" width="50" height="50"/>
+                <img class="preview_img" th:if="${cvo.campaign_img4}!=null" th:src="@{/displayFile?fullName=/campaign/}+${cvo.campaign_img4}" width="50" height="50"/>
+                <img class="preview_img" th:if="${cvo.campaign_img5}!=null" th:src="@{/displayFile?fullName=/campaign/}+${cvo.campaign_img5}" width="50" height="50"/>
+            </div>
+        </div>
+        <div id="contents">
+            <div><span id="campaign_title" th:text="${cvo.campaign_title}"></span></div>
+            <hr/>
+            <div id="profile_picture">
+                <span th:each="mList:${memberList}">
+                    <img th:src="@{/displayFile?fullName=/member/}+${mList.member_seq}+@{/}+${mList.member_picture}" width="30" height="30"/>
+                </span>
+            </div>
+            <hr/>
+            <div id="campaign_information">
+                <div>Campaign Information</div><br/>
+                <div><span>Country: </span><span id="campaign_country" th:text="${cvo.campaign_country}"></span></div>
+                <div><span>Original_price: </span><span id="original_price"></span></div>
+                <div><span>Type: </span><span id="type" th:text="${cvo.type}"></span></div>
+                <div>
+                    <span>[Description]</span><br/>
+                    <span id="campaign_description" th:text="${cvo.campaign_description}"></span>
+                </div>
+            </div>
+            <br/>
+            <div id="button_div">
+                <button id="btn_join" disabled>Join</button>
+            </div>
+
+            <div id="screenShot_div" style="display: none;">
+                <hr/>
+                <div id="payment_div">
+                    <form name="frm_payment" id="frm_payment" enctype="multipart/form-data" method="post">
+                        <input type="hidden" name="dir"/>
+                        <input type="hidden" name="member_seq"/>
+                        <input type="hidden" name="campaign_seq"/>
+                        <input type="hidden" name="img_type"/>
+                        <span>Payment Screenshot</span>&nbsp;&nbsp;
+                        <button id="payment_insert" disabled>Submit</button>
+                        <input type="reset" value="Cancel" id="payment_reset" disabled/>
+                        <div id="pImage_div">
+                            <div>이미지 미리보기</div>
+                            <div id="pImg_div">
+                                <span><img class="click_img" num="payment_img1" idx="0" th:if="${jvo.payment_img1}!=null" th:src="@{/displayFile?fullName=/joined/}+${jvo.joined_campaign_seq}+@{/}+${jvo.payment_img1}" width="50" height="50"/></span>
+                                <span><img class="click_img" num="payment_img1" idx="0" th:unless="${jvo.payment_img1}!=null" th:src=@{/placehold.it/50x50} width="50" height="50"/></span>
+
+                                <span><img class="click_img" num="payment_img2" idx="1" th:if="${jvo.payment_img2}!=null" th:src="@{/displayFile?fullName=/joined/}+${jvo.joined_campaign_seq}+@{/}+${jvo.payment_img2}" width="50" height="50"/></span>
+                                <span><img class="click_img" num="payment_img2" idx="1" th:unless="${jvo.payment_img2}!=null" th:src=@{/placehold.it/50x50} width="50" height="50"/></span>
+
+                                <span><img class="click_img" num="payment_img3" idx="2" th:if="${jvo.payment_img3}!=null" th:src="@{/displayFile?fullName=/joined/}+${jvo.joined_campaign_seq}+@{/}+${jvo.payment_img3}" width="50" height="50"/></span>
+                                <span><img class="click_img" num="payment_img3" idx="2" th:unless="${jvo.payment_img3}!=null" th:src=@{/placehold.it/50x50} width="50" height="50"/></span>
+
+                                <span><img class="click_img" num="payment_img4" idx="3" th:if="${jvo.payment_img4}!=null" th:src="@{/displayFile?fullName=/joined/}+${jvo.joined_campaign_seq}+@{/}+${jvo.payment_img4}" width="50" height="50"/></span>
+                                <span><img class="click_img" num="payment_img4" idx="3" th:unless="${jvo.payment_img4}!=null" th:src=@{/placehold.it/50x50} width="50" height="50"/></span>
+                                <input type="file" class="file_img" num="payment_img1" name="payment_img1" attr="pay" style="display: none;">
+                                <input type="file" class="file_img" num="payment_img2" name="payment_img2" attr="pay" style="display: none;">
+                                <input type="file" class="file_img" num="payment_img3" name="payment_img3" attr="pay" style="display: none;">
+                                <input type="file" class="file_img" num="payment_img4" name="payment_img4" attr="pay" style="display: none;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <br/>
+                <div id="review_div">
+                    <form name="frm_review" id="frm_review" enctype="multipart/form-data" method="post">
+                        <input type="hidden" name="dir"/>
+                        <input type="hidden" name="member_seq"/>
+                        <input type="hidden" name="campaign_seq"/>
+                        <input type="hidden" name="img_type"/>
+                        <span>Review Screenshot</span>&nbsp;&nbsp;
+                        <button id="review_insert" disabled>Submit</button>
+                        <input type="reset" value="Cancel" id="review_reset" disabled/>
+                        <div id="rImage_div">
+                            <div>이미지 미리보기</div>
+                            <div id="rImg_div">
+                                <span><img class="click_img" num="review_img1" idx="0" th:if="${jvo.review_img1}!=null" th:src="@{/displayFile?fullName=/joined/}+${jvo.joined_campaign_seq}+@{/}+${jvo.review_img1}" width="50" height="50"/></span>
+                                <span><img class="click_img" num="review_img1" idx="0" th:unless="${jvo.review_img1}!=null" th:src=@{/placehold.it/50x50} width="50" height="50"/></span>
+
+                                <span><img class="click_img" num="review_img2" idx="1" th:if="${jvo.review_img2}!=null" th:src="@{/displayFile?fullName=/joined/}+${jvo.joined_campaign_seq}+@{/}+${jvo.review_img2}" width="50" height="50"/></span>
+                                <span><img class="click_img" num="review_img2" idx="1" th:unless="${jvo.review_img2}!=null" th:src=@{/placehold.it/50x50} width="50" height="50"/></span>
+
+                                <span><img class="click_img" num="review_img3" idx="2" th:if="${jvo.review_img3}!=null" th:src="@{/displayFile?fullName=/joined/}+${jvo.joined_campaign_seq}+@{/}+${jvo.review_img3}" width="50" height="50"/></span>
+                                <span><img class="click_img" num="review_img3" idx="2" th:unless="${jvo.review_img3}!=null" th:src=@{/placehold.it/50x50} width="50" height="50"/></span>
+
+                                <span><img class="click_img" num="review_img4" idx="3" th:if="${jvo.review_img4}!=null" th:src="@{/displayFile?fullName=/joined/}+${jvo.joined_campaign_seq}+@{/}+${jvo.review_img4}" width="50" height="50"/></span>
+                                <span><img class="click_img" num="review_img4" idx="3" th:unless="${jvo.review_img4}!=null" th:src=@{/placehold.it/50x50} width="50" height="50"/></span>
+                                <input type="file" class="file_img" num="review_img1" name="review_img1" attr="re" style="display: none;">
+                                <input type="file" class="file_img" num="review_img2" name="review_img2" attr="re" style="display: none;">
+                                <input type="file" class="file_img" num="review_img3" name="review_img3" attr="re" style="display: none;">
+                                <input type="file" class="file_img" num="review_img4" name="review_img4" attr="re" style="display: none;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script th:inline="javascript">
+    var campaign_seq = [[${campaign_seq}]];
+    var member_seq = [[${session.member_seq}]];
+    console.log(member_seq);
+
+    var strPrice = [[${cvo.original_price}]].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    $("#original_price").html("$"+strPrice);
+
+    chkStatus();
+
+
+
+
+    /***************************** 이미지 스크립트 *****************************/
+    var arrPayImg=new Array([[${jvo.payment_img1}]], [[${jvo.payment_img2}]], [[${jvo.payment_img3}]], [[${jvo.payment_img4}]]);
+    var payNullChk=false;
+    arrPayImg.forEach(function(args){
+        if(args!=null){
+            payNullChk=true;
+        }
+    });
+    if(payNullChk){
+        $("#payment_insert").html("Edit");
+    }
+    var arrReImg=new Array([[${jvo.review_img1}]], [[${jvo.review_img2}]], [[${jvo.review_img3}]], [[${jvo.review_img4}]]);
+    var reNullChk=false;
+    arrReImg.forEach(function(args){
+        if(args!=null){
+            reNullChk=true;
+        }
+    });
+    if(reNullChk){
+        $("#review_insert").html("Edit");
+    }
+
+    // (Payment) Submit 클릭 시
+    $("#payment_insert").on("click", function(e){
+        e.preventDefault();
+
+        $(frm_payment.dir).val("joined/");
+        $(frm_payment.member_seq).val(member_seq);
+        $(frm_payment.campaign_seq).val(campaign_seq);
+        $(frm_payment.img_type).val("payment");
+
+        if(!confirm("Do you want to those screenshots?")) return;
+
+        frm_payment.action="/join/update-image";
+        frm_payment.method="post";
+        frm_payment.submit();
+
+    });
+
+    //  Payment - Cancel 버튼 클릭 시
+    $("#payment_reset").on("click", function(e){
+        e.preventDefault();
+        $("#frm_payment")[0].reset();
+
+        $("#payment_insert").prop("disabled", true);
+        $("#payment_reset").prop("disabled", true);
+
+
+
+        $("#pImg_div .file_img").each(function(){
+            var img = $(this)[0].files[0];
+            var fAttr = $(this).attr("num");
+            var strImg = "image"+fAttr;
+
+            if(img==null){
+                $("#pImg_div .click_img").each(function(){
+                    var cAttr = $(this).attr("num");
+                    var idx = $(this).attr("idx");
+                    if(fAttr == cAttr) {
+                        $(this).attr("src","http://placehold.it/50x50");
+                    }
+                    if(arrPayImg[idx]!=null){
+                        $(this).attr("src", "/displayFile?fullName=/joined/"+[[${jvo.joined_campaign_seq}]]+"/"+arrPayImg[idx]);
+                    }
+                });
+            }
+        });
+    });
+
+    // (Review) Submit 클릭 시
+    $("#review_insert").on("click", function(e){
+        e.preventDefault();
+
+        $(frm_review.dir).val("joined/");
+        $(frm_review.member_seq).val(member_seq);
+        $(frm_review.campaign_seq).val(campaign_seq);
+        $(frm_review.img_type).val("review");
+
+        if(!confirm("Do you want to those screenshots?")) return;
+
+        frm_review.action="/join/update-image";
+        frm_review.method="post";
+        frm_review.submit();
+
+    });
+
+    //  Review - Cancel 버튼 클릭 시
+    $("#review_reset").on("click", function(e){
+        e.preventDefault();
+        $("#frm_review")[0].reset();
+
+        $("#review_insert").prop("disabled", true);
+        $("#review_reset").prop("disabled", true);
+
+
+
+        $("#rImg_div .file_img").each(function(){
+            var img = $(this)[0].files[0];
+            var fAttr = $(this).attr("num");
+            var strImg = "image"+fAttr;
+
+            if(img==null){
+                $("#rImg_div .click_img").each(function(){
+                    var cAttr = $(this).attr("num");
+                    var idx = $(this).attr("idx");
+                    if(fAttr == cAttr) {
+                        $(this).attr("src","http://placehold.it/50x50");
+                    }
+                    if(arrReImg[idx]!=null){
+                        $(this).attr("src", "/displayFile?fullName=/joined/"+[[${jvo.joined_campaign_seq}]]+"/"+arrReImg[idx]);
+                    }
+                });
+            }
+        });
+    });
+
+    // 미리보기 이미지 클릭 시
+    $("#screenShot_div").on("click", ".click_img", function(){
+       var pNum=$(this).attr("num");
+       $("#screenShot_div .file_img").each(function(){
+           var fNum=$(this).attr("num");
+           if(pNum==fNum){
+               $(this).click();
+           }
+       });
+    });
+
+    // 이미지 첨부 시
+    $("#screenShot_div").on("change", ".file_img", function(){
+        var img = $(this)[0].files[0];
+        var fAttr = $(this).attr("num");
+        var type = "";
+        if(img!=null){
+            type=$(this).attr("attr");
+        }
+
+        if(img==null){
+            $("#screenShot_div .click_img").each(function(){
+                var cAttr = $(this).attr("num");
+                if(fAttr == cAttr) {
+                    $(this).attr("src","http://placehold.it/50x50");
+                }
+            });
+        }else{
+            $("#screenShot_div .click_img").each(function(){
+                var cAttr = $(this).attr("num");
+                if(fAttr == cAttr) {
+                    $(this).attr("src", URL.createObjectURL(img));
+                    $(this).attr("fileName", img.name);
+                }
+            });
+        }
+        if(type=="pay"){
+            $("#payment_insert").removeProp("disabled");
+            $("#payment_reset").removeProp("disabled");
+        }else if(type=="re"){
+            $("#review_insert").removeProp("disabled");
+            $("#review_reset").removeProp("disabled");
+        }
+    });
+
+    // 작은 이미지 리스트 선택 시 큰 이미지 변경
+    $(".preview_img").on("click", function(){
+        src=$(this).attr("src");
+        $("#view_img").attr("src", src);
+    });
+
+    /***************************** 이미지 스크립트 *****************************/
+
+    // Join 버튼 클릭 시
+    $("#btn_join").on("click", function(){
+        if(!confirm("Do you want to join this campaign?")) return;
+
+        $.ajax({
+            type:"post",
+            url:"/common/api/joined_campaign/read/status_check",
+            data:{
+                    "campaign_seq":campaign_seq,
+                    "member_seq":member_seq
+                },
+            success:function(result){
+                if(result==1){
+                    alert("Join success");
+                }else if(result==0){
+                    alert("sorry");
+                }else{
+                    alert("no member");
+                }
+                location.reload();
+            }
+        });
+    });
+
+    // Join 버튼 활성화 여부
+    function chkStatus(){
+        $.ajax({
+            type:"post",
+            url:"/join/status-check",
+            data: {
+                "campaign_seq":campaign_seq,
+                "member_seq":member_seq
+                },
+            async:false,
+            success:function(result){
+                //console.log(result);
+                if(result==0 || result==4){
+                    $("#btn_join").html("Closed");
+                }else if(result==1){
+                    $("#btn_join").html("Joined");
+                }else if(result==2){
+                    $("#btn_join").removeProp("disabled");
+                }else if(result==3){
+                    $("#button_div").hide();
+                    $("#screenShot_div").show();
+                }else{
+                    $("#btn_join").html("Closed");
+                }
+            }
+        });
+    }
+
+    /*
+    getCampaign();
+    function getCampaign(){
+        $.ajax({
+            type:"get",
+            url:"/campaign/read",
+            async:false,
+            data:
+                {
+                "campaign_seq":campaign_seq
+                },
+            success:function(data){
+                $("#campaign_title").html(data.campaign_title);
+                $("#campaign_country").html(data.campaign_country);
+                var original_price = data.original_price;
+                var strPrice = original_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                $("#original_price").html("$"+strPrice);
+                $("#type").html(data.type);
+                $("#campaign_description").html(data.campaign_description);
+                if(data.campaign_img1 != null) {
+                    console.log(data.campaign_img1);
+                    var strList = "<img class='review_img' src='/displayFile?fullName=/campaign/"+data.campaign_img1+"' width='50' height='50'/>";
+                    var strView = "<img id='view_img' src='/displayFile?fullName=/campaign/"+data.campaign_img1+"' width='100' height='100'/>";
+                    $("#img_list").append(strList);
+                    $("#img_view").append(strView);
+                }
+            }
+        });
+    }
+    */
+</script>
+</html>

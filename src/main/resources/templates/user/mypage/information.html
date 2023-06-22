@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/myPageLayout}">
+<head>
+    <title>정보 수정</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="userContent">
+    <div class="myInfo-cont-wrap">
+        <div class="page-title myInfo-page-title">My Information <span class="d-none">(/user/mypage/information.html)</span></div>
+        <div class="recommendLink-div" style="margin-bottom: 40px;">
+            <div><b>Referral URL<br/>(Invite friends)</b></div>
+            <span class='recommendLinkLine' style="text-align: inherit; cursor: inherit;">
+                <span id="recommendLink" style="color:#888;"></span>
+                <button style="float: right;" id="copyBtn">copy</button>
+            </span>
+        </div>
+        <div class="information-tab-wrap">
+            <span id="basic" class="on">Basic</span>&nbsp;&nbsp;
+            <span id="more">More</span>
+        </div>
+        <!-----------------Basic ----------------->
+        <div id="basicDiv" class="login-page-wrap info-basic-wrap">
+            <div class="login-id-title">
+                <div>Name</div>
+                <input type="text" id="member_name"/>
+            </div>
+            <div class="login-id-title">
+                <div>Email</div>
+                <input type="text" id="member_id" disabled/>
+            </div>
+            <div class="login-id-title">
+                <div>Nickname</div>
+                <input type="text" id="member_nickname"/>
+            </div>
+            <div class="login-id-title">
+                <div>Instagram</div>
+                <input type="text" id="instagram_url" placeholder="Enter your Instagram url"/>
+            </div>
+            <div class="login-id-title">
+                <div>Instagram followers</div>
+                <input type="text" id="instagram_followers" placeholder="The number of Followers (Only numbers)"/>
+            </div>
+            <div class="login-id-title">
+                <div>Facebook</div>
+                <input type="text" id="facebook_url" placeholder="Enter your Facebook url"/>
+            </div>
+            <div class="login-id-title">
+                <div>Facebook followers</div>
+                <input type="text" id="facebook_followers" placeholder="The number of Followers (Only numbers)"/>
+            </div>
+            <div class="login-id-title">
+                <div>Youtube</div>
+                <input type="text" id="youtube_url" placeholder="Enter your Youtube url"/>
+            </div>
+            <div class="login-id-title">
+                <div>Youtube subscribes</div>
+                <input type="text" id="youtube_subscribes" placeholder="The number of Subscribes (Only numbers)"/>
+            </div>
+            <div class="login-id-title">
+                <div>Tiktok</div>
+                <input type="text" id="tiktok_url" placeholder="Enter your Tiktok url"/>
+            </div>
+            <div class="login-id-title">
+                <div>Tiktok followers</div>
+                <input type="text" id="tiktok_followers" placeholder="The number of Followers (Only numbers)"/>
+            </div>
+            <div class="login-id-title">
+            <div>Preference</div>
+                <div class="select_box">
+                    <select id="preference">
+                        <option value="Beauty">Beauty</option>
+                        <option value="Food">Food</option>
+                        <option value="Pet">Pet</option>
+                        <option value="Baby">Baby</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Daily_supplies">Daily supplies</option>
+                    </select>
+                    <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                </div>
+            </div>
+        </div>
+        <!------------------ More ------------------>
+        <div id="moreDiv" class="login-page-wrap info-basic-wrap">
+            <div class="login-id-title">
+                <div>Shopee ID(User name)</div>
+                <input type="text" id="shopee_id"/>
+            </div>
+            <div class="login-id-title">
+                <div>Lazada ID(User name)</div>
+                <input type="text" id="lazada_id"/>
+            </div>
+            <div class="login-id-title">
+            <div>Phone Number</div>
+                <div class="d-flex jc-space-bt a-center national-number-wrap">
+                    <div class="select_box national-number">
+                        <select id="national_number">
+                            <option seleted hidden>+nation</option>
+                        </select>
+                        <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                    </div>
+                    <input type="text" id="phone_number" placeholder="Enter your phone number (OnlyNumber)" class="phone_number"/>
+                </div>
+                <div class="pass-form-notice" style="margin-top: 5px;">
+                    <span style="color:red;">※ Please write down your mobile phone number accurately as it will be used as deposit data such as &lt;paynow&gt; in Singapore and &lt;touch&go&gt; in Malaysia. We are not responsible if you do not receive payment due to entering the wrong number.</span>
+                </div>
+            </div>
+            <div class="login-id-title">
+                <div>
+                    Address1
+                </div>
+                <input type="text" id="address1">
+            </div>
+            <div class="login-id-title">
+                <div>Address2</div>
+                <input type="text" id="address2">
+            </div>
+            <div class="login-id-title">
+                <div>State</div>
+                <input type="text" id="state">
+            </div>
+            <div class="login-id-title">
+                <div>City</div>
+                <input type="text" id="city">
+            </div>
+            <div class="login-id-title">
+                <div>Zipcode</div>
+                <input type="text" id="zipcode">
+            </div>
+            <div class="login-id-title">
+                <div>Country</div>
+                <div class="select_box">
+                    <select id="country" class="info-country">
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Taiwan">Taiwan</option>
+                        <option value="Japan">Japan</option>
+                        <option value="South Korea">South Korea</option>
+                    </select>
+                    <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                </div>
+            </div>
+            <div class="login-id-title">
+                <div>Country 2</div>
+                <div class="select_box">
+                    <select id="country2" class="info-country">
+                        <option value="None">None</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Taiwan">Taiwan</option>
+                        <option value="Japan">Japan</option>
+                        <option value="South Korea">South Korea</option>
+                    </select>
+                    <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                </div>
+            </div>
+            <div class="login-id-title">
+                <div>Country 3</div>
+                <div class="select_box">
+                    <select id="country3" class="info-country">
+                        <option value="None">None</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Taiwan">Taiwan</option>
+                        <option value="Japan">Japan</option>
+                        <option value="South Korea">South Korea</option>
+                    </select>
+                    <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                </div>
+            </div>
+            <div class="login-id-title">
+                <div>Paypal email</div>
+                <input type="text" id="paypal_id">
+            </div>
+            <div class="login-id-title">
+                <div>Payoneer email</div>
+                <input type="text" id="payoneer_id">
+            </div>
+        </div>
+        <div class="loginP-loginBtn info-save-btn">
+            <button id="btnSave">Save</button>
+            <button class="resetPass ">Reset Password</button>
+        </div>
+
+<!--        &lt;!&ndash; modal start &ndash;&gt;-->
+<!--        <div id="resetPwd" class="modal">-->
+<!--            <div class="modal-wrap" id="before">-->
+<!--                <div class="modal-title">-->
+<!--                    <div class="title2">──── RESET YOUR PASSWORD ────</div>-->
+<!--                    <span class="closeBtn"><i class="fa-solid fa-xmark"></i></span>-->
+<!--                </div>-->
+<!--                <div class="modal-inner">-->
+<!--                    <div id="brand_list_div" class="modal-description-wrap">-->
+<!--                        <span>-->
+<!--                            Please enter your current password to reset your password.-->
+<!--                        </span>-->
+<!--                        <br/>-->
+<!--                        <br/>-->
+<!--                        <span>-->
+<!--                            If the password is correct, you will go to the reset password page.-->
+<!--                        </span>-->
+<!--                    </div>-->
+<!--                    <div class="search-box-wrap">-->
+<!--                        <div class="email-box">-->
+<!--                            <input type="password" id="currentPwd" placeholder="Enter your current password."/>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="modal-button" style="margin-top: 20px;">-->
+<!--                        <button id="confirmPass" class="black-btn">Confirm</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="bg-cover"></div>-->
+<!--        </div>-->
+<!--        &lt;!&ndash; modal end &ndash;&gt;-->
+    </div>
+
+    <script th:inline="javascript">
+        var member_seq = [[${session.member_seq}]];
+        var original_phone="";
+
+        $(document).ready(function(){
+            getInfo();
+        });
+
+        $("#moreDiv").hide();
+        $("#basic").on("click", function(){
+            $("#moreDiv").hide();
+            $("#basicDiv").show();
+        });
+
+        $("#more").on("click", function(){
+            $("#moreDiv").show();
+            $("#basicDiv").hide();
+        });
+
+        $("#btnSave").on("click", function(){
+            var member_name=$("#member_name").val();
+            var member_nickname=$("#member_nickname").val();
+            var preferences=$("#preference").val();
+
+            var instagram_url = $("#instagram_url").val();
+            var instagram_followers = $("#instagram_followers").val();
+            var youtube_url = $("#youtube_url").val();
+            var youtube_subscribes = $("#youtube_subscribes").val();
+            var facebook_url = $("#facebook_url").val();
+            var facebook_followers = $("#facebook_followers").val();
+            var tiktok_url = $("#tiktok_url").val();
+            var tiktok_followers = $("#tiktok_followers").val();
+
+            var shopee_id=$("#shopee_id").val();
+            var lazada_id=$("#lazada_id").val();
+            var address1=$("#address1").val();
+            var address2=$("#address2").val();
+            var city=$("#city").val();
+            var zipcode=$("#zipcode").val();
+            var country=$("#country").val();
+            var national_number=$("#national_number").val();
+            var phone=$("#phone_number").val();
+            var state=$("#state").val();
+            var paypal_id=$("#paypal_id").val();
+            var payoneer_id=$("#payoneer_id").val();
+
+            var country2=$("#country2").val();
+            var country3=$("#country3").val();
+            if(country2=="None") {
+                country2=null;
+            }
+            if(country3=="None") {
+                country3=null;
+            }
+            $.ajax({
+                type:"patch",
+                url:"/common/api/member/update",
+                data:{
+                    "member_name":member_name,
+                    "member_nickname":member_nickname,
+                    "instagram_url":instagram_url,
+                    "instagram_followers":instagram_followers,
+                    "youtube_url":youtube_url,
+                    "youtube_subscribes":youtube_subscribes,
+                    "facebook_url":facebook_url,
+                    "facebook_followers":facebook_followers,
+                    "tiktok_url":tiktok_url,
+                    "tiktok_followers":tiktok_followers,
+                    "preferences":preferences,
+                    "shopee_id":shopee_id,
+                    "lazada_id":lazada_id,
+                    "address1":address1,
+                    "address2":address2,
+                    "state":state,
+                    "city":city,
+                    "zipcode":zipcode,
+                    "country":country,
+                    "national_number":national_number,
+                    "phone":phone,
+                    "member_seq":member_seq,
+                    "paypal_id":paypal_id,
+                    "payoneer_id":payoneer_id,
+                    "country2":country2,
+                    "country3":country3,
+                    "step":"all"
+                },
+                success:function(data){
+                    location.reload();
+                }
+            });
+        });
+
+        // 기존에 저장된 회원 정보 불러오기
+        function getInfo(){
+            $.ajax({
+                type:"get",
+                url:"/user/api/member/read",
+                //async:false,
+                data:{
+                    "member_seq":member_seq
+                },
+                success:function(data){
+
+                    $("#member_name").val(data.member_name);
+                    $("#member_id").val(data.member_id);
+                    if(data.member_nickname == null) {
+                        $("#member_nickname").val(data.member_name);
+                    }else{
+                        $("#member_nickname").val(data.member_nickname);
+                    }
+                    $("#preference").val(data.preferences);
+                    $("#shopee_id").val(data.shopee_id);
+                    $("#lazada_id").val(data.lazada_id);
+                    $("#address1").val(data.address1);
+                    $("#address2").val(data.address2);
+                    $("#state").val(data.state);
+                    $("#city").val(data.city);
+                    $("#zipcode").val(data.zipcode);
+                    $("#country").val(data.country);
+                    $("#phone_number").val(data.phone);
+                    $("#paypal_id").val(data.paypal_id);
+                    $("#payoneer_id").val(data.payoneer_id);
+
+                    $("#instagram_url").val(data.instagram_url);
+                    $("#instagram_followers").val(data.instagram_followers);
+                    $("#youtube_url").val(data.youtube_url);
+                    $("#youtube_subscribes").val(data.youtube_subscribes);
+                    $("#facebook_url").val(data.facebook_url);
+                    $("#facebook_followers").val(data.facebook_followers);
+                    $("#tiktok_url").val(data.tiktok_url);
+                    $("#tiktok_followers").val(data.tiktok_followers);
+
+                    if(data.country2!=null && data.country2!="") {
+                        $("#country2").val(data.country2);
+                    }else{
+                        $("#country2").val("None");
+                    }
+                    if(data.country3!=null && data.country3!="") {
+                        $("#country3").val(data.country3);
+                    }else{
+                        $("#country3").val("None");
+                    }
+
+                    var national_number=data.national_number;
+                    setNat(national_number);
+                    var hostName = window.location.hostname;
+                    $("#recommendLink").html("http://"+hostName+"/join/"+data.recommend_code);
+                }
+            });
+        }
+
+        function setNat(national_number) {
+            var name = ["Malaysia", "Philippines", "Singapore", "Taiwan", "Japan", "South Korea"];
+            var num = [ "(+60)", "(+63)", "(+65)", "(+886)", "(+81)", "(+82)"];
+            for (var i = 0; i < name.length; i++) {
+                $("#national_number").append(
+                    "<option class='nationOpt' value='"+ num[i] +"'>" + name[i] + " " + num[i] + "</option>"
+                );
+                if(national_number == num[i]) {
+                    $(".nationOpt").attr("selected", true);
+
+                }
+            }
+        }
+
+        $("#phone_number").focusout(function(){
+            let val=$(this).val();
+            let str=""
+            for(i=0; i<val.length; i++){
+                if(val[i]!="-"){
+                    str+=val[i];
+                }
+            }
+            $(this).val(str);
+        });
+
+        $('.information-tab-wrap span').click(function(){
+           $('.information-tab-wrap span').removeClass('on');
+           $(this).addClass('on');
+        });
+
+        $("#copyBtn").on("click", function (){
+            $("#recommendLink").css("color", "#222");
+            let recommendLink = $("#recommendLink").html();
+            let tempInput = document.createElement("input");
+            tempInput.value = recommendLink;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            alert("Recommend Link is copied");
+        });
+
+        /*비밀번호 모달창*/
+        $('.resetPass').on('click',function(){
+            $('.modal').css('display','block');
+        });
+        $('.closeBtn, .bg-cover, .sendBtn').on('click',function (){
+            $("#currentPwd").val("");
+            $('.modal').css('display','none');
+        });
+        //
+        // $("#confirmPass").on("click", function (){
+        //     let currentPwd = $("#currentPwd").val();
+        //     let mid = [[${session.member_id}]];
+        //     if(currentPwd=="") {
+        //         alert("Enter your current password.");
+        //         return;
+        //     }
+        //
+        //     $.ajax({
+        //         type:"post",
+        //         url:"/user/api/password/confirm",
+        //         data:{
+        //             "member_id":mid,
+        //             "member_password":currentPwd
+        //         },
+        //         success:function(data){
+        //             if(data == 2){
+        //                 location.href="/mypage/reset-password";
+        //             }else {
+        //                 alert("Check your password.");
+        //             }
+        //         }
+        //     });
+        // });
+
+    </script>
+</th:block>
+</body>
+</html>
+

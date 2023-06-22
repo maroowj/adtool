@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <h2 class="page-title message-title">가입회원 관리<span class="d-none">(/admin/manage_member.html)</span></h2>
+
+        <div class="manageM-search-wrap">
+            <div id="member_search_div">
+                <div class="select_box">
+                    <select id="memSearchType">
+                        <option value="member_id">이메일</option>
+                        <option value="member_name">이름</option>
+                    </select>
+                    <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                </div>
+                <div class="search-box">
+                    <input id="memKeyword" type="text"/><button id="memBtnSearch">찾기</button>
+                </div>
+                <div class="select_box" style="margin-left: 20px;">
+                    <select id="point_status">
+                        <option value="all">전체</option>
+                        <option value="done">지급</option>
+                        <option value="notYet">미지급</option>
+                    </select>
+                    <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                </div>
+            </div>
+
+            <div id="function_div" class="function_div memberM-function-div">
+                <div id="convert_to_excel" class="cursorPoint" >엑셀 다운</div>
+                <div id="send_Msg" class="cursorPoint">쪽지발송</div>
+                <div id="update_info" class="cursorPoint" stat="write" >수정하기</div>
+                <div id="update_cancel" class="cursorPoint">취소</div>
+                <div id="member_ban" class="cursorPoint">Black</div>
+                <div id="member_default" class="cursorPoint">초기화</div>
+                <div id="member_delete" class="cursorPoint">삭제</div>
+            </div>
+
+
+        </div>
+
+        <div class="joined-table-wrap auto">
+            <table id="member_list_table">
+                <colgroup>
+                    <col style ="width:6%">
+                    <col style ="width:7%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                    <col style ="width:19.4%">
+                </colgroup>
+                <thead>
+                <tr id="order">
+                    <td><input type="checkbox" id="all_chk"/></td>
+                    <td order="rownum">순번</td>
+                    <td order="member_id">이메일 주소(아이디)</td>
+                    <td order="member_name">이름</td>
+                    <td order="country">국가 1</td>
+                    <td order="country">국가 2</td>
+                    <td order="country">국가 3</td>
+                    <td order="phone" colspan="2">연락처</td>
+                    <td order="address1">Address 1</td>
+                    <td order="address2">Address 2</td>
+                    <td order="state">State</td>
+                    <td order="city">City</td>
+                    <td order="zipcode">Zipcode</td>
+                    <td order="shopee_id">Shopee ID</td>
+                    <td order="lazada_id">Lazada_ID</td>
+                    <td order="instagram_url">Instagram</td>
+                    <td order="instagram_followers">I_followers</td>
+                    <td order="youtube_url">Youtube</td>
+                    <td order="youtube_subscribes">Y_subscribes</td>
+                    <td order="facebook_url">Facebook</td>
+                    <td order="facebook_followers">F_followers</td>
+                    <td order="tiktok_url">Tiktok</td>
+                    <td order="tiktok_followers">T_followers</td>
+                    <td order="paypal_email">Paypal_email</td>
+                    <td order="payoneer_email">Payoneer_email</td>
+                    <td order="preferences">Preferences</td>
+                    <td order="join_date">가입일</td>
+                    <td order="recommender">추천인</td>
+                    <td>추천 포인트 지급</td>
+                    <td order="banned_date">블랙리스트 설정일</td>
+                </tr>
+                </thead>
+                <tbody class="t-center" id="member_list_tbody"></tbody>
+                <script id="member_list_tbody_script" type="text/x-handlebars-template">
+                    {{#each .}}
+                    <tr class="row" miSeq="{{member_info_seq}}" mSeq="{{member_seq}}" banned="{{banned}}">
+                        <td><input type="checkbox" class="chk"/></td>
+                        <td class="rownum">{{rowNum}}</td>
+                        <td class="member_id">{{black member_id banned}}</td>
+                        <td><input type="text" class="infoText member_name" disabledChk="0" value="{{member_name}}" disabled></td>
+                        <td>
+                            <select class="infoText country" disabledChk="0" disabled>
+                                {{{strCountry country}}}
+                                <option value="Malaysia">Malaysia</option>
+                                <option value="Philippines">Philippines</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="Taiwan">Taiwan</option>
+                                <option value="Japan">Japan</option>
+                                <option value="South Korea">South Korea</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="infoText country2" disabledChk="0" disabled>
+                                {{{strCountry country2}}}
+                                <option value="None">None</option>
+                                <option value="Malaysia">Malaysia</option>
+                                <option value="Philippines">Philippines</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="Taiwan">Taiwan</option>
+                                <option value="Japan">Japan</option>
+                                <option value="South Korea">South Korea</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="infoText country3" disabledChk="0" disabled>
+                                {{{strCountry country3}}}
+                                <option value="None">None</option>
+                                <option value="Malaysia">Malaysia</option>
+                                <option value="Philippines">Philippines</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="Taiwan">Taiwan</option>
+                                <option value="Japan">Japan</option>
+                                <option value="South Korea">South Korea</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="infoText nation" disabled>
+                                <option hidden>+nation</option>
+                                {{{nation national_number}}}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="infoText phone" disabledChk="0" value="{{phone}}" disabled>
+                        </td>
+                        <td><input type="text" class="infoText address1" disabledChk="0" value="{{address1}}" disabled></td>
+                        <td><input type="text" class="infoText address2" disabledChk="0" value="{{address2}}" disabled></td>
+                        <td><input type="text" class="infoText state" disabledChk="0" value="{{state}}" disabled></td>
+                        <td><input type="text" class="infoText city" disabledChk="0" value="{{city}}" disabled></td>
+                        <td><input type="text" class="infoText zipcode" disabledChk="0" value="{{zipcode}}" disabled></td>
+                        <td><input type="text" class="infoText shopee_id" disabledChk="0" value="{{shopee_id}}" disabled></td>
+                        <td><input type="text" class="infoText lazada_id" disabledChk="0" value="{{lazada_id}}" disabled></td>
+                        <td><input type="text" class="infoText instagram_url" disabledChk="0" value="{{instagram_url}}" disabled></td>
+                        <td><input type="text" class="infoText instagram_followers" disabledChk="0" value="{{zero instagram_followers}}" disabled></td>
+                        <td><input type="text" class="infoText youtube_url" disabledChk="0" value="{{youtube_url}}" disabled></td>
+                        <td><input type="text" class="infoText youtube_subscribes" disabledChk="0" value="{{zero youtube_subscribes}}" disabled></td>
+                        <td><input type="text" class="infoText facebook_url" disabledChk="0" value="{{facebook_url}}" disabled></td>
+                        <td><input type="text" class="infoText facebook_followers" disabledChk="0" value="{{zero facebook_followers}}" disabled></td>
+                        <td><input type="text" class="infoText tiktok_url" disabledChk="0" value="{{tiktok_id}}" disabled></td>
+                        <td><input type="text" class="infoText tiktok_followers" disabledChk="0" value="{{zero tiktok_followers}}" disabled></td>
+                        <td><input type="text" class="infoText paypal_id" disabledChk="0" value="{{paypal_id}}" disabled></td>
+                        <td><input type="text" class="infoText payoneer_id" disabledChk="0" value="{{payoneer_id}}" disabled></td>
+                        <td>
+                            <select class="infoText preferences" disabledChk="0" disabled>
+                                <option selected hidden value="{{preferences}}">{{preferences}}</option>
+                                <option value="Beauty">Beauty</option>
+                                <option value="Food">Food</option>
+                                <option value="Pet">Pet</option>
+                                <option value="Baby">Baby</option>
+                                <option value="Fashion">Fashion</option>
+                                <option value=">Daily_supplies">Daily supplies</option>
+                            </select>
+                        </td>
+                        <td>{{date join_date}}</td>
+                        <td>{{bar recommender}}</td>
+                        <td>{{{point recommendation point_status}}}</td>
+                        <td>{{date banned_date}}</td>
+                    </tr>
+                    {{/each}}
+                </script>
+            </table>
+        </div>
+        <div id="pagination">12313</div>
+    </div>
+
+    <div id="msg_body" class="modal">
+        <div class="modal-wrap">
+            <div class="modal-title">
+                <h3 class="title">쪽지 발송</h3>
+                <span class="closeBtn"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <div class="modal-inner">
+                <div class="joined-MemList-modal-text">
+                    <div id="title_div"><input type="text" id="title" placeholder="제목을 입력하세요"></div>
+                    <div id="content_div"><textarea id="content" rows="10" cols="22" placeholder="내용을 입력하세요"></textarea></div>
+                </div>
+
+                <div class="modal-button"><button id="btn_send" class="black-btn">발송</button></div>
+            </div>
+
+        </div>
+
+        <div class="bg-cover"></div>
+    </div>
+
+<script th:inline="javascript">
+    let memSearchType="";
+    let memKeyword="";
+    let page=1;
+    let perPageNum=10;
+
+    if([[${param.searchType}]]!=null){
+        var searchType=[[${param.searchType}]][0];
+        var keyword=[[${param.keyword}]][0];
+        $("#searchType").val(searchType);
+        $("#keyword").val(keyword);
+    }
+
+    getMemberList();
+
+    $("#pagination").on("click", "a", function(e){
+        e.preventDefault();
+        page=$(this).attr("href");
+        getMemberList();
+    });
+
+    $("#update_cancel").hide();
+
+    $("#memKeyword").on("keydown", function(e){
+        if(e.keyCode==13){
+            $("#memBtnSearch").click();
+        }
+    });
+    $("#memBtnSearch").on("click", function (){
+        page=1;
+        if(searchType=="member"){
+            searchType="";
+            keyword="";
+            $("#searchType").val("joining_campaign");
+            $("#keyword").val("");
+        }
+        searchType=undefined;
+        getMemberList();
+    });
+
+
+    // 체크박스 기능
+    $("#all_chk").on("click", function(){
+        var chkNum=$(".chk").length;
+        var checkedNum=$(".chk:checked").length;
+
+        if(chkNum!=checkedNum){
+            $(".chk").each(function(){
+                $(this).prop("checked", true);
+            });
+        }else{
+            $(".chk").each(function(){
+                $(this).prop("checked", false);
+            });
+        }
+    });
+
+    $("#member_list_tbody").on("click", ".chk", function(){
+        var chkNum=$(".chk").length;
+        var checkedNum=$(".chk:checked").length;
+
+        if(chkNum==checkedNum){
+            $("#all_chk").prop("checked", true);
+        }else{
+            $("#all_chk").prop("checked", false);
+        }
+    });
+
+    // 포인트 지급 select-box 선택 시
+    $("#point_status").on("change", function (){
+       getMemberList();
+    });
+
+    // 수정하기 버튼 클릭 시
+    $("#update_info").on("click", function (){
+        if($(".chk:checked").length==0){
+            alert("수정 할 회원(들)을 선택해주세요");
+            return;
+        }
+
+        var stat = $(this).attr("stat");
+
+        if(stat=="write"){
+            $("#update_cancel").show();
+            $(this).attr("stat", "save");
+            $(this).html("저장하기");
+            $(".chk:checked").each(function(){
+                var row =  $(this).parent().parent();
+                row.find(".infoText").prop("disabled", false);
+            });
+        }else{
+           if(!confirm("선택하신 회원(들)의 정보를 수정하시겠습니까?")) return;
+
+           $(".chk:checked").each(function(){
+               var row =  $(this).parent().parent();
+               var member_info_seq=row.attr("miSeq");
+               var member_name=row.find(".member_name").val();
+               var country=row.find(".country").val();
+               var national_number=row.find(".nation").val();
+               var phone=row.find(".phone").val();
+               var address1=row.find(".address1").val();
+               var address2=row.find(".address2").val();
+               var state=row.find(".state").val();
+               var city=row.find(".city").val();
+               var zipcode=row.find(".zipcode").val();
+               var shopee_id=row.find(".shopee_id").val();
+               var lazada_id=row.find(".lazada_id").val();
+               var instagram_url=row.find(".instagram_url").val();
+               var youtube_url=row.find(".youtube_url").val();
+               var facebook_url=row.find(".facebook_url").val();
+               var tiktok_url=row.find(".tiktok_url").val();
+               var paypal_id=row.find(".paypal_id").val();
+               var payoneer_id=row.find(".payoneer_id").val();
+               var preferences=row.find(".preferences").val();
+
+               var country2=row.find(".country2").val();
+               var country3=row.find(".country3").val();
+               if(country2=="None") {
+                   country2=null;
+               }
+               if(country3=="None") {
+                   country3=null;
+               }
+
+               var objParams={
+                   "member_info_seq":member_info_seq,
+                   "member_name":member_name,
+                   "preferences":preferences,
+                   "country":country,
+                   "address1":address1,
+                   "address2":address2,
+                   "state":state,
+                   "city":city,
+                   "zipcode":zipcode,
+                   "national_number":national_number,
+                   "phone":phone,
+                   "youtube_url":youtube_url,
+                   "instagram_url":instagram_url,
+                   "facebook_url":facebook_url,
+                   "tiktok_url":tiktok_url,
+                   "shopee_id":shopee_id,
+                   "lazada_id":lazada_id,
+                   "paypal_id":paypal_id,
+                   "payoneer_id":payoneer_id,
+                   "country2":country2,
+                   "country3":country3
+               }
+               updateInfo(objParams);
+           });
+           $("#update_cancel").hide();
+           $(this).attr("stat", "write");
+           $(this).html("수정하기");
+           $("#all_chk").prop("checked", false);
+           getMemberList();
+        }
+    });
+
+    // 취소 버튼 클릭 시
+    $("#update_cancel").on("click", function (){
+        $(this).hide();
+        $("#update_info").attr("stat", "write");
+        $("#update_info").html("수정하기");
+        $("#all_chk").prop("checked", false);
+        getMemberList();
+    });
+
+    // row의 회원 정보 수정
+    function updateInfo(objParams){
+        $.ajax({
+            type:"put",
+            url:"/admin/api/member/update",
+            async:false,
+            data: objParams,
+            success:function (data){
+            },
+            error:function (data){
+                alert("ajax error!");
+            }
+        });
+    }
+
+    function getMemberList(){
+        if(searchType!=undefined){
+            memSearchType=searchType;
+            memKeyword=keyword;
+        }else{
+            memSearchType=$("#memSearchType").val();
+            memKeyword=$("#memKeyword").val();
+        }
+
+        let point_status = $("#point_status").val();
+        $.ajax({
+            type:"get",
+            url:"/admin/api/member/list",
+            data:{
+                "searchType":memSearchType,
+                "keyword":memKeyword,
+                "point_status":point_status,
+                "page":page,
+                "perPageNum":perPageNum
+            },
+            success:function(data){
+                var list = data.list;
+                var template=Handlebars.compile($("#member_list_tbody_script").html())
+                $("#member_list_tbody").html(template(list));
+                // rowNum();
+
+                //페이징 목록 출력
+                var str="";
+                var prev=data.pm.startPage-1;
+                var next=data.pm.endPage+1;
+
+                if(data.pm.prev){
+                    str +="<a href='" + prev + "'>prev</a>";
+                }else{
+                    str +="<a href='javascript:;'></a>";
+                }
+                for(var i=data.pm.startPage;i<=data.pm.endPage; i++){
+                    if(i==page){
+                        str += "<a class='active' href='" + i + "'>" + i + "</a>";
+                    }else{
+                        str += "<a href='" + i + "'>" + i + "</a>";
+                    }
+                }
+                if(data.pm.next) {
+                    str +="<a href='" + next + "'>next</a>";
+                }else{
+                    str +="<a href='javascript:;'></a>";
+                }
+                $("#pagination").html(str);
+
+            },
+            error:function (){
+               alert("ajax error");
+            }
+        });
+    }
+
+    $("#convert_to_excel").on("click", function(){
+        if(searchType!=undefined){
+            memSearchType=searchType;
+            memKeyword=keyword;
+        }else{
+            memSearchType=$("#memSearchType").val();
+            memKeyword=$("#memKeyword").val();
+        }
+
+        let point_status = $("#point_status").val();
+
+        let url = "/admin/api/member/list/excel?" +
+                "searchType=" + memSearchType +
+                "&keyword=" + memKeyword +
+                "&point_status=" + point_status;
+
+        window.open(url);
+    })
+
+    // 행에 순번 매기는 function
+    // function rowNum(){
+    //     var cnt= 1;
+    //     $(".rownum").each(function (){
+    //         $(this).html(cnt);
+    //         cnt++;
+    //     });
+    // }
+
+    $("#member_list_tbody").on("focusout", ".phone", function(){
+        let val=$(this).val();
+        let str=""
+        for(i=0; i<val.length; i++){
+            if(val[i]!="-"){
+                str+=val[i];
+            }
+        }
+        $(this).val(str);
+    });
+
+
+    Handlebars.registerHelper("strCountry", function (country){
+        var strCountry="";
+        if(country!=null && country!=""){
+            strCountry="<option selected hidden value='"+country+"'>"+country+"</option>";
+        }else{
+            strCountry="<option selected hidden>국가선택</option>";
+        }
+        return strCountry;
+    });
+
+    Handlebars.registerHelper("zero", function (followers){
+        var str="";
+        if(followers==0){
+            str="";
+        }else{
+            str= followers;
+        }
+        return str;
+    });
+
+    /*
+    Handlebars.registerHelper("date", function(join_date){
+        var yyyy=join_date.substring(0,4);
+        var MM=join_date.substring(5,7);
+        var dd=join_date.substring(8,10);
+
+        return yyyy+"-"+MM+"-"+dd;
+    });
+     */
+
+    Handlebars.registerHelper("date", function(join_date){
+        if(join_date!=null) {
+            return join_date.substring(0, 10);
+        }else {
+            return "-";
+        }
+    });
+
+    Handlebars.registerHelper("nation", function(national_number){
+        if(national_number!=null){
+            var name = ["Malaysia", "Philippines", "Singapore", "Taiwan", "Japan", "South Korea"];
+            var num = [ "(+60)", "(+63)", "(+65)", "(+886)", "(+81)", "(+82)"];
+            var str=""
+            for (i=0; i<name.length; i++) {
+                if(national_number == num[i]) {
+                    str+="<option class='nationOpt' value='" + num[i] + "' selected>" + name[i] + " " + num[i] + "</option>";
+                }else{
+                    str+="<option class='nationOpt' value='" + num[i] + "'>" + name[i] + " " + num[i] + "</option>";
+                }
+            }
+        }else{
+            var name = ["Malaysia", "Philippines", "Singapore", "Taiwan", "Japan", "South Korea"];
+            var num = [ "(+60)", "(+63)", "(+65)", "(+886)", "(+81)", "(+82)"];
+            var str=""
+            for (i=0; i<name.length; i++) {
+                str+="<option class='nationOpt' value='" + num[i] + "'>" + name[i] + " " + num[i] + "</option>";
+            }
+        }
+        return str;
+    });
+
+    Handlebars.registerHelper("noNation", function(phone){
+        let noNatNum;
+        if(phone!=null){
+            noNatNum=phone.substr(5,20);
+        }
+        return noNatNum;
+    });
+
+    Handlebars.registerHelper("point", function(recommendation, point_status){
+        if(recommendation==0) {
+            return "-";
+        }else {
+            if(point_status==0) {
+                return "<button class='sendPoint' status='send' style='background: red;'>지급</button>";
+            }else {
+                return "<button class='sendPoint' status='cancel' disabled style='cursor: inherit;'>지급 완료</button>";
+            }
+        }
+    });
+
+    Handlebars.registerHelper("black", function(member_id, banned){
+        if(banned==0) {
+            return member_id;
+        }else {
+            return member_id + " (B)";
+        }
+    });
+
+    Handlebars.registerHelper("bar", function(recommneder){
+        if(recommneder!=null) {
+            return recommneder;
+        }else {
+            return "-";
+        }
+    });
+
+
+    /*********************** 쪽지 Script *************************/
+    // 발송 버튼 클릭 시
+    $("#btn_send").on("click", function(e){
+        e.preventDefault();
+        var title=$("#title").val();
+        var content=editor.getData();
+
+        if(title==""){
+            alert("제목을 입력하세요");
+            return;
+        }else if(content==""){
+            alert("내용을 입력하세요");
+            return;
+        }
+
+        if(!confirm("쪽지를 발송하시겠습니까?")) return;
+
+        $(".chk:checked").each(function(){
+            var pp=$(this).parent().parent();
+            var receiver=pp.attr("mSeq");
+
+            // 쪽지 인서트 ajax
+            $.ajax({
+                type:"post",
+                url:"/admin/api/message/insert",
+                async:false,
+                data:{
+                    "title":title,
+                    "content":content,
+                    "receiver":receiver,
+                    "sender":"mber_0000000001"
+                },
+                success:function (data){
+                }
+            });
+        });
+        location.reload();
+    });
+
+    /*쪽지 모달창*/
+    $('#send_Msg').on('click',function(){
+        if($(".chk:checked").length==0){
+            alert("쪽지를 발송 할 인원을 선택해주세요!");
+            return;
+        }
+        $('.modal').css('display','block');
+    });
+    $('.closeBtn, .bg-cover').on('click',function (){
+        $('.modal').css('display','none');
+    });
+</script>
+    <script>
+        let editor;
+        const editorCnt = document.querySelectorAll( '#content' ).length;
+        if( editorCnt == 1 ) {
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    toolbar: {
+                        items: [
+                            'heading',
+                            '|',
+                            'bold',
+                            'italic',
+                            'blockQuote',
+                            '|',
+                            'link',
+                            'undo',
+                            'redo',
+                            '|',
+                            'outdent',
+                            'numberedList',
+                            'bulletedList',
+                            'indent',
+                        ]
+                    },
+                    language: "ko",
+                    link : {
+                        addTargetToExternalLinks: true,
+                        decorators: [
+                            {
+                                mode: 'auto',
+                                label: '새창 링크',
+                                attributes: {
+                                    target: '_blank',
+                                }
+                            }
+                        ]
+                    }
+                })
+                .then( newEditor => {
+                    editor = newEditor;
+                })
+                .catch( error => {
+                    console.log( error );
+                });
+        }
+
+        // black 지정
+        $("#member_ban").on("click", function(){
+            if($(".chk:checked").length==0 || $(".chk:checked").length>1){
+                alert("블랙리스트를 설정/해지 하려는 회원을 선택해주세요\n※ 설정/해지는 한명씩 할 수 있습니다.");
+                return;
+            }
+            $(".chk:checked").each(function() {
+                var row = $(this).parent().parent();
+                var member_seq = row.attr("mSeq");
+                var member_id = row.find(".member_id").html();
+                var banned = row.attr("banned");
+
+                if(!confirm(member_id+"을(를) 블랙리스트 설정/해지 하시겠습니까?")) return;
+
+                if(banned==0) {
+                    banned=1;
+                }else {
+                    banned=0;
+                }
+
+                $.ajax({
+                    type:"patch",
+                    url:"/admin/api/member/banned",
+                    data:{
+                        "member_seq":member_seq,
+                        "banned":banned
+                    },
+                    success:function (data) {
+                        getMemberList();
+                    },
+                    error:function () {
+                        console.log("ajax error: member banned");
+                    }
+                });
+            });
+        })
+
+        // 비밀번호 초기화
+        $("#member_default").on("click", function(){
+            if($(".chk:checked").length==0 || $(".chk:checked").length>1){
+                alert("비밀번호를 초기화 하려는 회원을 선택해주세요\n※ 비밀번호 초기화는 한명씩 할 수 있습니다.");
+                return;
+            }
+            $(".chk:checked").each(function() {
+                var row = $(this).parent().parent();
+                var member_seq = row.attr("mSeq");
+                var member_id = row.find(".member_id").html();
+
+
+                if(!confirm(member_id+"의 비밀번호를 초기화 하시겠습니까?\n※ 초기화 시 비밀번호는 00000000 입니다.")) return;
+
+                $.ajax({
+                    type:"patch",
+                    url:"/admin/api/member/default",
+                    data:{
+                        "member_seq":member_seq
+                        },
+                    success:function (data) {
+                        if(data==1) {
+                            alert(member_id+"의 비밀번호를 초기화(00000000) 했습니다.");
+                            getMemberList();
+                        }else {
+                            alert("비밀번호 초기화에 실패했습니다.");
+                        }
+                    },
+                    error:function() {
+                        console.log("ajax error: password_default");
+                    }
+                });
+
+            });
+        })
+
+        // 회원 삭제
+        $("#member_delete").on("click", function(){
+            if($(".chk:checked").length==0 || $(".chk:checked").length>1){
+                alert("삭제하려는 회원을 선택해주세요\n※ 삭제는 한명씩 할 수 있습니다.");
+                return;
+            }
+            $(".chk:checked").each(function() {
+                var row = $(this).parent().parent();
+                var member_seq = row.attr("mSeq");
+                var member_id = row.find(".member_id").html();
+
+                if(!confirm(member_id+"을(를) 삭제 하시겠습니까?")) return;
+
+                $.ajax({
+                    type:"delete",
+                    url:"/admin/api/member/delete",
+                    data:{
+                        "member_seq":member_seq
+                    },
+                    success:function (data) {
+                        if(data==1) {
+                            alert(member_id+"을(를) 삭제했습니다.");
+                            getMemberList();
+                        }else {
+                            alert("회원 삭제에 실패했습니다.");
+                        }
+                    },
+                    error:function() {
+                        console.log("ajax error: member_delete");
+                    }
+                });
+
+            });
+        })
+
+        // 추천 포인트 지급 / 회수
+        $("#member_list_tbody").on("click", ".sendPoint" ,function(){
+            var row = $(this).parent().parent();
+            var member_seq = row.attr("mSeq");
+
+            if(!confirm("추천인 포인트를 지급하시겠습니까?")) return;
+
+            $.ajax({
+                type:"post",
+                url:"/admin/api/point/recommend",
+                data:{
+                    "member_seq":member_seq
+                },
+                success:function(data) {
+                    getMemberList();
+                },
+                error:function(){
+                    console.log("ajax error: recommend point");
+                }
+            });
+        });
+
+    </script>
+
+</th:block>
+</html>

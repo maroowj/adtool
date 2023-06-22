@@ -1,0 +1,175 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="userMenu">
+    <div class="userM-pc-wrap">
+        <div class="userM-login-wrap">
+            <th:block th:if="${session.member_seq==null}">
+            <div class="auto" style="overflow: hidden;">
+                <div id="loginDiv" style="overflow: hidden;">
+                    <span class="cursorPoint" onclick="location.href='/join'">JOIN</span>
+                    <span class="cursorPoint" onclick="location.href='/login'">Login</span>
+                    <span class="cursorPoint">ENG</span>
+                </div>
+            </div>
+            </th:block>
+            <th:block th:unless="${session.member_seq==null}">
+                <div class="auto" style="overflow: hidden;">
+                    <div id="loginDiv">
+                        <span>Nickname: </span><span th:text="${session.member_name}"></span>
+                        <span class="cursorPoint" onclick="location.href='/common/api/logout'">Logout</span>
+                        <span class="cursorPoint" style="float: right; margin-left: 30px;">ENG</span>
+                    </div>
+                </div>
+
+            </th:block>
+        </div>
+        <div>
+            <div id="menuDiv" style="overflow: hidden;">
+                <div class="userM-header-wrap auto">
+                    <div class="logoBox"><img src="../../images/icon/logo.png" class="cursorPoint" th:src="@{/displayFile?fullName=icon/logo.png}" onClick="location.href='/'"/></div>
+                    <div class="d-flex a-center userM-gnb-wrp">
+                        <div class="userTopMenu on userTopMenu-campaign"><a href="/">Campaign</a></div>
+                        <div class="userTopMenu userTopMenu-myPage"><a href="/mypage">My Page</a></div>
+                        <div class="userTopMenu userTopMenu-notice"><a href="/notice">Notification</a></div>
+                        <div class="userTopMenu userTopMenu-help"><a href="/help">Help</a></div>
+                    </div>
+                    <div class="userM-search-box"><input type="text" id="keyword"><button id="btn_search">Search</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="userM-m-wrap">
+       <div class="userM-m-gnb-wrap auto">
+           <div class="userM-m-menuBtn-wrap cursorPoint mMenu">
+               <a href="#" class="userM-m-menuBtn">Menu</a>
+           </div>
+           <div class="logoBox"><img src="../../images/icon/logo.png" class="cursorPoint" th:src="@{/displayFile?fullName=icon/logo.png}" onClick="location.href='/'"/></div>
+           <div class="userM-search-box"><button id="btn_search">Search</button></div>
+       </div>
+
+        <div class="userM-menuList-wrap">
+            <div class="menuList-Box-inner">
+                <th:block th:if="${session.member_seq==null}">
+                    <div class="login-Box">
+                        <div class="prof-img"><img src="/displayFile?fullName=/img/profile_basic.png" alt=""></div>
+                        <div class="meunList-login-btn">
+                            <button onclick="location.href='/join'">Join</button>
+                            <button onclick="location.href='/login'">Login</button>
+                        </div>
+                        <p class="eng">ENG</p>
+                    </div>
+                </th:block>
+                <th:block th:unless="${session.member_seq==null}">
+                    <div class="login-Box">
+                        <div class="prof-img"><img src="/displayFile?fullName=/img/profile_basic.png" id="loginPic" alt=""></div>
+                        <div class="meunList-login-btn">
+                            <div th:text="${session.member_name}"></div>
+                            <button onclick="location.href='/common/api/logout'">Logout</button>
+                        </div>
+                        <p class="eng">ENG</p>
+                    </div>
+                </th:block>
+
+                <ul class="menuList-Box">
+                   <li class="userTopMenu on userTopMenu-campaign"><a href="/">Campaigns</a></li>
+                   <li class="userTopMenu userTopMenu-myPage"><a href="/mypage">My page</a></li>
+                   <li class="userTopMenu userTopMenu-notice"><a href="/notice">Notification</a></li>
+                   <li class="userTopMenu userTopMenu-help"><a href="/help">Help</a></li>
+                </ul>
+            </div>
+            <button class="closeBtn"><i class="fa-solid fa-xmark"></i></button>
+            <div class="bg-cover"></div>
+        </div>
+
+        <div class="userM-m-search-wrap">
+            <div class="search-box-inner">
+                <div class="userM-search-box"><input type="text" id="keyword" class="keyword_m"><button id="btn_search" class="btn_search_m">Search</button></div>
+                <button class="closeBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script th:inline="javascript">
+
+
+        $("#keyword").on("keydown", function(e){
+            if(e.keyCode==13){
+                $("#btn_search").click();
+            }
+        });
+
+        $("#btn_search").on("click", function (){
+            keyword=$("#keyword").val();
+            if(keyword=="") {
+                alert("Enter search keyword Please");
+                return;
+            }
+            location.href="/?keyword="+keyword;
+        });
+
+        $(".keyword_m").on("keydown", function(e){
+            if(e.keyCode==13){
+                $(".btn_search_m").click();
+            }
+        });
+
+        $(".btn_search_m").on("click", function (){
+            keyword=$(".keyword_m").val();
+            if(keyword=="") {
+                alert("Enter search keyword Please");
+                return;
+            }
+            location.href="/?keyword="+keyword;
+        });
+
+
+        $(".mMenu").on("click", function(){
+            let user = [[${session.member_seq}]];
+            if(user!=null) {
+                $.ajax({
+                    type:"get",
+                    url:"/user/api/member/read",
+                    data:{"member_seq": user},
+                    success:function(data) {
+                        let memberPicture = data.member_picture;
+                        if(memberPicture!=null) {
+                            $("#loginPic").attr("src", "/displayFile?fullName=/member/"+user+"/"+memberPicture);
+                        }
+                    }
+                });
+            }
+        });
+
+        $(document).ready(function(){
+            var tLink = document.location.href;
+            if(tLink.includes("mypage")) {
+                $(".userTopMenu").removeClass("on");
+                $(".userTopMenu-myPage").addClass("on");
+            }else if(tLink.includes("notice")) {
+                $(".userTopMenu").removeClass("on");
+                $(".userTopMenu-notice").addClass("on");
+            }else if(tLink.includes("help")) {
+                $(".userTopMenu").removeClass("on");
+                $(".userTopMenu-help").addClass("on");
+            }
+        });
+    </script>
+
+    <script>
+        /*menu nav*/
+        $('.userM-m-menuBtn-wrap').on("click",function(){
+           $('.userM-menuList-wrap').css('display','block');
+        });
+        $('.userM-search-box #btn_search').on("click", function(){
+           $('.userM-m-search-wrap').css('display','block');
+        });
+        $('.bg-cover,.closeBtn').click(function(){
+            $('.userM-menuList-wrap,.userM-m-search-wrap').css('display','none');
+        });
+    </script>
+</th:block>
+</html>
+

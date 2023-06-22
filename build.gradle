@@ -1,0 +1,116 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.2'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'war'
+}
+
+group = 'com.muzi'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation('nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect')
+
+	// spring security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+	// springboot
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// spring dev tools
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// mysql
+	//runtimeOnly 'mysql:mysql-connector-java'
+
+	// mariaDB
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	// slf4j
+	implementation 'org.slf4j:slf4j-api'
+
+	// mybatis
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
+
+	// jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// file upload
+	implementation 'commons-io:commons-io:2.6'
+
+	// lang3
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// json
+	implementation 'org.json:json:20200518'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+	// JWT
+	implementation 'javax.xml.bind:jaxb-api'
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+	// XML Security with Extensions
+	implementation 'com.sun.xml.security:xml-security-impl:1.0'
+	// rome
+	implementation 'com.rometools:rome:1.18.0'
+	// ReplacingInputStream
+	implementation 'org.apache.poi:poi:5.0.0'
+	// jsonView
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+
+	/* 외부(cafe24같은) TOMCAT에 WAR를 배포할 때는 providedCompile로 정의한다. */
+	providedCompile 'org.springframework.boot:spring-boot-starter-tomcat:2.5.1'
+//	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat:2.5.1'
+//	providedRuntime 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.46'
+//	providedRuntime 'javax.servlet:jstl:1.2'
+
+	providedCompile 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.46'
+	providedCompile 'javax.servlet:jstl:1.2'
+
+	implementation 'javax.xml.bind:jaxb-api'
+
+	// excel
+	implementation 'org.apache.poi:poi:4.1.2'
+	implementation 'org.apache.poi:poi-ooxml:4.1.2'
+	implementation 'commons-io:commons-io:2.4'
+
+	// shedlock (스케쥴러 중복실행 방지)
+	implementation 'net.javacrumbs.shedlock:shedlock-spring:4.34.0'
+	implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.34.0'
+
+	// mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+}
+
+test {
+	useJUnitPlatform()
+}

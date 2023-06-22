@@ -1,0 +1,94 @@
+<html xmlns="http://www.w3.org/1999/xhtml"xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <title>Help</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+    <style>
+        .cursorPoint {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div class="auto">
+
+        <div id="page_title">
+            <h1 class="d-none">Help (/admin/help/read.html)</h1>
+        </div>
+
+
+        <div id="notice_read_div" class="notice-read-wrap">
+            <div id="title_div">
+                <span class="notice-title">[Title]</span><span id="title" class="notice-title"></span>
+            </div>
+            <div id="writer_div">
+                <div class="notice-writer">
+                    <span class="title">작성자</span><span id="writer"></span>
+                </div>
+                <span id="create_date"></span>
+            </div>
+
+            <div id="content_div">
+                <div id="img_list"></div>
+                <div id="content" class="admin-notice-content "></div>
+            </div>
+        </div>
+
+        <div class="notice-btn-List">
+            <button onclick="update()" class="admin-line-button">수정</button>
+            <span id="btn_List" class="cursorPoint admin-black-button" onclick="location.href='/admin/help'" >목록으로</span>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        var member_seq = [[${session.member_seq}]];
+        let no= [[${param.no}]][0];
+
+        getNotice();
+
+        function getNotice(){
+            $.ajax({
+                type:"get",
+                url:"/common/api/help/read",
+                data:{"bbs_seq":no},
+                success:function(data){
+                    var title=data.title;
+                    var create_date=data.create_date;
+                    var content=data.content;
+                    var writer=data.member_name;
+                    $("#title").html(title);
+                    $("#create_date").html(create_date);
+                    $("#content").html(content);
+                    $("#writer").html(writer);
+
+                    var arrImg=new Array(data.image1, data.image2, data.image3, data.image4, data.image5);
+                    console.log(arrImg);
+                    arrImg.forEach(function (arg){
+                        if(arg!=null && arg!=""){
+                            var strList = "<a href='/displayFile?fullName=/help/"+arg+"' target='_blank'><img class='preview_img' src='/displayFile?fullName=/help/"+arg+"' width='auto' height='auto'/></a>";
+                            $("#img_list").append(strList);
+                        }
+                    });
+                },
+                error:function (){
+                    alert("ajax error!");
+                }
+            });
+        }
+
+        Handlebars.registerHelper("date", function(joined_date){
+            var yyyy=joined_date.substring(0,4);
+            var MM=joined_date.substring(5,7);
+            var dd=joined_date.substring(8,10);
+
+            return yyyy+"."+MM+"."+dd;
+        });
+
+        function update(){
+            location.href="/admin/help/update?no="+no;
+        }
+    </script>
+</th:block>
+</body>
+</html>

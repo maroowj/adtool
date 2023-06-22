@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>캠페인 정산</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<!--    <script src="https://cdn.ckeditor.com/ckeditor5/26.0.0/classic/ckeditor.js"></script>-->
+    <!--<style>
+	div {
+	        margin-bottom:10px;
+	    }
+    .input {
+            margin-left: 5px;
+            }
+
+    .cursorPoint {
+        cursor: pointer;
+    }
+	</style>-->
+
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <div class="d-flex jc-space-bt a-center">
+            <h2 class="page-title message-title">캠페인 정산 <span class="d-none">(/admin/joined_campaign_calculate.html)</span></h2>
+            <div id="move_menu_div">
+                <select id="move_menu">
+                    <option value="update">캠페인 수정</option>
+                    <option value="member">캠페인 명단</option>
+                    <option value="review" >캠페인 리뷰</option>
+                    <option value="calculate" selected>캠페인 정산</option>
+                </select>
+                <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </div>
+        </div>
+
+        <div id="campaign_info_div">
+
+            <div class="d-flex jc-space-bt a-start">
+                <div class="admin-joinedCp-img-wrap">
+                    <img class="preview_img" th:if="${cvo.campaign_img1}!=null" th:src="@{/displayFile?fullName=/campaign/}+${cvo.campaign_img1}">
+                </div>
+                <div class="admin-joinedCp-info-wrap">
+                    <div class="info-text">
+                        <div><span class="title">[Campaign] </span><span th:text="${{cvo.campaign_title}}"></span></div>
+                        <div><span class="title">[Brand / Project]</span><span th:text="${{cvo.brand_name}}"></span></div>
+                        <div><span class="title">[모집인원]</span><span th:text="${{cvo.need_number}}"></span></div>
+                        <div><span class="title">[모집인원 1.5배수]</span><span th:text="${{cvo.multiple_number}}"></span></div>
+                        <div class="campaign-progress">
+                            <span th:if="${{cvo.status}}==recruit" th:text="|마감 전 (모집중)|" class="recruit"></span>
+                            <span th:if="${{cvo.status}}==progress" th:text="|마감 완료 (진행중)|" class="progress"></span>
+                            <span th:if="${{cvo.status}}==end" th:text="|캠페인 종료|" class="end"></span>
+                        </div>
+                    </div>
+                    <div id="function_div" class="function_div">
+                        <div id="convert_to_excel" class="cursorPoint" >엑셀 다운로드</div>
+                        <div th:if="${{cvo.status}}==recruit" th:text="|캠페인 종료|" class="cursorPoint shutdown" status="end"></div>
+                        <div th:if="${{cvo.status}}==progress" th:text="|캠페인 종료|" class="cursorPoint shutdown" status="end"></div>
+                        <div th:if="${{cvo.status}}==end" th:text="|종료 취소|" class="cursorPoint shutdown" status="progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="joined-table-wrap auto">
+            <table id="campaign_calculate_list_table">
+                <colgroup>
+                    <col style ="width:5%">
+                    <col style ="width:23.375%">
+                    <col style ="width:23.375%">
+                    <col style ="width:9.5%">
+                    <col style ="width:9.5%">
+                    <col style ="width:9.5%">
+                    <col style ="width:9.5%">
+<!--                    <col style ="width:18.7%">-->
+<!--                    <col style ="width:18.7%">-->
+                    <col style ="width:23.375%">
+                    <col style ="width:23.375%">
+                    <col style ="width:23.375%">
+                    <col style ="width:23.375%">
+                    <col style ="width:23.375%">
+                    <col style ="width:23.375%">
+<!--                    <col style ="width:17%">-->
+
+                </colgroup>
+                <thead>
+                <tr id="order">
+                    <td order="rownum">순번</td>
+                    <td order="member_id">아이디</td>
+                    <td order="phone">연락처</td>
+                    <td colspan="4">정산 스크린샷</td>
+<!--                    <td>Paypal</td>-->
+<!--                    <td>Payoneer</td>-->
+                    <td>Expense</td>
+                    <td>Exchange</td>
+                    <td>Compensation</td>
+                    <td>Fee</td>
+                    <td>Total</td>
+<!--                    <td>Platform</td>-->
+                    <td>SEND</td>
+                </tr>
+                </thead>
+                <tbody class="t-center" id="campaign_calculate_list_tbody"></tbody>
+            </table>
+        </div>
+        <script id="campaign_calculate_list_table_script" type="text/x-handlebars-template">
+            {{#each .}}
+            <tr class="row" miSeq={{member_info_seq}} jcSeq={{joined_campaign_seq}} mSeq="{{member_seq}}">
+                <td class="rownum"></td>
+                <td>{{member_id}}</td>
+                <td>{{national_number}} {{phone}}</td>
+                <td>{{{img payment_img1 joined_campaign_seq}}}</td>
+                <td>{{{img payment_img2 joined_campaign_seq}}}</td>
+                <td>{{{img payment_img3 joined_campaign_seq}}}</td>
+                <td>{{{img payment_img4 joined_campaign_seq}}}</td>
+<!--                <td>{{paypal_id}}</td>-->
+<!--                <td>{{payoneer_id}}</td>-->
+                <td><input type="text" class="expense cal" value={{expense}} stat="{{payment_status}}"></td>
+                <td><input type="text" class="exchange cal" value={{exchange_rate}} stat="{{payment_status}}"></td>
+                <td><input type="text" class="compensation cal" value={{compensation}} stat="{{payment_status}}"></td>
+                <td><input type="text" class="fee cal" value={{fee}} stat="{{payment_status}}"></td>
+                <td><input type="text" class="total" disabled value={{total}} stat="{{payment_status}}"></td>
+<!--                <td>-->
+<!--                    <select class="platformSel">-->
+<!--                        <option selected hidden>{{selected payment_platform}}</option>-->
+<!--                        {{{notPay payment_status}}}-->
+<!--                        <option value="Paypal">Paypal</option>-->
+<!--                        <option value="Payoneer">Payoneer</option>-->
+<!--                    </select>-->
+<!--                </td>-->
+                <td>{{{sendChk payment_status payment_seq}}}</td>
+            </tr>
+            {{/each}}
+        </script>
+    </div>
+    <script th:inline="javascript">
+        Handlebars.registerHelper('notPay', function (payment_status){
+           if(payment_status=="Done"){
+               return "<option value='notPay'>미정산</option>";
+           }
+        });
+
+        Handlebars.registerHelper("view", function (chat_check){
+            if(chat_check==1){
+                return "V";
+            }
+        })
+
+        Handlebars.registerHelper("sendChk", function (payment_status, payment_seq){
+            if(payment_status=="Send" || payment_status=="notPay") {
+                return "<button value='Done' class='sendChk sendBtn' stat='Done' pSeq='"+payment_seq+"'>SEND</button>";
+            }else {
+                return "<button value='Send' class='sendChk' stat='Send' pSeq='"+payment_seq+"'>DONE</button>";
+            }
+        });
+
+        Handlebars.registerHelper("img", function (image,  joined_campaign_seq){
+            if(image!=null) {
+                return "<a href='/displayFile?fullName=/joined/"+joined_campaign_seq+"/"+image+"' target='_blank'><img src='/displayFile?fullName=/joined/"+joined_campaign_seq+"/"+image+"' width='auto' height='auto'/></a>";
+            }
+        });
+
+        Handlebars.registerHelper("selected", function(payment_platform){
+            if(payment_platform=="Paypal" || payment_platform=="Payoneer"){
+                return payment_platform;
+            }else if(payment_platform=="notPay"){
+                return "정산선택";
+            }else {
+                return "정산선택";
+            }
+        });
+    </script>
+
+    <script th:inline="javascript">
+        var campaign_seq = [[${campaign_seq}]];
+
+        getList();
+
+        $("#convert_to_excel").on("click", function(){
+
+            let url = "/admin/api/joined_campaign/calculate/excel?" +
+                "campaign_seq=" + campaign_seq;
+
+            window.open(url);
+        })
+
+
+        // Send 버튼 클릭 시
+        $("#campaign_calculate_list_tbody").on("click", ".sendChk", function(){
+
+            var pp=$(this).parent().parent();
+            var payment_status=pp.find(".sendChk").attr("stat");
+            var expense=pp.find(".expense").val();
+            var exchange_rate=pp.find(".exchange").val();
+            var fee=pp.find(".fee").val();
+            var compensation=pp.find(".compensation").val();
+            var total=pp.find(".total").val();
+            var pSeq=$(this).attr("pSeq");
+            var point=pp.find(".total").val();
+
+            /** 220610 포인트 부분 추가 **/
+            var member_seq = pp.attr("mSeq");
+            var type="save";
+
+            if(pp.find(".cal").val()==""){
+                alert("금액을 입력해주세요");
+                return;
+            }
+
+            if(payment_status=="Send"){
+                if(!confirm("정산 내역을 취소하시겠습니까?\n※ 취소하시면 해당 회원의 정산 값은 초기화 됩니다.\n※ 취소하시면 포인트가 회수됩니다.")) return;
+
+                expense=0;
+                exchange_rate=0;
+                fee=0;
+                compensation=0;
+                total=0;
+                type="withdraw";
+            }
+
+            // var payment_platform=pp.find(".platformSel").val();
+
+
+            $.ajax({
+                type:"post",
+                url:"/admin/api/point/campaign",
+                async:false,
+                data:{
+                    "member_seq":member_seq,
+                    "campaign_seq":campaign_seq,
+                    "point":point,
+                    "type":type
+                },
+                success:function (data) {
+                    if(data==0) {
+                        alert("포인트 회수에 실패했습니다.\n회원이 보유한 포인트를 확인해주세요.");
+                        return;
+                    }else {
+                        $.ajax({
+                            type:"put",
+                            url:"/admin/api/payment/update",
+                            async:false,
+                            data: {
+                                "expense":expense,
+                                "exchange_rate":exchange_rate,
+                                "fee":fee,
+                                "compensation":compensation,
+                                "total":total,
+                                "payment_seq":pSeq,
+                                "payment_status":payment_status
+                            },
+                            success:function (data){
+                                if(payment_status=="Done"){
+                                    alert("포인트 지급 완료!");
+                                }else{
+                                    alert("변경 완료");
+                                }
+                                location.reload();
+                            },
+                            error:function (){
+                                alert("ajax error!");
+                            }
+                        });
+                    }
+                },
+                error:function() {
+                    alert("요청하신 작업에 실패했습니다. 관리자에게 문의해주세요.");
+                }
+            });
+            getList();
+        });
+
+        // // '미정산' 선택 시
+        // $(".platformSel").on("change", function(){
+        //     var stat = $(this).val();
+        //     var pp = $(this).parent().parent();
+        //     if(stat=="notPay"){
+        //         pp.find(".sendChk").prop("disabled", false);
+        //     }
+        // });
+
+
+        // select box 변경 시 이동
+        $("#move_menu").on('change', function (){
+            var aim = $(this).val();
+            if(aim=="update"){
+                location.href="/admin/campaign_update?campaign_seq="+campaign_seq;
+            }else if(aim=="member"){
+                location.href="/admin/member_in_campaign?campaign_seq="+campaign_seq;
+            }else if(aim=="review"){
+                location.href="/admin/campaign_review?campaign_seq="+campaign_seq;
+            }else if(aim=="calculate"){
+                location.href="/admin/campaign_calculate?campaign_seq="+campaign_seq;
+            }
+        });
+
+        function getList(){
+            $.ajax({
+                url : "/admin/api/payment/list",
+                method :"GET",
+                dataType : "JSON",
+                data:{"campaign_seq": campaign_seq},
+                async:false,
+                success : function(result){
+                    console.log(result);
+                    var template=Handlebars.compile($("#campaign_calculate_list_table_script").html());
+                    $("#campaign_calculate_list_tbody").html(template(result));
+                    rowNum();
+                    $(".cal").each(function (){
+                       let stat= $(this).attr("stat");
+                       if(stat=="Done"){
+                           $(this).attr("disabled", true);
+                       }
+                    });
+                }
+            });
+        }
+
+        // 숫자 입력시 total 값 변경 (합산)
+        $(".cal").on("keyup", function () {
+            var inputExpense = Number($(this).parent().parent().find(".expense").val());
+            var inputExchange = Number($(this).parent().parent().find(".exchange").val());
+            var inputFee = Number($(this).parent().parent().find(".fee").val());
+            var inputCompensation = Number($(this).parent().parent().find(".compensation").val());
+
+            var total = inputExpense + inputExchange + inputFee + inputCompensation;
+            $(this).parent().parent().find(".total").val(total);
+        });
+
+        // 행에 순번 매기는 function
+        function rowNum(){
+            var cnt= 1;
+            $(".rownum").each(function (){
+                $(this).html(cnt);
+                cnt++;
+            });
+        }
+
+        $(".shutdown").on("click", function(){
+           var status = $(this).attr("status");
+
+           if(status=="end") {
+               if(!confirm("캠페인을 종료하시겠습니까?")) return;
+           }else {
+               if(!confirm("종료된 캠페인을 다시 진행하시겠습니까?")) return;
+           }
+
+            $.ajax({
+                type:"put",
+                url:"/admin/api/campaign/update",
+                data:{
+                    "campaign_seq":campaign_seq,
+                    "status":status
+                },
+                success:function(data) {
+                    if(status=="end") {
+                        alert("캠페인이 종료 되었습니다.");
+                    }else{
+                        alert("캠페인이 진행중입니다.");
+                    }
+                    location.reload();
+                },
+                error:function(){
+                    console.log("ajax error: campaign_status_update");
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

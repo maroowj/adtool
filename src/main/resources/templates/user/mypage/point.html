@@ -1,0 +1,138 @@
+<html xmlns="http://www.w3.org/1999/xhtml"xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/myPageLayout}">
+<head>
+    <title>Message List</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="userContent">
+    <div id="body" class="login-page-wrap info-basic-wrap">
+        <div id="page_title">
+            <h1 class="page-title message-title">US Dollar(Withdrawable Amount)</h1>
+            <span class="totalPoint"></span>
+        </div>
+        <div>
+            <div>Withdrawal request(US Dollar)</div>
+            <input type="text" id="exchangePoint"/>
+            <button id="exchange">Exchange</button>
+        </div>
+        <div id="point_list_div"></div>
+        <script id="point_list_script" type="/text/x=handlebars-template">
+            <div class="Title">
+                <span style="color: black;">Date</span>
+                <span style="color: black;">Description</span>
+                <span style="color: black;">US Dollar<br/>(Withdrawable Amount)</span>
+            </div>
+            {{#each list}}
+            <div class="subject">
+                <span>{{date create_date}}</span>
+                <span>{{{strDetail detail}}} - {{strType type}}</span>
+                <span>{{mark point}}</span>
+            </div>
+            {{/each}}
+        </script>
+        <div id="pagination"></div>
+    </div>
+    <script th:inline="javascript">
+        var member_seq = [[${session.member_seq}]];
+        //console.log(member_seq);
+
+
+        $("#pagination").on("click", "a", function(e){
+            e.preventDefault();
+            page=$(this).attr("href");
+        });
+
+        Handlebars.registerHelper("date", function(create_date){
+            var yyyy=create_date.substring(0,4);
+            var MM=create_date.substring(5,7);
+            var dd=create_date.substring(8,10);
+
+            return yyyy+"."+MM+"."+dd;
+        });
+
+        Handlebars.registerHelper("mark", function(point){
+            if(point>0) {
+                return "+"+point;
+            }else {
+                return point;
+            }
+
+        });
+
+        Handlebars.registerHelper("strType", function(type){
+            if(type=="적립") {
+                return "save";
+            }else if(type=="회수"){
+                return "cancel";
+            }else if(type=="요청" || type=="출금"){
+                return "exchange";
+            }
+        });
+
+        Handlebars.registerHelper("strDetail", function(detail){
+            var strDetail = detail+"";
+
+            strDetail=strDetail.replaceAll("캠페인", "<b>Campaign</b>");
+            // strDetail=strDetail.replaceAll("사용자 출금요청", "<b>User Request</b>");
+            if(strDetail=="사용자 출금 요청") {
+                strDetail = strDetail.replaceAll("사용자 출금 요청", "<b>User Request</b> ") + "(Processing)";
+            }else if(strDetail.includes("(Complete)")) {
+                strDetail=strDetail.replaceAll("사용자 출금 요청", "<b>User Request</b>");
+            }
+
+            strDetail=strDetail.replaceAll("추천인", "<b>Recommender</b>");
+            return strDetail;
+        });
+
+        $("#exchange").on("click", function(){
+           var point = Number($("#exchangePoint").val());
+           if(point=="" || point==null) {
+               alert("Enter only number please");
+               return;
+           }
+           if(isNaN(point)) {
+               alert("Enter only number please");
+               $("#exchangePoint").val("");
+               return;
+           }
+           if(point<10) {
+               alert("You can exchange 10 US Dollars or more");
+               return;
+           }
+           if(point>totalPoint) {
+               alert("You can't enter number more than total US Dollars");
+               return;
+           }
+
+           if(!confirm("Would you like to exchange "+ point + " US Dollars?")) return;
+
+           $.ajax({
+               type:"post",
+               url:"/user/api/point/request",
+               data:{
+                   "member_seq":member_seq,
+                   "point":point
+               },
+               success:function(data) {
+                   if(data==0){ // 요청한 환급 포인트가 최소 출금액 보다 적을 때, (실패)
+                       alert("You can exchange 10 US Dollar or more");
+                       return;
+                   }else if(data==1) { // 요청한 환급 포인트가 회원이 보유한 총 포인트보다 많을 때, (실패)
+                       alert("You can't enter number more than total US Dollar");
+                       return;
+                   }else if(data==2) {
+                       location.reload();
+                   }
+               },
+               error:function(){
+                   console.log("ajax error: point_request");
+               }
+           });
+        });
+
+</script>
+</th:block>
+</body>
+</html>

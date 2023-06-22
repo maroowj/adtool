@@ -1,0 +1,122 @@
+<html xmlns="http://www.w3.org/1999/xhtml"xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/myPageLayout}">
+<head>
+    <title>Message List</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="userContent">
+    <div id="body">
+        <div id="page_title"><h1 class="page-title message-title">Message<span class="d-none">(/user/mypage/msg_list.html)</span></h1></div>
+
+        <div id="message_list_div"></div>
+        <script id="message_list_script" type="/text/x=handlebars-template">
+            {{#each list}}
+            <div style="cursor: pointer" class="subject" seq="{{message_seq}}" readChk="{{read_check}}">{{{bold read_check title message_date}}}</div>
+            {{/each}}
+        </script>
+        <div id="pagination"></div>
+    </div>
+    <script th:inline="javascript">
+        var member_seq = [[${session.member_seq}]];
+        var page=1;
+        //console.log(member_seq);
+
+        getMessageList();
+
+        // 글 제목 클릭 시
+        $("#message_list_div").on("click", ".subject", function(){
+            var seq=$(this).attr("seq");
+            var readChk=$(this).attr("readChk");
+            if(readChk==0){
+                updateReadCheck(seq);
+            }
+            location.href="/mypage/message_read?mno="+seq;
+        });
+
+        $("#pagination").on("click", "a", function(e){
+            e.preventDefault();
+            page=$(this).attr("href");
+            getMessageList();
+        });
+
+        function getMessageList(){
+            $.ajax({
+                type:"get",
+                url:"/user/api/message/list",
+                data:{
+                    "page":page,
+                    "member_seq":member_seq
+                },
+                success:function(data){
+                    console.log(data);
+                    var template=Handlebars.compile($("#message_list_script").html());
+                    $("#message_list_div").html(template(data));
+
+                    //페이징 목록 출력
+                    var str="";
+                    var prev=data.pm.startPage-1;
+                    var next=data.pm.endPage+1;
+
+                    if(data.pm.prev){
+                        str +="<a href='" + prev + "'>prev</a>";
+                    }else{
+                        str +="<a href='javascript:;'></a>";
+                    }
+                    for(var i=data.pm.startPage;i<=data.pm.endPage; i++){
+                        if(i==page){
+                            str += "<a class='active' href='" + i + "'>" + i + "</a>";
+                        }else{
+                            str += "<a href='" + i + "'>" + i + "</a>";
+                        }
+                    }
+                    if(data.pm.next) {
+                        str +="<a href='" + next + "'>next</a>";
+                    }else{
+                        str +="<a href='javascript:;'></a>";
+                    }
+                    $("#pagination").html(str);
+                }
+
+            });
+        }
+
+        function updateReadCheck(seq){
+            $.ajax({
+                type:"patch",
+                url:"/user/api/message/update/read_check",
+                data:{
+                    "message_seq":seq
+                },
+                success:function (data){
+
+                },
+                error:function(){
+                    alert("ajax error!");
+                }
+            });
+        }
+
+        Handlebars.registerHelper("bold", function(read_check, title, message_date){
+            var yyyy=message_date.substring(0,4)+".";
+            var MM=message_date.substring(5,7)+".";
+            var dd=message_date.substring(8,10);
+            if(read_check==0){
+                return "<span class='unread-msg'>"+title+"</span><span class='unread-msg-date msg-date'>"+yyyy+MM+dd+"</span>";
+            }else{
+                return "<span>"+title+"</span><span class='msg-date'>"+yyyy+MM+dd+"</span>";
+            }
+        });
+
+        Handlebars.registerHelper("date", function(joined_date){
+            var yyyy=joined_date.substring(0,4);
+            var MM=joined_date.substring(5,7);
+            var dd=joined_date.substring(8,10);
+
+            return yyyy+"."+MM+"."+dd;
+        });
+    </script>
+</th:block>
+</body>
+</html>

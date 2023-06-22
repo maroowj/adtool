@@ -1,0 +1,97 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="adminMenu">
+    <div class="b-bottom">
+        <div class="admin-infoMenu">
+            <div id="loginDiv" class="auto" >
+                <p><span class="nickname">닉네임</span><span th:text="${session.member_name}"></span></p>
+                <p><span class="cursorPoint" onclick="location.href='/common/api/logout'">로그아웃</span></p>
+                <div class="admin-select-wrap">
+                    <div class="select-box">
+                        <select id="searchType">
+                            <option value="joining_campaign">현재 캠페인</option>
+                            <option value="ended_campaign">지난 캠페인</option>
+                            <option value="member">회원</option>
+                        </select>
+                    </div>
+                    <div class="serch-box"><input type="text" id="keyword"><button id="btn_search">검색</button></div>
+                </div>
+            </div>
+        </div>
+        <div class="auto">
+            <div id="menuDiv" class="admin-menu-wrap">
+                <div class="admin-logo"><img src="../../images/icon/logo.png" class="cursorPoint" th:src="@{/displayFile?fullName=icon/logo.png}" width="200px;" height="80px;" onclick="location.href='/admin'"/></div>
+                <div class="admin-nav-wrap">
+                    <div class="on adminMenu"><a href="/admin">현재캠페인</a></div>
+                    <div class="adminMenu adminMenu-ended"><a href="/admin/ended_campaign">지난캠페인</a></div>
+                    <div class="adminMenu adminMenu-reservation"><a href="/admin/reservation_campaign">예약캠페인</a></div>
+                    <div class="adminMenu adminMenu-insert"><a href="/admin/campaign_insert">캠페인생성</a></div>
+                    <div class="adminMenu adminMenu-manage"><a href="/admin/manage_member">회원관리</a></div>
+                    <div class="adminMenu adminMenu-point"><a href="/admin/point">포인트</a></div>
+                    <div class="adminMenu adminMenu-notice"><a href="/admin/notice">공지사항</a></div>
+                    <div class="adminMenu adminMenu-message"><a href="/admin/message_box">쪽지함</a></div>
+                    <div class="adminMenu adminMenu-help"><a href="/admin/help">Help</a></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        $("#keyword").on("keydown", function(e){
+            if(e.keyCode==13){
+                $("#btn_search").click();
+            }
+        });
+
+        $("#btn_search").on("click", function (){
+            searchType=$("#searchType").val();
+            keyword=$("#keyword").val();
+            if(keyword=="") {
+                alert("검색하실 단어를 입력해주세요.");
+                return;
+            }
+            if(searchType=="joining_campaign"){
+                location.href="/admin/joining_campaign?searchType=joining_campaign&keyword="+keyword;
+                $("#keyword").val(keyword);
+            }else if(searchType=="ended_campaign"){
+                location.href="/admin/ended_campaign?searchType=ended_campaign&keyword="+keyword;
+                $("#searchType").val(searchType);
+                $("#keyword").val(keyword);
+            }else if(searchType=="member"){
+                location.href="/admin/manage_member?searchType=member&keyword="+keyword;
+            }
+        });
+
+        $(document).ready(function(){
+            var link = document.location.href;
+            if(link.includes("ended")) {
+                $(".adminMenu").removeClass("on");
+                $(".adminMenu-ended").addClass("on");
+            }else if(link.includes("reservation")) {
+                $(".adminMenu").removeClass("on");
+                $(".adminMenu-reservation").addClass("on");
+            }else if(link.includes("campaign_insert")) {
+                $(".adminMenu").removeClass("on");
+                $(".adminMenu-insert").addClass("on");
+            }else if(link.includes("manage")) {
+                $(".adminMenu").removeClass("on");
+                $(".adminMenu-manage").addClass("on");
+            }else if(link.includes("point")) {
+                $(".adminMenu").removeClass("on");
+                $(".adminMenu-point").addClass("on");
+            }else if(link.includes("notice")) {
+                $(".adminMenu").removeClass("on");
+                $(".adminMenu-notice").addClass("on");
+            }else if(link.includes("message")) {
+                $(".adminMenu").removeClass("on");
+                $(".adminMenu-message").addClass("on");
+            }else if(link.includes("help")) {
+                $(".adminMenu").removeClass("on");
+                $(".adminMenu-help").addClass("on");
+            }
+        });
+    </script>
+</th:block>
+</html>
+

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <h2 class="page-title message-title">공지사항<span class="d-none">(/admin/notice/list.html)</span></h2>
+        <div>
+            <div class="admin-noticeList-search-wrap">
+                <div class="p-relative admin-noticeList-search">
+                    <div id="notice_search_div">
+                        <input id="notice_Keyword" type="text"/><button id="noticeBtnSearch">찾기</button>
+                    </div>
+                </div>
+                <div class="notice-writeBtn">
+                    <button onClick="location.href='/admin/notice/insert'">글쓰기</button>
+                </div>
+            </div>
+
+            <div id="notice_list_div" class="admin-noticeList-table-wrap"></div>
+            <script id="notice_list_script" type="/text/x=handlebars-template">
+                <div class="notice-table-title">
+                    <div class="num">번호</div>
+                    <div class="title">제목</div>
+                    <div class="writer">작성자</div>
+                    <div class="date">작성일</div>
+                    <div class="view">조회</div>
+                </div>
+                {{#highlight}}
+                <div style="overflow: hidden" class="cursorPoint notice_row_highlight" onclick="location.href='/admin/notice/read?no={{notice_seq}}'">
+                    <div class="subject">★</div>
+                    <div class="subject">{{title}}</div>
+                    <div class="subject">{{member_name}}</div>
+                    <div class="subject">{{date notice_date}}</div>
+                    <div class="subject">{{read_count}}</div>
+                </div>
+                {{/highlight}}
+                {{#each list}}
+                <div class="cursorPoint notice_row" onclick="location.href='/admin/notice/read?no={{notice_seq}}'">
+                    <div class="subject num">{{rowNum}}</div>
+                    <div class="subject title t-left">{{title}}</div>
+                    <div class="subject writer">{{member_name}}</div>
+                    <div class="subject date">{{date notice_date}}</div>
+                    <div class="subject view">{{read_count}}</div>
+                </div>
+                {{/each}}
+            </script>
+
+            <div id="pagination"></div>
+        </div>
+
+    </div>
+<script th:inline="javascript">
+    let notice_page=1;
+    let notice_keyword="";
+
+    getNoticeList();
+
+    $("#notice_Keyword").on("keydown", function(e){
+        if(e.keyCode==13) {
+            $("#noticeBtnSearch").click();
+        }
+    });
+
+    $("#noticeBtnSearch").on("click", function(){
+        getNoticeList();
+    });
+
+
+    $("#pagination").on("click", "a", function(e){
+        e.preventDefault();
+        notice_page=$(this).attr("href");
+        getNoticeList();
+    });
+
+    function getNoticeList(){
+        notice_keyword=$("#notice_Keyword").val();
+
+        $.ajax({
+            type:"get",
+            url:"/common/api/notice/list",
+            data:{
+                "keyword":notice_keyword,
+                "page":notice_page
+            },
+            success:function (data){
+                var template=Handlebars.compile($("#notice_list_script").html());
+                $("#notice_list_div").html(template(data));
+
+
+                //페이징 목록 출력
+                var str="";
+                var prev=data.pm.startPage-1;
+                var next=data.pm.endPage+1;
+
+                if(data.pm.prev){
+                    str +="<a href='" + prev + "'>prev</a>";
+                }else{
+                    str +="<a href='javascript:;'></a>";
+                }
+                for(var i=data.pm.startPage;i<=data.pm.endPage; i++){
+                    if(i==notice_page){
+                        str += "<a class='active' href='" + i + "'>" + i + "</a>";
+                    }else{
+                        str += "<a href='" + i + "'>" + i + "</a>";
+                    }
+                }
+                if(data.pm.next) {
+                    str +="<a href='" + next + "'>next</a>";
+                }else{
+                    str +="<a href='javascript:;'></a>";
+                }
+                $("#pagination").html(str);
+
+            }
+        });
+    }
+
+
+    Handlebars.registerHelper("date", function(notice_data){
+        var yyyy=notice_data.substring(0,4);
+        var MM=notice_data.substring(5,7);
+        var dd=notice_data.substring(8,10);
+
+        return yyyy+"-"+MM+"-"+dd;
+    });
+
+    Handlebars.registerHelper("numbering", function (notice_seq){
+        var delName=notice_seq.replace("notc_", "");
+        var num=Number(delName);
+        return num;
+    });
+
+</script>
+</th:block>
+</html>

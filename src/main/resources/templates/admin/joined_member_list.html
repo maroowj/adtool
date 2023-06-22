@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>캠페인 명단</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/26.0.0/classic/ckeditor.js"></script>
+    <!--<style>
+	div {
+	        margin-bottom:10px;
+	    }
+    .input {
+            margin-left: 5px;
+            }
+
+    .cursorPoint {
+        cursor: pointer;
+    }
+	</style>-->
+
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <div class="d-flex jc-space-bt a-center">
+            <h2 class="page-title message-title">캠페인 명단 <span class="d-none">(/admin/joined_member_list.html)</span></h2>
+            <div id="move_menu_div">
+                <select id="move_menu">
+                    <option value="update">캠페인 수정</option>
+                    <option value="member" selected>캠페인 명단</option>
+                    <option value="review">캠페인 리뷰</option>
+                    <option value="calculate">캠페인 정산</option>
+                </select>
+                <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </div>
+        </div>
+        <div id="campaign_info_div">
+
+            <div class="d-flex jc-space-bt a-start">
+                <div class="admin-joinedCp-img-wrap">
+                    <img class="preview_img" th:if="${cvo.campaign_img1}!=null" th:src="@{/displayFile?fullName=/campaign/}+${cvo.campaign_img1}">
+                </div>
+                <div class="admin-joinedCp-info-wrap">
+                    <div class="info-text">
+                        <div><span class="title">[Campaign]</span><span th:text="${{cvo.campaign_title}}"></span></div>
+                        <div><span class="title">[Brand / Project]</span><span th:text="${{cvo.brand_name}}"></span></div>
+                        <div><span class="title">[모집인원]</span><span th:text="${{cvo.need_number}}"></span></div>
+                        <div><span class="title">[모집인원 1.5배수]</span><span th:text="${{cvo.multiple_number}}"></span></div>
+                        <div class="campaign-progress">
+                            <span th:if="${{cvo.status}}==recruit" th:text="|마감 전(모집중)|" class="recruit"></span>
+                            <span th:if="${{cvo.status}}==progress" th:text="|마감 완료(진행중)|" class="progress"></span>
+                            <span th:if="${{cvo.status}}==end" th:text="|캠페인 종료|" class="end"></span>
+                        </div>
+                    </div>
+                    <div id="function_div" class="function_div">
+                        <div id="convert_to_excel" class="cursorPoint">엑셀 다운로드</div>
+                        <div id="send_Msg" class="cursorPoint" >쪽지 발송</div>
+                        <div id="update_info" class="cursorPoint">수정내용 저장</div>
+                        <div th:if="${{cvo.status}}==recruit" th:text="|마감|"  condition="insert" class="cursorPoint update_member_accept" ></div>
+                        <div th:unless="${{cvo.status}}==recruit" th:text="|마감 수정|"  condition="update" class="cursorPoint update_member_accept" ></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <div class="joined-table-wrap auto">
+            <table id="joined_member_list_table">
+               <colgroup>
+                   <col style ="width:6%">
+                   <col style ="width:6%">
+                   <col style ="width:17.5%">
+                   <col style ="width:20.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:8%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                   <col style ="width:17.5%">
+                </colgroup>
+                <thead>
+                <tr id="order">
+                    <td><input type="checkbox" id="all_chk"></td>
+                    <td order="rownum">순번</td>
+                    <td order="joined_date">타임스탬프</td>
+                    <td order="member_id">이메일 주소</td>
+                    <td order="accept">*승인여부*</td>
+                    <td>왓츠앱</td>
+                    <td>채팅</td>
+                    <td order="preferences">선호 카테고리</td>
+                    <td order="member_name">이름</td>
+                    <td order="phone" colspan="2">연락처</td>
+                    <td order="country">국가 1</td>
+                    <td order="country">국가 2</td>
+                    <td order="country">국가 3</td>
+                    <td order="address1">Address 1</td>
+                    <td order="address2">Address 2</td>
+                    <td order="state">State</td>
+                    <td order="city">City</td>
+                    <td order="zipcode">Zipcode</td>
+                    <td order="shopee_id">Shopee ID</td>
+                    <td order="lazada_id">Lazada_ID</td>
+                    <td order="instagram_url">Instagram</td>
+                    <td order="youtube_url">Youtube</td>
+                    <td order="facebook_url">Facebook</td>
+                    <td order="tiktok_url">Tiktok</td>
+                    <td order="paypal_id">Paypal_email</td>
+                    <td order="payoneer_id">Payoneer_email</td>
+                </tr>
+                </thead>
+                <tbody class="t-center" id="joined_member_list_tbody"></tbody>
+            </table>
+        </div>
+        <script id="joined_member_list_tbody_script" type="text/x-handlebars-template">
+            {{#each .}}
+            <tr class="row" miSeq={{member_info_seq}} jcSeq={{joined_campaign_seq}} mSeq="{{member_seq}}">
+                <td class="checked"><input type="checkbox" class="chk" accept="{{accept}}" payCheck="{{payment_status}}" mid="{{member_id}}"/></td>
+                <td class="rownum"></td>
+                <td>{{joined_date}}</td>
+                <td class="member_id">{{black member_id banned}}</td>
+                <td style="color: red;">{{accept}}</td>
+                <td>{{{whatsapp national_number phone}}}</td>
+                <td>
+                    <select class="infoText chat_check" disabledChk="0" disabled>
+                        <option selected hidden value="{{chat_check}}">{{view chat_check}}</option>
+                        <option value="0"></option>
+                        <option value="1">V</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="infoText preferences" disabledChk="0" disabled>
+                        <option selected hidden value="{{preferences}}">{{preferences}}</option>
+                        <option value="Beauty">Beauty</option>
+                        <option value="Food">Food</option>
+                        <option value="Pet">Pet</option>
+                        <option value="Baby">Baby</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value=">Daily_supplies">Daily supplies</option>
+                    </select>
+                </td>
+                <td><input type="text" class="infoText member_name" disabledChk="0" value="{{member_name}}" disabled></td>
+                <td>
+                    <select class="infoText nation" disabled>
+                        <option hidden>+nation</option>
+                        {{{nation national_number}}}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="infoText phone" disabledChk="0" value="{{phone}}" disabled>
+                </td>
+                <td>
+                    <select class="infoText country" disabledChk="0" disabled>
+                        {{{strCountry country}}}
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Taiwan">Taiwan</option>
+                        <option value="Japan">Japan</option>
+                        <option value="South Korea">South Korea</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="infoText country2" disabledChk="0" disabled>
+                        {{{strCountry country2}}}
+                        <option value="None">None</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Taiwan">Taiwan</option>
+                        <option value="Japan">Japan</option>
+                        <option value="South Korea">South Korea</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="infoText country3" disabledChk="0" disabled>
+                        {{{strCountry country3}}}
+                        <option value="None">None</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Taiwan">Taiwan</option>
+                        <option value="Japan">Japan</option>
+                        <option value="South Korea">South Korea</option>
+                    </select>
+                </td>
+                <td><input type="text" class="infoText address1" disabledChk="0" value="{{address1}}" disabled></td>
+                <td><input type="text" class="infoText address2" disabledChk="0" value="{{address2}}" disabled></td>
+                <td><input type="text" class="infoText state" disabledChk="0" value="{{state}}" disabled></td>
+                <td><input type="text" class="infoText city" disabledChk="0" value="{{city}}" disabled></td>
+                <td><input type="text" class="infoText zipcode" disabledChk="0" value="{{zipcode}}" disabled></td>
+                <td><input type="text" class="infoText shopee_id" disabledChk="0" value="{{shopee_id}}" disabled></td>
+                <td><input type="text" class="infoText lazada_id" disabledChk="0" value="{{lazada_id}}" disabled></td>
+                <td><input type="text" class="infoText instagram_url" disabledChk="0" value="{{instagram_url}}" disabled></td>
+                <td><input type="text" class="infoText youtube_url" disabledChk="0" value="{{youtube_url}}" disabled></td>
+                <td><input type="text" class="infoText facebook_url" disabledChk="0" value="{{facebook_url}}" disabled></td>
+                <td><input type="text" class="infoText tiktok_id" disabledChk="0" value="{{tiktok_id}}" disabled></td>
+                <td><input type="text" class="infoText paypal_id" disabledChk="0" value="{{paypal_id}}" disabled></td>
+                <td><input type="text" class="infoText payoneer_id" disabledChk="0" value="{{payoneer_id}}" disabled></td>
+            </tr>
+            {{/each}}
+        </script>
+    </div>
+
+    <div id="msg_body" class="modal">
+        <div class="modal-wrap">
+            <div class="modal-title">
+                <h3 class="title">쪽지 발송</h3>
+                <span class="closeBtn"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <div class="modal-inner">
+                <div class="joined-MemList-modal-text">
+                    <div id="title_div"><input type="text" id="title" placeholder="제목을 입력하세요"></div>
+                    <div id="content_div"><textarea id="content" placeholder="내용을 입력하세요" style="height:200px;"></textarea></div>
+                </div>
+
+                <div class="modal-button"><button id="btn_send" class="black-btn">발송</button></div>
+            </div>
+
+        </div>
+
+        <div class="bg-cover"></div>
+    </div>
+    <script th:inline="javascript">
+        Handlebars.registerHelper("view", function (chat_check){
+            if(chat_check==1){
+                return "V";
+            }
+        });
+
+        Handlebars.registerHelper("whatsapp", function (national_number, phone){
+            if(national_number==null || national_number=="" || national_number=="+nation" || phone==null || phone==""){
+                return "수정요망";
+            }else {
+                var national = national_number.replaceAll("(", "");
+                national = national.replaceAll("+", "");
+                national = national.replaceAll(")", "");
+                console.log("national=" + national);
+                var phoneNumber = national+phone;
+                return "<a href='https://api.whatsapp.com/send?phone="+ phoneNumber + "' target='_blank'><img src='/displayFile?fullName=icon/whatsapp.png'></a>";
+            }
+        });
+
+        Handlebars.registerHelper("nation", function(national_number){
+            if(national_number!=null){
+                var name = ["Malaysia", "Philippines", "Singapore", "Taiwan", "Japan", "South Korea"];
+                var num = [ "(+60)", "(+63)", "(+65)", "(+886)", "(+81)", "(+82)"];
+                var str=""
+                for (i=0; i<name.length; i++) {
+                    if(national_number == num[i]) {
+                        str+="<option class='nationOpt' value='" + num[i] + "' selected>" + name[i] + " " + num[i] + "</option>";
+                    }else{
+                        str+="<option class='nationOpt' value='" + num[i] + "'>" + name[i] + " " + num[i] + "</option>";
+                    }
+                }
+            }else{
+                var name = ["Malaysia", "Philippines", "Singapore", "Taiwan", "Japan", "South Korea"];
+                var num = [ "(+60)", "(+63)", "(+65)", "(+886)", "(+81)", "(+82)"];
+                var str=""
+                for (i=0; i<name.length; i++) {
+                    str+="<option class='nationOpt' value='" + num[i] + "'>" + name[i] + " " + num[i] + "</option>";
+                }
+            }
+            return str;
+        });
+
+        Handlebars.registerHelper("noNation", function(phone){
+            let noNatNum;
+            if(phone!=null){
+                noNatNum=phone.substr(5,20);
+            }
+            return noNatNum;
+        });
+
+        Handlebars.registerHelper("strCountry", function (country){
+            var strCountry="";
+            if(country!=null && country!=""){
+                strCountry="<option selected hidden value='"+country+"'>"+country+"</option>";
+            }else{
+                strCountry="<option selected hidden>국가선택</option>";
+            }
+            return strCountry
+        });
+
+        Handlebars.registerHelper("black", function(member_id, banned){
+            if(banned==0) {
+                return member_id;
+            }else {
+                return member_id + " (B)";
+            }
+        });
+    </script>
+
+    <script th:inline="javascript">
+        var campaign_seq = [[${campaign_seq}]];
+
+        getList();
+
+        // 쪽지 발송
+        $("#btn_send").on("click", function(e){
+            e.preventDefault();
+            var title=$("#title").val();
+            var content=editor.getData();
+
+            if(title==""){
+                alert("제목을 입력하세요");
+                return;
+            }else if(content==""){
+                alert("내용을 입력하세요");
+                return;
+            }
+
+            if(!confirm("쪽지를 발송하시겠습니까?")) return;
+
+            $(".chk:checked").each(function(){
+                var pp=$(this).parent().parent();
+                var receiver=pp.attr("mSeq");
+
+                // 쪽지 인서트 ajax
+                $.ajax({
+                    type:"post",
+                    url:"/admin/api/message/insert",
+                    async:false,
+                    data:{
+                        "title":title,
+                        "content":content,
+                        "receiver":receiver,
+                        "sender":"mber_0000000001"
+                    },
+                    success:function (data){
+                    }
+                });
+            });
+            location.reload();
+        });
+
+        // 체크박스 기능
+        $("#all_chk").on("click", function(){
+            var chkNum=$(".chk").length;
+            var checkedNum=$(".chk:checked").length;
+
+            if(chkNum!=checkedNum){
+                $(".chk").each(function(){
+                    $(this).prop("checked", true);
+                });
+            }else{
+                $(".chk").each(function(){
+                    $(this).prop("checked", false);
+                });
+            }
+        });
+
+        $("#joined_member_list_tbody").on("click", ".chk", function(){
+            var chkNum=$(".chk").length;
+            var checkedNum=$(".chk:checked").length;
+
+            if(chkNum==checkedNum){
+                $("#all_chk").prop("checked", true);
+            }else{
+                $("#all_chk").prop("checked", false);
+            }
+        });
+
+        // '수정내용 저장' 클릭 시
+        $("#update_info").on("click", function (){
+            if(!confirm("변경된 내용을 저장하시겠습니까?")) return;
+
+            $(".chk").each(function(){
+                var pp = $(this).parent().parent();
+
+                var member_info_seq=pp.attr("miSeq");
+                var joined_campaign_seq=pp.attr("jcSeq");
+                var chat_check=pp.find(".chat_check").val();
+                var member_name=pp.find(".member_name").val();
+                var country=pp.find(".country").val();
+                var country2=pp.find(".country2").val();
+                var country3=pp.find(".country3").val();
+                if(country2=="None") {
+                    country2=null;
+                }
+                if(country3=="None") {
+                    country3=null;
+                }
+                var preferences=pp.find(".preferences").val();
+                var address1=pp.find(".address1").val();
+                var address2=pp.find(".address2").val();
+                var state=pp.find(".state").val();
+                var city=pp.find(".city").val();
+                var zipcode=pp.find(".zipcode").val();
+                var national_number=pp.find(".nation").val();
+                var phone=pp.find(".phone").val();
+                var youtube_url=pp.find(".youtube_url").val();
+                var instagram_url=pp.find(".instagram_url").val();
+                var facebook_url=pp.find(".facebook_url").val();
+                var tiktok_url=pp.find(".tiktok_url").val();
+                var shopee_id=pp.find(".shopee_id").val();
+                var lazada_id=pp.find(".lazada_id").val();
+                var paypal_id=pp.find(".paypal_id").val();
+                var payoneer_id=pp.find(".payoneer_id").val();
+
+                var objParams={
+                    "member_info_seq":member_info_seq,
+                    "joined_campaign_seq":joined_campaign_seq,
+                    "chat_check":chat_check,
+                    "member_name":member_name,
+                    "preferences":preferences,
+                    "country":country,
+                    "address1":address1,
+                    "address2":address2,
+                    "state":state,
+                    "city":city,
+                    "zipcode":zipcode,
+                    "national_number":national_number,
+                    "phone":phone,
+                    "youtube_url":youtube_url,
+                    "instagram_url":instagram_url,
+                    "facebook_url":facebook_url,
+                    "tiktok_url":tiktok_url,
+                    "shopee_id":shopee_id,
+                    "lazada_id":lazada_id,
+                    "paypal_id":paypal_id,
+                    "payoneer_id":payoneer_id,
+                    "country2":country2,
+                    "country3":country3
+                }
+                updateInfo(objParams);
+            });
+            alert("회원 정보가 수정되었습니다.");
+            getList();
+            $("#all_chk").prop("checked", false);
+        });
+
+        // 회원의 캠페인 참여 승인/탈락 상태 변경 버튼(마감 버튼) 클릭 시
+        $(".update_member_accept").on("click", function(){
+            var condition=$(this).attr("condition");
+            if(condition=="insert"){
+                if(!confirm("캠페인 모집을 종료합니다.\n선택한 인원의 참여를 승인하고, 캠페인을 진행하시겠습니까?")) return;
+                var status="progress";
+                update_campaign_status(campaign_seq, status);
+            }else if(condition=="update"){
+                if(!confirm("참여 할 인원을 선택된 인원들로 수정하시겠습니까?")) return;
+            }
+
+            if($(".chk:checked").length==0){
+                alert("캠페인에 참여 할 인원을 선택해주세요!");
+                return;
+            }
+
+            var doneChk=false;
+            $(".chk").each(function(){
+                var payCheck=$(this).attr("payCheck");
+                if(!$(".chk").prop("checked")) {
+                    if(payCheck=="Done"){
+                        doneChk=true;
+                    }
+                }
+            });
+            if(doneChk){
+                alert("승인->탈락으로 정보를 변경하려는 회원 중 이미 정산이 완료된\n회원이 있습니다.확인 후 다시 시도해주세요!");
+                return;
+            }else{
+                $(".chk").each(function(){
+                    var pp = $(this).parent().parent();
+                    var joined_campaign_seq=pp.attr("jcSeq");
+                    if($(this).prop("checked")){
+                        var accept="accept";
+                    }else{
+                        var accept="decline";
+                    }
+                    updateAccept(joined_campaign_seq, accept);
+                })
+                location.reload();
+            }
+        });
+
+        // 쪽지 발송 버튼 클릭 시
+        // $("#send_Msg").on("click", function (){
+        //     if($(".chk:checked").length==0){
+        //         alert("쪽지를 발송 할 인원을 선택해주세요!");
+        //         return;
+        //     }
+        //
+        //     // 차후 개발 예정
+        //
+        // });
+
+        // input text 더블 클릭 시 disabled 해제
+        $("#joined_member_list_tbody").on("dblclick", ".infoText", function(){
+            $(this).attr("disabledChk", 1);
+            $(".infoText").each(function(){
+                var disabledChk = $(this).attr("disabledChk");
+                if(disabledChk==1){
+                    $(this).prop("disabled", false);
+                    $(this).focus();
+                    $(this).attr("disabledChk", 0);
+                }else{
+                    $(this).prop("disabled", true);
+                }
+            });
+        });
+
+        // input 포커스 아웃
+        $("#joined_member_list_tbody").on("focusout", ".infoText", function(){
+            $("#joined_member_list_tbody .infoText").attr("disabledChk", 0);
+            $("#joined_member_list_tbody .infoText").prop("disabled", true);
+        });
+
+        // select box 변경 시 이동
+        $("#move_menu").on('change', function (){
+            var aim = $(this).val();
+            if(aim=="update"){
+                location.href="/admin/campaign_update?campaign_seq="+campaign_seq;
+            }else if(aim=="member"){
+                location.href="/admin/member_in_campaign?campaign_seq="+campaign_seq;
+            }else if(aim=="review"){
+                location.href="/admin/campaign_review?campaign_seq="+campaign_seq;
+            }else if(aim=="calculate"){
+                location.href="/admin/campaign_calculate?campaign_seq="+campaign_seq;
+            }
+        });
+
+        function getList(){
+            $.ajax({
+                url : "/admin/api/joined_campaign/list",
+                method :"GET",
+                dataType : "JSON",
+                data:{"campaign_seq": campaign_seq},
+                success : function(result){
+                    console.log(result);
+                    var template=Handlebars.compile($("#joined_member_list_tbody_script").html());
+                    $("#joined_member_list_tbody").html(template(result));
+                    rowNum();
+                    checked();
+                }
+            });
+        }
+
+        $("#convert_to_excel").on("click", function(){
+
+            let url = "/admin/api/joined_campaign/list/excel?" +
+                "campaign_seq=" + campaign_seq;
+
+            window.open(url);
+        })
+
+        // row의 회원 정보 수정
+        function updateInfo(objParams){
+            $.ajax({
+                type:"put",
+                url:"/admin/api/joined_campaign/update/member_info",
+                async:false,
+                data: objParams,
+                success:function (data){
+                }
+            });
+        }
+
+        // row의 회원 승인/탈락 update
+        function updateAccept(joined_campaign_seq, accept){
+            $.ajax({
+                type:"patch",
+                url:"/admin/api/joined_campaign/update/member_accept",
+                async:false,
+                data:{
+                    "joined_campaign_seq":joined_campaign_seq,
+                    "accept":accept
+                },
+                success:function(data){
+
+                },
+                error:function (){
+                    alert("ajax error!");
+                }
+            });
+        }
+
+        // 행에 순번 매기는 function
+        function rowNum(){
+            var cnt= 1;
+            $(".rownum").each(function (){
+                $(this).html(cnt);
+                cnt++;
+            });
+        }
+
+        // 캠페인 참여(accept) 값이 승인(accept)되었으면 자동으로 체크되는 function
+        function checked(){
+            $(".chk").each(function (){
+                var accept=$(this).attr("accept");
+                if(accept=="accept"){
+                    $(this).prop("checked", true);
+                }
+            });
+
+            var chkNum=$(".chk").length;
+            var checkedNum=$(".chk:checked").length;
+
+            if(chkNum==checkedNum){
+                $("#all_chk").prop("checked", true);
+            }else{
+                $("#all_chk").prop("checked", false);
+            }
+        }
+
+        // 캠페인 진행 상태 변경 function
+        function update_campaign_status(campaign_seq, status){
+            $.ajax({
+                type:"put",
+                url:"/admin/api/campaign/update",
+                data:{
+                    "campaign_seq":campaign_seq,
+                    "status":status
+                },
+                async:false,
+                success:function(){
+                }
+            });
+        };
+
+        /*쪽지 모달창*/
+        $('#send_Msg').on('click',function(){
+            if($(".chk:checked").length==0){
+                alert("쪽지를 발송 할 인원을 선택해주세요");
+                return;
+            }
+            $('.modal').css('display','block');
+        });
+        $('.closeBtn, .bg-cover').on('click',function (){
+            $('.modal').css('display','none');
+        });
+    </script>
+
+    <script>
+        let editor;
+        const editorCnt = document.querySelectorAll( '#content' ).length;
+        if( editorCnt == 1 ) {
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    toolbar: {
+                        items: [
+                            'heading',
+                            '|',
+                            'bold',
+                            'italic',
+                            'blockQuote',
+                            '|',
+                            'alignment',
+                            'fontFamily',
+                            'fontSize',
+                            'fontColor',
+                            'fontBackgroundColor',
+                            'highlight',
+                            '|',
+                            'link',
+                            'undo',
+                            'redo',
+                            '|',
+                            'outdent',
+                            'numberedList',
+                            'bulletedList',
+                            'indent',
+                        ]
+                    },
+                    language: "ko",
+                    fontSize: {
+                        options: [16,18,'default',22,24,26,28,30,32,34,36,40,44,48,60,72]
+                    },
+                    link : {
+                        addTargetToExternalLinks: true,
+                        decorators: [
+                            {
+                                mode: 'auto',
+                                label: '새창 링크',
+                                attributes: {
+                                    target: '_blank',
+                                }
+                            }
+                        ]
+                    }
+                })
+                .then( newEditor => {
+                    editor = newEditor;
+                })
+                .catch( error => {
+                    console.log( error );
+                });
+        }
+    </script>
+
+</th:block>
+</body>
+</html>

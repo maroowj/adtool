@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <h1 class="d-none">예약 캠페인 (/admin/reservation_campaign.html)</h1>
+        <div id="country">
+            <div class="d-none">COUNTRY</div>
+            <ul class="campaign-country-list">
+                <li class="on"><a class="country" country=""><span><img src="/displayFile?fullName=/img/country_all.png" alt="all"></span>All</a></li>
+                <li><a class="country" country="Singapore"><span><img src="/displayFile?fullName=/img/country_sg.png" alt="Singapore"></span>Singapore</a></li>
+                <li><a class="country" country="Malaysia"><span><img src="/displayFile?fullName=/img/country_my.png" alt="Malaysia"></span>Malaysia</a></li>
+                <li><a class="country" country="Philippines"><span><img src="/displayFile?fullName=/img/country_ph.png" alt="Philippines"></span>Philippines</a></li>
+            </ul>
+        </div>
+
+        <div id="brandListDiv" class="admin-join-brandList"></div>
+        <script id="brandListScript" type="/text/x=handlebars-template">
+            {{#each list}}
+            <div class="brandListDiv">
+                <div class="contentsDiv" style="border-radius: 20px; background-image:url('/displayFile?fullName=/campaign/{{thumbnail}}')">
+                    <div class="before">
+                        <div class="list"><span class="d-none">bvo.brand_seq: </span><span class="d-none">{{bvo.brand_seq}}</span></div>
+                        <div class="list"><span class="d-none">bvo.brand_name: </span><span>{{bvo.brand_name}}</span></div>
+                        <div class="admin-campaign-count">
+                            <div class="opt_title bold" style="width:100%;height:100%;" seq={{bvo.brand_seq}}>캠페인 리스트 <span><i class="fa-solid fa-chevron-down" style="margin-left:5px; font-size:13px;"></i></span></div>
+                            <div class='opt_contents' seq={{bvo.brand_seq}} style="display: none; cursor: default;">
+                                {{#rl}}
+                                <div class="opt_handlebars" style="cursor: pointer;" seq="{{rvo.re_campaign_seq}}" sel="0" onclick="location.href='/admin/reservation_campaign/{{rvo.re_campaign_seq}}'">
+                                    <!--
+                                    {{rvo.campaign_title}} | {{str rvo.publish_status}} | {{rvo.reservation_date}} | {{rvo.publish_date}}
+                                    -->
+                                    <span>{{rvo.campaign_title}}</span>
+                                    <span>{{str rvo.publish_status}}</span><br>
+                                    <!--<span>{{rvo.reservation_date}}</span>-->
+                                    <span>{{rvo.publish_date}}</span>
+                                </div>
+                                {{/rl}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </script>
+
+        <script th:inline="javascript">
+            Handlebars.registerHelper("str", function(publish_status){
+                if(publish_status==0) {
+                    return "미발행";
+                }else {
+                    return "발행 완료";
+                }
+            });
+
+        </script>
+        <script th:inline="javascript">
+            var campaign_country="";
+            var searchType=[[${searchType}]];
+            var keyword=[[${keyword}]];
+            getList();
+
+            var campaign_seq="";
+
+            $("#brandListDiv").on("click", ".opt_handlebars", function(){
+                $(".link_campaign").each(function(){
+                   $(this).attr("seq", "");
+                });
+                campaign_seq = $(this).attr("seq");
+                $(this).attr("sel", 1);
+                $(".opt_handlebars").each(function (){
+                    var sel = $(this).attr("sel");
+                    if(sel==1){
+                        //$(this).css("background", "yellow");
+                        $(this).css({
+                            'color': '#222',
+                            'font-weight': '500'
+                        });
+                        $(this).attr("sel", 0);
+                    }else {
+                        $(this).css("background", "");
+                    }
+                });
+
+                var parents = $(this).parent().parent().parent().parent().parent();
+                parents.find(".link_campaign").attr("seq", campaign_seq);
+
+            });
+
+            // 국가 클릭(선택) 시
+            $(".country").on("click", function(){
+                campaign_country = $(this).attr("country");
+                console.log(campaign_country);
+                getList();
+            });
+
+
+            function getList(){
+                console.log(searchType);
+                console.log(keyword);
+
+                $("#keyword").val(keyword);
+                $.ajax({
+                    type:"get",
+                    url:"/admin/api/reservation_campaign/list",
+                    data:{
+                        "campaign_country":campaign_country,
+                        "status":"recruit",
+                        "searchType":searchType,
+                        "keyword":keyword
+                    },
+                    success:function(data){
+                        console.log(data);
+                        var template=Handlebars.compile($("#brandListScript").html());
+                        $("#brandListDiv").html(template(data));
+
+                    }
+                });
+            }
+
+
+            $("#brandListDiv").on("click", ".opt_title", function (){
+                var ts = $(this).attr("seq");
+                campaign_seq="";
+                $(".opt_contents").each(function(){
+                    var cs=$(this).attr("seq");
+                    if(ts==cs){
+                        if($(this).css("display")=="none"){
+                            $(this).show();
+                        }else{
+                            $(this).hide();
+                        }
+                    }else{
+                        $(this).hide();
+                    }
+                });
+
+                $(".opt_handlebars").each(function (){
+                    var sel = $(this).attr("sel");
+                    if(sel==0){
+                        $(this).css("background", "");
+                    }
+                });
+
+                $(".link_campaign").each(function(){
+                   $(this).attr("seq", "");
+                });
+            });
+
+            /*country 선택시 해당 나라 class 추가*/
+            $('.campaign-country-list li').click(function (){
+                $('.campaign-country-list li').removeClass('on');
+                $(this).addClass('on');
+            });
+
+        </script>
+    </div>
+
+</th:block>
+</body>
+
+</html>

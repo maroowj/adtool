@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminMapper">
+    <!-- Brand -->
+    <select id="brand_list_by_country_for_admin" resultType="com.muzi.adtool.domain.CampaignVO">
+        <if test="searchType==''">
+            <if test="status=='end'">
+                select b.*, c.* from brand b left join campaign c on b.brand_seq=c.brand_seq
+                where campaign_country like concat ('%', #{campaign_country},'%') and status='end' and b.withdrawal=0 and c.withdrawal=0 group by c.brand_seq
+            </if>
+
+            <if test="status!='end'">
+                select b.*, c.* from brand b left join campaign c on b.brand_seq=c.brand_seq
+                where campaign_country like concat ('%', #{campaign_country},'%') and b.withdrawal=0 and c.withdrawal=0 and not status='end' group by c.brand_seq
+            </if>
+        </if>
+
+        <if test="searchType=='joining_campaign'">
+            <if test="status!='end'">
+                select b.*, c.* from brand b left join campaign c on b.brand_seq=c.brand_seq
+                where campaign_country like concat ('%', #{campaign_country},'%') and campaign_title like concat('%', #{keyword},'%') and b.withdrawal=0 and c.withdrawal=0 and not status='end' group by c.brand_seq
+            </if>
+        </if>
+
+        <if test="searchType=='ended_campaign'">
+            <if test="status=='end'">
+                select b.*, c.* from brand b left join campaign c on b.brand_seq=c.brand_seq
+                where campaign_country like concat ('%', #{campaign_country},'%') and status='end'
+                and campaign_title like concat('%', #{keyword},'%') and b.withdrawal=0 and c.withdrawal=0 group by c.brand_seq
+            </if>
+        </if>
+    </select>
+
+    <select id="firstCampaign_by_brand" resultType="com.muzi.adtool.domain.CampaignVO">
+        select * from campaign where brand_seq=#{brand_seq} limit 1
+    </select>
+
+    <!-- Campaign -->
+    <select id="campaign_list_by_brand_seq_and_country" resultType="com.muzi.adtool.domain.CampaignVO">
+        <if test="searchType==''">
+            <if test="status=='end'">
+                select * from campaign where brand_seq=#{brand_seq} and status='end' and campaign_country like concat('%', #{campaign_country}, '%')
+            </if>
+            <if test="status!='end'">
+                select * from campaign where brand_seq=#{brand_seq} and (status='progress' or status='recruit') and campaign_country like concat('%', #{campaign_country}, '%')
+            </if>
+        </if>
+
+        <if test="searchType=='joining_campaign'">
+            <if test="status!='end'">
+                select * from campaign where brand_seq=#{brand_seq} and (status='progress' or status='recruit')
+                and campaign_country like concat('%', #{campaign_country}, '%')
+                and campaign_title like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+
+        <if test="searchType=='ended_campaign'">
+            <if test="status=='end'">
+                select * from campaign where brand_seq=#{brand_seq} and status='end'
+                and campaign_country like concat('%', #{campaign_country}, '%')
+                and campaign_title like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+    </select>
+
+    <!-- Joined Campaign -->
+    <select id="joined_member_list_by_campaign_seq" resultType="com.muzi.adtool.domain.PaymentVO">
+        select @rownum:=@rownum+1 as rownum, a.* from (select @rownum:=0) as rownum,
+            (select jc.joined_campaign_seq, jc.joined_date, jc.accept, jc.review_check, m.member_id, mi.*,
+            jc.chat_check, jc.review_img1, jc.review_img2, jc.review_img3, jc.review_img4, jc.review_img5,
+            jc.payment_img1, jc.payment_img2, jc.payment_img3, jc.payment_img4, jc.payment_img5,
+            p.payment_seq, p.payment_platform, p.expense, p.exchange_rate, p.fee, p.compensation, p.total,
+            p.payment_status, p.payment_date
+                from member_information mi left join member m on mi.member_seq=m.member_seq
+                left join joined_campaign jc on mi.member_seq=jc.member_seq
+                left join payment p on jc.joined_campaign_seq=p.joined_campaign_seq
+            where campaign_seq=#{campaign_seq}
+            order by jc.joined_date) as a order by accept, joined_date
+    </select>
+
+    <update id="joined_member_info_update">
+        update member_information
+        set member_name=#{member_name}, phone=#{phone}, national_number=#{national_number}, country=#{country}, address1=#{address1}, address2=#{address2},
+            state=#{state}, city=#{city}, zipcode=#{zipcode}, preferences=#{preferences}, shopee_id=#{shopee_id},
+            lazada_id=#{lazada_id}, youtube_url=#{youtube_url}, instagram_url=#{instagram_url}, facebook_url=#{facebook_url},
+            tiktok_url=#{tiktok_url}, paypal_id=#{paypal_id}, payoneer_id=#{payoneer_id}, country2=#{country2}, country3=#{country3}
+        where member_info_seq=#{member_info_seq}
+    </update>
+
+    <update id="joined_member_chat_update">
+        update joined_campaign set chat_check=#{chat_check} where joined_campaign_seq=#{joined_campaign_seq}
+    </update>
+
+    <update id="joined_member_accept_update">
+        update joined_campaign set accept=#{accept} where joined_campaign_seq=#{joined_campaign_seq}
+    </update>
+
+    <update id="review_check_update">
+        update joined_campaign set review_check=#{review_check} where joined_campaign_seq=#{joined_campaign_seq}
+    </update>
+
+    <!-- Payment -->
+    <select id="payment_list_by_campaign_seq" resultType="com.muzi.adtool.domain.PaymentVO">
+        select jc.joined_campaign_seq, jc.joined_date, jc.accept, jc.review_check, m.member_id, mi.*,
+                jc.chat_check, jc.review_img1, jc.review_img2, jc.review_img3, jc.review_img4, jc.review_img5,
+                jc.payment_img1, jc.payment_img2, jc.payment_img3, jc.payment_img4, jc.payment_img5,
+                p.payment_seq, p.payment_platform, p.expense, p.exchange_rate, p.fee, p.compensation, p.total,
+                p.payment_status, p.payment_date
+         from member_information mi left join member m on mi.member_seq=m.member_seq
+                                    left join joined_campaign jc on mi.member_seq=jc.member_seq
+                                    left join payment p on jc.joined_campaign_seq=p.joined_campaign_seq
+         where campaign_seq=#{campaign_seq} and jc.accept='accept'
+         order by jc.joined_date
+    </select>
+
+    <insert id="payment_insert">
+        insert payment(payment_seq, joined_campaign_seq) values(#{payment_seq}, #{joined_campaign_seq})
+    </insert>
+
+    <delete id="payment_delete">
+        delete from payment where joined_campaign_seq=#{joined_campagin_seq}
+    </delete>
+
+    <select id="payment_read_by_joined_seq" resultType="com.muzi.adtool.domain.PaymentVO">
+        select jc.accept, p.* from joined_campaign jc left join payment p
+        on jc.joined_campaign_seq=p.joined_campaign_seq where jc.joined_campaign_seq=#{joined_campaign_seq}
+    </select>
+
+    <update id="payment_update">
+        update payment set expense=#{expense}, exchange_rate=#{exchange_rate}, fee=#{fee},
+                           total=#{total}, payment_status=#{payment_status}, compensation=#{compensation}, payment_date=now()
+        where payment_seq=#{payment_seq}
+    </update>
+
+    <!-- Member -->
+
+    <select id="member_all_list_except_for_admin" resultType="com.muzi.adtool.domain.Member_informationVO">
+        select m.member_id, mi.* from member m left join member_information mi on m.member_seq=mi.member_seq
+        where m.member_seq not in('mber_0000000001')
+        <if test="point_status=='all'">
+             <if test="searchType=='member'">
+                 and (member_id like concat('%', #{keyword}, '%') or member_name like concat('%', #{keyword}, '%'))
+             </if>
+             <if test="searchType=='member_id'">
+                 and member_id like concat('%', #{keyword}, '%')
+             </if>
+             <if test="searchType=='member_name'">
+                 and member_name like concat('%', #{keyword}, '%')
+             </if>
+        </if>
+
+        <if test="point_status=='notYet'">
+            <if test="searchType=='member'">
+                and (member_id like concat('%', #{keyword}, '%') or member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                and member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                and member_name like concat('%', #{keyword}, '%')
+            </if>
+            and mi.point_status=0 and mi.recommendation=1
+        </if>
+
+        <if test="point_status=='done'">
+            <if test="searchType=='member'">
+                and (member_id like concat('%', #{keyword}, '%') or member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                and member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                and member_name like concat('%', #{keyword}, '%')
+            </if>
+            and mi.point_status=1 and mi.recommendation=1
+        </if>
+        and withdrawal=0
+        order by mi.member_info_seq ${desc}
+        limit #{pageStart}, #{perPageNum}
+    </select>
+
+    <select id="member_all_count_except_for_admin" resultType="int">
+        select count(*) from member m left join member_information mi on m.member_seq=mi.member_seq
+        where m.member_seq not in('mber_0000000001')
+        <if test="point_status=='all'">
+            <if test="searchType=='member'">
+                and (member_id like concat('%', #{keyword}, '%') or member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                and member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                and member_name like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+
+        <if test="point_status=='notYet'">
+            <if test="searchType=='member'">
+                and (member_id like concat('%', #{keyword}, '%') or member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                and member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                and member_name like concat('%', #{keyword}, '%')
+            </if>
+            and mi.point_status=0 and mi.recommendation=1
+        </if>
+
+        <if test="point_status=='done'">
+            <if test="searchType=='member'">
+                and (member_id like concat('%', #{keyword}, '%') or member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                and member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                and member_name like concat('%', #{keyword}, '%')
+            </if>
+            and mi.point_status=1 and mi.recommendation=1
+        </if>
+
+        and withdrawal=0
+    </select>
+
+
+    <!-- Reservation_Campaign -->
+    <select id="brand_list_by_country_in_reservation_campaign" resultType="com.muzi.adtool.domain.BrandVO">
+        select b.* from brand b left join reservation_campaign rc on b.brand_seq=rc.brand_seq
+        where campaign_country like concat ('%', #{campaign_country},'%') and rc.publish_status=0 and rc.withdrawal=0 and b.withdrawal=0 group by rc.brand_seq
+    </select>
+
+    <select id="reservation_campaign_list_by_brand_seq_and_country" resultType="com.muzi.adtool.domain.Reservation_campaignVO">
+        select * from reservation_campaign where brand_seq=#{brand_seq} and status='recruit' and campaign_country like concat('%', #{campaign_country}, '%') and publish_status=0 and withdrawal=0
+    </select>
+
+    <insert id="reservation_campaign_insert">
+        insert into reservation_campaign(re_campaign_seq, brand_seq, campaign_title, campaign_country, type, need_number,
+                             multiple_number, campaign_description, status, original_price, discount_price,
+                             campaign_img1, campaign_img2, campaign_img3, campaign_img4, campaign_img5, campaign_img6,
+                             campaign_img7, campaign_img8, campaign_img9, campaign_img10, publish_date)
+        values(#{re_campaign_seq}, #{brand_seq}, #{campaign_title}, #{campaign_country}, #{type}, #{need_number},
+               #{multiple_number}, #{campaign_description}, #{status}, #{original_price}, #{discount_price},
+               #{campaign_img1}, #{campaign_img2}, #{campaign_img3}, #{campaign_img4}, #{campaign_img5}, #{campaign_img6},
+               #{campaign_img7}, #{campaign_img8}, #{campaign_img9}, #{campaign_img10}, #{publish_date})
+    </insert>
+
+    <select id="reservationCampaignRead" resultType="com.muzi.adtool.domain.Reservation_campaignVO">
+        select rc.*, b.brand_name from reservation_campaign rc left join brand b on rc.brand_seq=b.brand_seq where re_campaign_seq=#{re_campaign_seq}
+    </select>
+
+    <update id="reservationCampaignDeleteByBrandSeq">
+        update reservation_campaign set withdrawal=1 where brand_seq=#{brand_seq}
+    </update>
+
+    <update id="reservationCampaignDeleteBySeq">
+        update reservation_campaign set withdrawal=1 where re_campaign_seq=#{re_campaign_seq}
+    </update>
+
+
+    <!-- point -->
+    <update id="update_point_status">
+        update member_information set point_status=1 where member_seq=#{member_seq}
+    </update>
+
+    <insert id="insert_point_by_admin">
+        insert into point(point_seq, member_seq, campaign_seq, point, type, detail, status, request_date, response_date)
+        values(#{point_seq}, #{member_seq}, #{campaign_seq}, #{point}, #{type}, #{detail}, 1, #{request_date}, now())
+    </insert>
+
+    <select id="find_basic_by_seq" resultType="com.muzi.adtool.domain.BasicVO">
+        select * from basic where basic_seq='bsic_0000000001'
+    </select>
+
+    <select id="all_list_point" resultType="com.muzi.adtool.domain.PointVO">
+        select p.*, m.member_id, mi.member_name, mi.country from point p
+            left join member m on p.member_seq=m.member_seq
+            left join member_information mi on m.member_seq=mi.member_seq
+        <if test="status=='all'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+
+        <if test="status=='request'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+            and p.type='요청'
+        </if>
+
+        <if test="status=='save'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+            and p.type='적립'
+        </if>
+
+        <if test="status=='exchange'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+            and p.type='출금'
+        </if>
+
+        <if test="status=='withdrawal'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+            and p.type='회수'
+        </if>
+            order by point_seq desc
+            limit #{pageStart}, #{perPageNum}
+    </select>
+
+    <select id="totalCount_point" resultType="int">
+        select count(*) from point p
+        left join member m on p.member_seq=m.member_seq
+        left join member_information mi on m.member_seq=mi.member_seq
+        <if test="status=='all'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+
+        <if test="status=='request'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+            and p.type='요청'
+        </if>
+
+        <if test="status=='save'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+            and p.type='적립'
+        </if>
+
+        <if test="status=='exchange'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+            and p.type='출금'
+        </if>
+
+        <if test="status=='withdrawal'">
+            <if test="searchType=='all'">
+                where (m.member_id like concat('%', #{keyword}, '%') or mi.member_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="searchType=='member_id'">
+                where m.member_id like concat('%', #{keyword}, '%')
+            </if>
+            <if test="searchType=='member_name'">
+                where mi.member_name like concat('%', #{keyword}, '%')
+            </if>
+            and p.type='회수'
+        </if>
+    </select>
+
+    <update id="update_point_for_exchange">
+        update point set type=#{type}, response_date=now(), status=#{status}, update_date=now(), detail=#{detail}
+        where point_seq=#{point_seq}
+    </update>
+
+    <select id="find_point_by_mem_and_cam" resultType="com.muzi.adtool.domain.PointVO">
+        select * from point where member_seq=#{member_seq} and campaign_seq=#{campaign_seq} and type='적립'
+        order by point_seq desc limit 1
+    </select>
+
+    <!-- 220621 블랙 리스트 설정 및 해제 -->
+    <update id="banned_member">
+        update member_information set banned=#{banned}, banned_date=#{banned_date} where member_seq=#{member_seq};
+    </update>
+
+    <!-- 비밀번호 초기화 -->
+    <update id="password_default">
+        update member set member_password=#{member_password} where member_seq=#{member_seq}
+    </update>
+
+    <!-- 회원 삭제(탈퇴처리) -->
+    <update id="member_delete">
+        update member set withdrawal=1 where member_seq=#{member_seq}
+    </update>
+    <update id="update_outDate">
+        update member_information set out_date=now() where member_seq=#{member_seq}
+    </update>
+
+</mapper>

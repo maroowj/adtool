@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/myPageLayout}">
+<head>
+    <title>Ended Campaign List</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="userContent">
+    <div id="body">
+        <div id="page_title"><h1 class="page-title message-title">Ended Campaign <span class="d-none">(/user/mypage/ended.html)</span></h1></div>
+        <div id="joining_campaign_list_div"></div>
+        <script id="joining_campaign_list_script" type="/text/x=handlebars-template">
+            {{#each list}}
+            <div style="cursor: pointer" class="subject" seq="{{campaignVO.campaign_seq}}">
+                <span class="title">{{campaignVO.campaign_title}}({{joinedVO.accept}})</span>
+                <span>{{date joinedVO.joined_date}}</span>
+            </div>
+            <div class="contents" seq="{{campaignVO.campaign_seq}}" style="display: none;">
+                <div class="myP-joining-cont-wrap">
+                    <div class="myP-joining-cont-img"><img src="/displayFile?fullName=/campaign/{{campaignVO.campaign_img1}}" /></div>
+                    <div class="myP-jCont-text">
+                        <div class="contTitle">{{campaignVO.campaign_title}}</div>
+                        <div><span class="title">Country</span><span>{{campaignVO.campaign_country}}</span></div>
+                        <div><span class="title">Original Price</span><span>{{campaignVO.original_price}}</span></div>
+                        <div><span class="title">Type</span><span>{{campaignVO.type}}</span></div>
+                        <div>
+                            <span class="title">Description</span>
+                            <span>{{campaignVO.campaign_description}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="myP-jCont-moreBtn"><button onClick="location.href='/campaign/join?campaign_seq={{campaignVO.campaign_seq}}'">More</button></div>
+            </div>
+            {{/each}}
+        </script>
+        <div id="pagination"></div>
+    </div>
+    <script th:inline="javascript">
+        var member_seq = [[${session.member_seq}]];
+        var page=1;
+        console.log(member_seq);
+
+        getList();
+
+        // 글 제목 클릭 시
+        $("#joining_campaign_list_div").on("click", ".subject", function(){
+            var subSeq=$(this).attr("seq");
+            $(".contents").each(function(){
+                var conSeq=$(this).attr("seq");
+                if(subSeq==conSeq){
+                    if($(this).css("display")=="none"){
+                        $(this).show();
+                    }else{
+                        $(this).hide();
+                    }
+                }else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        $("#pagination").on("click", "a", function(e){
+            e.preventDefault();
+            page=$(this).attr("href");
+            getList();
+        });
+
+        function getList(){
+            $.ajax({
+                type:"get",
+                url:"/user/api/joined_campaign/list",
+                data:{
+                    "page":page,
+                    "status":"end",
+                    "member_seq":member_seq
+                },
+                success:function(data){
+                    console.log(data);
+                    var template=Handlebars.compile($("#joining_campaign_list_script").html());
+                    $("#joining_campaign_list_div").html(template(data));
+
+                    //페이징 목록 출력
+                    var str="";
+                    var prev=data.pm.startPage-1;
+                    var next=data.pm.endPage+1;
+
+                    if(data.pm.prev){
+                        str +="<a href='" + prev + "'>prev</a>";
+                    }else{
+                        str +="<a href='javascript:;'></a>";
+                    }
+                    for(var i=data.pm.startPage;i<=data.pm.endPage; i++){
+                        if(i==page){
+                            str += "<a class='active' href='" + i + "'>" + i + "</a>";
+                        }else{
+                            str += "<a href='" + i + "'>" + i + "</a>";
+                        }
+                    }
+                    if(data.pm.next) {
+                        str +="<a href='" + next + "'>next</a>";
+                    }else{
+                        str +="<a href='javascript:;'></a>";
+                    }
+                    $("#pagination").html(str);
+                }
+
+            });
+        }
+
+        Handlebars.registerHelper("date", function(joined_date){
+            var yyyy=joined_date.substring(0,4);
+            var MM=joined_date.substring(5,7);
+            var dd=joined_date.substring(8,10);
+
+            return yyyy+"."+MM+"."+dd;
+        });
+    </script>
+</th:block>
+</body>
+</html>

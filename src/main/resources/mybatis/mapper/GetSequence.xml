@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="GetSequence">
+	
+	<select id="getSeq" resultType="String">
+		call get_seq(#{seq_name});
+	</select>
+
+	<select id="getSeq2" resultType="String">
+		select seq_no from tb_sequence where seq_name=#{seq_name}
+	</select>
+
+	<update id="seq_update">
+		update tb_sequence set seq_no=seq_no+1 where seq_name=#{seq_name}
+	</update>
+
+	<insert id="seq_insert">
+		insert into tb_sequence(seq_name, seq_no) values(#{seq_name}, 1)
+	</insert>
+</mapper>

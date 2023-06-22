@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <h1 class="d-none">진행중 캠페인 (/admin/joining_campaign.html)</h1>
+        <div id="country">
+            <div class="d-none">COUNTRY</div>
+            <ul class="campaign-country-list">
+                <li class="on"><a class="country" country=""><span><img src="/displayFile?fullName=/img/country_all.png" alt="all"></span>All</a></li>
+                <li><a class="country" country="Singapore"><span><img src="/displayFile?fullName=/img/country_sg.png" alt="Singapore"></span>Singapore</a></li>
+                <li><a class="country" country="Malaysia"><span><img src="/displayFile?fullName=/img/country_my.png" alt="Malaysia"></span>Malaysia</a></li>
+                <li><a class="country" country="Philippines"><span><img src="/displayFile?fullName=/img/country_ph.png" alt="Philippines"></span>Philippines</a></li>
+            </ul>
+        </div>
+        <div id="brandListDiv" class="admin-join-brandList"></div>
+        <script id="brandListScript" type="/text/x=handlebars-template">
+            {{#each list}}
+            <div class="brandListDiv">
+                <div class="contentsDiv" style="border-radius: 20px; background-image:url('/displayFile?fullName=/campaign/{{thumbnail}}')">
+                    <div class="before" >
+                        <div class="list"><span class="d-none">bvo.brand_seq: </span><span class="d-none">{{bvo.brand_seq}}</span></div>
+                        <div class="list"><span class="d-none">bvo.brand_name: </span><span>{{bvo.brand_name}}</span></div>
+                        <div class="admin-campaign-count">
+                            <div class="opt_title" seq={{bvo.brand_seq}}><span class="str_all"></span><span class="str_ok"></span><span class="str_no"></span></div>
+                            <div class='opt_contents' seq={{bvo.brand_seq}} style="display: none;">
+                                {{#cl}}
+                                <!--<div class="opt_handlebars" style="cursor:pointer;" seq="{{cvo.campaign_seq}}" sel="0">{{cvo.campaign_title}}{{{chkFull cvo.apply_count cvo.multiple_number}}} | {{cvo.campaign_seq}} | {{cvo.apply_count}}/{{cvo.multiple_number}} | {{{chkProgress cvo.status}}}</div>-->
+                                <div class="opt_handlebars" seq="{{cvo.campaign_seq}}" sel="0">
+                                    <span ctxt="{{cvo.campaign_title}}" nowcnt="{{cvo.apply_count}}" allcnt="{{cvo.multiple_number}}">{{cvo.campaign_title}}{{{chkFull cvo.apply_count cvo.multiple_number}}}</span>
+                                    <span>{{cvo.apply_count}}/{{cvo.multiple_number}}</span>
+                                </div>
+                                {{/cl}}
+
+                            </div>
+                        </div>
+                        <div class="admin-campaign-selected"><input type="text" class="campaign_select" value="캠페인을 선택하세요." data-seq="" disabled></div>
+                    </div>
+                </div>
+                <div class="admin-campaignList-btn">
+                    <div class="link_campaign" aim="update">수정</div>
+                    <div class="link_campaign" aim="member">명단</div>
+                    <div class="link_campaign" aim="review">리뷰</div>
+                    <div class="link_campaign" aim="calculate">정산</div>
+                </div>
+            </div>
+            {{/each}}
+        </script>
+
+        <script th:inline="javascript">
+            Handlebars.registerHelper("chkFull", function(apply_count, multiple_number){
+                if(apply_count>=multiple_number) {
+                    return "<span class='okFull'>(충원완료)</span>";
+                }else {
+                    return "<span class='noFull'>(미충원)</span>";
+                }
+            });
+
+            Handlebars.registerHelper("chkProgress", function(status){
+                if(status=='recruit') {
+                    return "<span>모집중</span>";
+                }else if(status=='progress') {
+                    return "<span>진행중</span>";
+                }
+            });
+        </script>
+        <script th:inline="javascript">
+            var campaign_country="";
+            var searchType=[[${searchType}]];
+            var keyword=[[${keyword}]];
+            getList();
+
+            var campaign_seq="";
+
+            $("#brandListDiv").on("click", ".opt_handlebars", function(){
+
+                $(".link_campaign").each(function(){
+                   $(this).attr("seq", "");
+                });
+                campaign_seq = $(this).attr("seq");
+                $(this).attr("sel", 1);
+
+                $(".opt_handlebars").each(function (){
+                    var sel = $(this).attr("sel");
+                    if(sel==1){
+                        //$(this).css("background", "yellow");
+                        $(this).css({
+                            'color': '#222',
+                            'font-weight': '500'
+                        });
+                        $(this).attr("sel", 0);
+                    }else {
+                        $(this).css("background", "");
+                    }
+                });
+
+                var parents = $(this).parent().parent().parent().parent().parent();
+                parents.find(".link_campaign").attr("seq", campaign_seq);
+
+                //캠페인을 선택하세요 부분에 text 입력
+
+                let camp_parent = $(this).parent().parent().next();
+                let camp_text = $(this).find('span').attr('ctxt');
+                let nowcnt = $(this).find('span').attr('nowcnt');
+                let allcnt = $(this).find('span').attr('allcnt');
+
+                let add_text = "";
+
+                if(nowcnt >= allcnt) add_text = " (충원완료) " + nowcnt + "/" + allcnt;
+                else add_text = " (미충원) " + nowcnt + "/" + allcnt;
+
+                let all_text = camp_text + add_text;
+
+                camp_parent.find(".campaign_select").val(all_text);
+
+                $(".opt_contents").hide();
+
+            });
+
+            $("#brandListDiv").on("click", ".link_campaign", function(){
+                var seq = $(this).attr("seq");
+
+                if(seq==null || seq=="") {
+                    alert("캠페인을 선택해주세요!"); return;
+                }
+                var aim = $(this).attr("aim");
+                if(aim=="update"){
+                    location.href="/admin/campaign_update?campaign_seq="+seq;
+                }else if(aim=="member"){
+                    location.href="/admin/member_in_campaign?campaign_seq="+seq;
+                }else if(aim=="review"){
+                    location.href="/admin/campaign_review?campaign_seq="+seq;
+                }else if(aim=="calculate"){
+                    location.href="/admin/campaign_calculate?campaign_seq="+seq;
+                }
+            });
+
+
+            // 국가 클릭(선택) 시
+            $(".country").on("click", function(){
+                campaign_country = $(this).attr("country");
+                // console.log(campaign_country);
+                getList();
+            });
+
+
+            function getList(){
+                //console.log(searchType);
+                //console.log(keyword);
+
+                $("#keyword").val(keyword);
+                $.ajax({
+                    type:"get",
+                    url:"/admin/api/index/list",
+                    data:{
+                        "campaign_country":campaign_country,
+                        "status":"recruit",
+                        "searchType":searchType,
+                        "keyword":keyword
+                    },
+                    success:function(data){
+                        console.log(data);
+                        var template=Handlebars.compile($("#brandListScript").html());
+                        $("#brandListDiv").html(template(data));
+
+                        $("#brandListDiv .str_all").each(function(){
+                            var pp = $(this).parent().parent();
+                            var cnt = pp.find(".opt_handlebars").length;
+                            $(this).html("전체("+cnt+")");
+                        });
+                        $("#brandListDiv .str_ok").each(function(){
+                            var pp = $(this).parent().parent();
+                            var cnt = pp.find(".okFull").length;
+                            $(this).html("충원완료("+cnt+")");
+                        });
+                        $("#brandListDiv .str_no").each(function(){
+                            var pp = $(this).parent().parent();
+                            var cnt = pp.find(".noFull").length;
+                            $(this).html("미충원("+cnt+")");
+                        });
+
+
+                    }
+                });
+            }
+
+
+            $("#brandListDiv").on("click", ".opt_title", function (){
+                var ts = $(this).attr("seq");
+                campaign_seq="";
+                $(".opt_contents").each(function(){
+                    var cs=$(this).attr("seq");
+                    if(ts==cs){
+                        if($(this).css("display")=="none"){
+                            $(this).show();
+                        }else{
+                            $(this).hide();
+                        }
+                    }else{
+                        $(this).hide();
+                    }
+                });
+
+                $(".opt_handlebars").each(function (){
+                    var sel = $(this).attr("sel");
+                    if(sel==0){
+                        $(this).css("background", "");
+                    }
+                });
+
+                $(".link_campaign").each(function(){
+                   $(this).attr("seq", "");
+                });
+            });
+
+            /*country 선택시 해당 나라 class 추가*/
+            $('.campaign-country-list li').click(function (){
+                $('.campaign-country-list li').removeClass('on');
+                $(this).addClass('on');
+            });
+
+        </script>
+    </div>
+
+</th:block>
+</body>
+
+</html>

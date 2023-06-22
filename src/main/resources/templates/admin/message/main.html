@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <h2 class="page-title message-title">쪽지함 <span class="d-none">(/admin/message/main.html)</span></h2>
+        <div class="admin-message-search-wrap">
+            <div class="admin-message-search">
+                <div class="select-box">
+                    <select id="msgSearchType">
+                        <option value="title">제목</option>
+                        <option value="receiver">받는 사람</option>
+                    </select>
+                </div>
+                <input id="msgKeyword" type="text"/>
+                <button id="msgBtnSearch">찾기</button>
+            </div>
+            <div id="function_div" >
+                <div class="notice-writeBtn">
+                    <button id="btn_send" class="cursorPoint">보내기</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div id="message_list_div" class="admin-message-table-wrap"></div>
+            <script id="message_list_script" type="/text/x=handlebars-template">
+                <div class="message-table-title">
+                    <div>제목</div>
+                    <div>받는 사람</div>
+                    <div>보낸 날짜</div>
+                </div>
+                {{#each list}}
+                <div class="cursorPoint message-table-cont" onclick="location.href='/admin/message_box/read?mno={{message_seq}}'">
+                    <div class="subject" seq="{{message_seq}}" readChk="{{read_check}}">{{title}}</div>
+                    <div class="subject">{{member_name}}</div>
+                    <div class="subject">{{date message_date}}</div>
+                </div>
+                {{/each}}
+            </script>
+            <div id="pagination"></div>
+        </div>
+    </div>
+
+    <div id="mList" class="modal">
+        <div class="modal-wrap" style="width:1000px;">
+            <div class="modal-title">
+                <h3 class="title">쪽지 발송</h3>
+                <span class="closeBtn"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <div class="modal-inner">
+                <div class="msg-send-wrap">
+                    <div id="member_search_div" class="member_search_div">
+                        <div class="select-box">
+                            <select id="memSearchType">
+                                <option value="member_id">이메일</option>
+                                <option value="member_name">이름</option>
+                            </select>
+                        </div>
+                        <input id="memKeyword" type="text"/>
+                        <button id="memBtnSearch">찾기</button>
+                    </div>
+                    <div class="modal-send-table">
+                        <table id="member_list_table" class="member_list_table">
+                            <colgroup>
+                                <col style="width:5%">
+                                <col style="width:6.5%">
+                                <col style="width:21%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:18.5%">
+                                <col style="width:16%">
+                            </colgroup>
+                            <thead>
+                            <tr id="order">
+                                <td><input type="checkbox" id="all_chk"/></td>
+                                <td order="rownum">순번</td>
+                                <td order="member_id">이메일 주소(아이디)</td>
+                                <td order="member_name">이름</td>
+                                <td order="country">국가</td>
+                                <td order="phone" colspan="2">연락처</td>
+                                <td order="address1">Address 1</td>
+                                <td order="address2">Address 2</td>
+                                <td order="state">State</td>
+                                <td order="city">City</td>
+                                <td order="zipcode">Zipcode</td>
+                                <td order="shopee_id">Shopee ID</td>
+                                <td order="lazada_id">Lazada_ID</td>
+                                <td order="instagram_url">Instagram</td>
+                                <td order="youtube_url">Youtube</td>
+                                <td order="facebook_url">Facebook</td>
+                                <td order="tiktok_url">Tiktok</td>
+                                <td order="paypal_id">Paypal_ID</td>
+                                <td order="payoneer_id">Payoneer_ID</td>
+                                <td order="preferences">Preferences</td>
+                                <td order="join_date">가입일</td>
+                            </tr>
+                            </thead>
+                            <tbody class="t-center" id="member_list_tbody"></tbody>
+                            <script id="member_list_tbody_script" type="text/x-handlebars-template">
+                                {{#each .}}
+                                <tr class="row" mSeq="{{member_seq}}"  miSeq="{{member_info_seq}}">
+                                    <td><input type="checkbox" class="chk"/></td>
+                                    <td class="rownum"></td>
+                                    <td>{{member_id}}</td>
+                                    <td><input type="text" class="infoText member_name" disabledChk="0" value="{{member_name}}" disabled></td>
+                                    <td>
+                                        <select class="infoText country" disabledChk="0" disabled>
+                                            <option selected hidden value="{{country}}">{{country}}</option>
+                                            <option value="Malaysia">Malaysia</option>
+                                            <option value="Philippines">Philippines</option>
+                                            <option value="Singapore">Singapore</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="infoText nation" disabled>
+                                            <option hidden>+nation</option>
+                                            {{{nation national_number}}}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="infoText phone" disabledChk="0" value="{{phone}}" disabled>
+                                    </td>
+                                    <td><input type="text" class="infoText address1" disabledChk="0" value="{{address1}}" disabled></td>
+                                    <td><input type="text" class="infoText address2" disabledChk="0" value="{{address2}}" disabled></td>
+                                    <td><input type="text" class="infoText state" disabledChk="0" value="{{state}}" disabled></td>
+                                    <td><input type="text" class="infoText city" disabledChk="0" value="{{city}}" disabled></td>
+                                    <td><input type="text" class="infoText zipcode" disabledChk="0" value="{{zipcode}}" disabled></td>
+                                    <td><input type="text" class="infoText shopee_id" disabledChk="0" value="{{shopee_id}}" disabled></td>
+                                    <td><input type="text" class="infoText lazada_id" disabledChk="0" value="{{lazada_id}}" disabled></td>
+                                    <td><input type="text" class="infoText instagram_url" disabledChk="0" value="{{instagram_url}}" disabled></td>
+                                    <td><input type="text" class="infoText youtube_url" disabledChk="0" value="{{youtube_url}}" disabled></td>
+                                    <td><input type="text" class="infoText facebook_url" disabledChk="0" value="{{facebook_url}}" disabled></td>
+                                    <td><input type="text" class="infoText tiktok_url" disabledChk="0" value="{{tiktok_id}}" disabled></td>
+                                    <td><input type="text" class="infoText paypal_id" disabledChk="0" value="{{paypal_id}}" disabled></td>
+                                    <td><input type="text" class="infoText payoneer_id" disabledChk="0" value="{{payoneer_id}}" disabled></td>
+                                    <td>
+                                        <select class="infoText preferences" disabledChk="0" disabled>
+                                            <option selected hidden value="{{preferences}}">{{preferences}}</option>
+                                            <option value="Beauty">Beauty</option>
+                                            <option value="Food">Food</option>
+                                            <option value="Pet">Pet</option>
+                                            <option value="Baby">Baby</option>
+                                            <option value="Fashion">Fashion</option>
+                                            <option value=">Daily_supplies">Daily supplies</option>
+                                        </select>
+                                    </td>
+                                    <td>{{date join_date}}</td>
+                                </tr>
+                                {{/each}}
+                            </script>
+                        </table>
+                    </div>
+                </div>
+                <div class="msg-wrap">
+                    <div id="msg_body" class="joined-MemList-modal-text">
+                        <div id="title_div">
+                            <input type="text" id="title" placeholder="제목을 입력하세요">
+                        </div>
+                        <div id="content_div">
+                            <textarea id="content" rows="6" cols="22" placeholder="내용을 입력하세요"></textarea>
+                        </div>
+                        <div class="modal-button"><button id="send_Msg" class="black-btn">발송</button></div>
+                    </div>
+                </div>
+            </div><!--modal-inner-->
+        </div>
+        <div class="bg-cover"></div>
+    </div>
+<script th:inline="javascript">
+    let memSearchType="";
+    let memKeyword="";
+
+
+    getMemberList();
+
+
+    $("#memKeyword").on("keydown", function(e){
+        if(e.keyCode==13){
+            $("#memBtnSearch").click();
+        }
+    });
+    $("#memBtnSearch").on("click", function (){
+        getMemberList();
+    });
+
+    // 체크박스 기능
+    $("#all_chk").on("click", function(){
+        var chkNum=$(".chk").length;
+        var checkedNum=$(".chk:checked").length;
+
+        if(chkNum!=checkedNum){
+            $(".chk").each(function(){
+                $(this).prop("checked", true);
+            });
+        }else{
+            $(".chk").each(function(){
+                $(this).prop("checked", false);
+            });
+        }
+    });
+
+    $("#member_list_tbody").on("click", ".chk", function(){
+        var chkNum=$(".chk").length;
+        var checkedNum=$(".chk:checked").length;
+
+        if(chkNum==checkedNum){
+            $("#all_chk").prop("checked", true);
+        }else{
+            $("#all_chk").prop("checked", false);
+        }
+    });
+
+    function getMemberList(){
+        memSearchType=$("#memSearchType").val();
+        memKeyword=$("#memKeyword").val();
+        $.ajax({
+            type:"get",
+            url:"/admin/api/member/list",
+            data:{
+                "searchType":memSearchType,
+                "keyword":memKeyword,
+                "point_status":"all"
+            },
+            success:function(data){
+               console.log(data);
+                var template=Handlebars.compile($("#member_list_tbody_script").html());
+                $("#member_list_tbody").html(template(data.list));
+                rowNum();
+            },
+            error:function (){
+               alert("ajax error");
+            }
+        });
+    }
+
+    // 행에 순번 매기는 function
+    function rowNum(){
+        var cnt= 1;
+        $(".rownum").each(function (){
+            $(this).html(cnt);
+            cnt++;
+        });
+    }
+
+    /*
+     Handlebars.registerHelper("date", function(join_date){
+         var yyyy=join_date.substring(0,4);
+         var MM=join_date.substring(5,7);
+         var dd=join_date.substring(8,10);
+
+         return yyyy+"-"+MM+"-"+dd;
+     });
+      */
+
+    Handlebars.registerHelper("date", function(join_date){
+        if(join_date!=null) {
+            return join_date.substring(0, 10);
+        }else {
+            return "-";
+        }
+    });
+
+
+    Handlebars.registerHelper("nation", function(national_phone){
+        if(national_phone!=null){
+            var name = [ "Singapore", "Malaysia", "Philippines"];
+            var num = ["(+65)", "(+60)", "(+63)"];
+            var str=""
+            for (i=0; i<name.length; i++) {
+                if(national_phone == num[i]) {
+                    str+="<option class='nationOpt' value='" + num[i] + "' selected>" + name[i] + " " + num[i] + "</option>";
+                }else{
+                    str+="<option class='nationOpt' value='" + num[i] + "'>" + name[i] + " " + num[i] + "</option>";
+                }
+            }
+        }else{
+            var name = [ "Singapore", "Malaysia", "Philippines"];
+            var num = ["(+65)", "(+60)", "(+63)"];
+            var str=""
+            for (i=0; i<name.length; i++) {
+                str+="<option class='nationOpt' value='" + num[i] + "'>" + name[i] + " " + num[i] + "</option>";
+            }
+        }
+        return str;
+    });
+
+    Handlebars.registerHelper("noNation", function(phone){
+        let noNatNum;
+        if(phone!=null){
+            noNatNum=phone.substr(5,20);
+        }
+        return noNatNum;
+    });
+
+
+
+    // 쪽지발송 버튼 클릭 시
+    $("#send_Msg").on("click", function (){
+        if($(".chk:checked").length==0){
+            alert("쪽지를 발송 할 인원을 선택해주세요!");
+            return;
+        }
+
+        var title=$("#title").val();
+        var content=editor.getData();
+
+        if(title==""){
+            alert("제목을 입력하세요");
+            return;
+        }else if(content==""){
+            alert("내용을 입력하세요");
+            return;
+        }
+
+        if(!confirm("쪽지를 발송하시겠습니까?")) return;
+
+        $(".chk:checked").each(function(){
+            var pp=$(this).parent().parent();
+            var receiver=pp.attr("mSeq");
+
+            // 쪽지 인서트 ajax
+            $.ajax({
+                type:"post",
+                url:"/admin/api/message/insert",
+                async:false,
+                data:{
+                    "title":title,
+                    "content":content,
+                    "receiver":receiver,
+                },
+                success:function (data){
+                }
+            });
+        });
+        location.reload();
+    });
+
+</script>
+<script th:inline="javascript">
+    /*********************** 쪽지 Script *************************/
+    let msgSearchType= "";
+    let msgKeyword="";
+    let msgPage=1;
+
+    $("#msgKeyword").on("keydown", function(e){
+       if(e.keyCode==13){
+           $("#msgBtnSearch").click();
+       }
+    });
+    $("#msgBtnSearch").on("click", function (){
+       getMessageList();
+    });
+
+    $("#mList").hide();
+
+    // '보내기' 버튼 클릭 시
+    $("#btn_send").on("click", function(e){
+       e.preventDefault();
+       $("#mList").show();
+    });
+
+    getMessageList();
+
+    $("#pagination").on("click", "a", function(e){
+        e.preventDefault();
+        msgPage=$(this).attr("href");
+        getMessageList();
+    });
+
+    function getMessageList(){
+        msgSearchType=$("#msgSearchType").val();
+        msgKeyword=$("#msgKeyword").val();
+        $.ajax({
+            type:"get",
+            url:"/admin/api/message/list",
+            data:{
+                "page":msgPage,
+                "keyword":msgKeyword,
+                "searchType":msgSearchType
+            },
+            success:function(data){
+                var template=Handlebars.compile($("#message_list_script").html());
+                $("#message_list_div").html(template(data));
+
+                //페이징 목록 출력
+                var str="";
+                var prev=data.pm.startPage-1;
+                var next=data.pm.endPage+1;
+
+                if(data.pm.prev){
+                    str +="<a href='" + prev + "'>prev</a>";
+                }else{
+                    str +="<a href='javascript:;'></a>";
+                }
+                for(var i=data.pm.startPage;i<=data.pm.endPage; i++){
+                    if(i==msgPage){
+                        str += "<a class='active' href='" + i + "'>" + i + "</a>";
+                    }else{
+                        str += "<a href='" + i + "'>" + i + "</a>";
+                    }
+                }
+                if(data.pm.next) {
+                    str +="<a href='" + next + "'>next</a>";
+                }else{
+                    str +="<a href='javascript:;'></a>";
+                }
+                $("#pagination").html(str);
+            }
+
+        });
+    };
+
+    /*쪽지 모달창*/
+    $('#btn_send').on('click',function(){
+        $('.modal').css('display','block');
+    });
+    $('.closeBtn, .bg-cover').on('click',function (){
+        $('.modal').css('display','none');
+    });
+</script>
+    <script>
+        let editor;
+        const editorCnt = document.querySelectorAll( '#content' ).length;
+        if( editorCnt == 1 ) {
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    toolbar: {
+                        items: [
+                            'heading',
+                            '|',
+                            'bold',
+                            'italic',
+                            'blockQuote',
+                            '|',
+                            'alignment',
+                            'fontFamily',
+                            'fontSize',
+                            'fontColor',
+                            'fontBackgroundColor',
+                            'highlight',
+                            '|',
+                            'link',
+                            'undo',
+                            'redo',
+                            '|',
+                            'outdent',
+                            'numberedList',
+                            'bulletedList',
+                            'indent',
+                        ]
+                    },
+                    language: "ko",
+                    image: {
+                        resizeUnit: "px",
+                        toolbar: [
+                            "imageStyle:alignLeft",
+                            "imageStyle:alignCenter",
+                            "imageStyle:alignRight",
+                        ],
+                        styles: ["full", "alignLeft", "alignRight"],
+                        type: ["JPEG", "JPG", "GIF", "PNG"],
+                    },
+                    fontSize: {
+                        options: [16,18,'default',22,24,26,28,30,32,34,36,40,44,48,60,72]
+                    },
+                    link : {
+                        addTargetToExternalLinks: true,
+                        decorators: [
+                            {
+                                mode: 'auto',
+                                label: '새창 링크',
+                                attributes: {
+                                    target: '_blank',
+                                }
+                            }
+                        ]
+                    }
+                })
+                .then( newEditor => {
+                    editor = newEditor;
+                })
+                .catch( error => {
+                    console.log( error );
+                });
+        }
+    </script>
+</th:block>
+</html>

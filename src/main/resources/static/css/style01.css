@@ -1,0 +1,10 @@
+@charset "UTF-8";
+*{
+	outline-style:none;
+	font-family: 'Noto Sans KR';
+	text-decoration: none;
+}
+@font-face{
+	src:url('font/NotoSansKR-Regular.otf');
+	font-family: Noto Sans KR; 
+	}

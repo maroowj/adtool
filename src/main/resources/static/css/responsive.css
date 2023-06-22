@@ -1,0 +1,382 @@
+@media screen and (max-width: 1200px) {
+    /* ruleset for 961px - 1200px */
+
+    /*공통 css*/
+    .auto{width: 94%;}
+
+    /*header css*/
+    .userM-login-wrap div > span{font-size: 0.875em;}
+    .userM-header-wrap{height:110px;}
+    .userM-gnb-wrp div a{font-size:1.125em;}
+
+
+    /*main - main-title*/
+    .main-title{font-size:2.188em;}
+    .contentsDiv-text-wrap div.discount-price span{font-size:2.188em;}
+    .contentsDiv-text-wrap div.original-price span{font-size:1.125em; margin-top:5px;}
+    .contentsDiv .after .btnJoin{font-size: 1em;}
+
+    /*campaign - join*/
+    .campaign-join-wrap #contents #campaign_title{font-size:1.875em;}
+    .join-contents-wrap .campaign-info-title{font-size:1.5em; margin:30px 0 20px;}
+    #memberPictureDiv{padding:30px 0;}
+    #campaign_information .campaign-info-textBox > div .campaign-info-subTitle, #campaign_information .campaign-info-textBox > div span{font-size:1.125em;}
+
+    /*회원가입페이지 second form*/
+    .login-page-wrap2{width: 90%;}
+
+    /*mypage*/
+    .myP-left-menu{width:25%;}
+    .myP-right-menu {width:calc(75% - 80px);}
+    .myPage-wrap:after{left:calc(25% + 40px);}
+
+    /*mypage - information.html*/
+    .page-title{font-size:2.188em;}
+
+
+    /*notice -list*/
+    .notice-table-title div{font-size:1em;}
+
+
+}/* ruleset for 961px - 1200px */
+
+@media screen and (max-width: 960px) {
+    /* ruleset for 569px - 960px  모바일 버전*/
+
+    /*mobile header*/
+    .userM-pc-wrap{display:none;}
+    .userM-m-wrap{display:block; border-bottom:1px solid #dcdcdc;}
+    .userM-m-gnb-wrap{display:flex; justify-content: space-between; align-items: center; height:100px;}
+    .userM-m-gnb-wrap .userM-m-menuBtn-wrap{padding:20px 0;}
+    .userM-m-menuBtn-wrap .userM-m-menuBtn{display:block; font-size: 0; width: 35px; height:3px; background:#222; position:relative;}
+    .userM-m-menuBtn-wrap .userM-m-menuBtn:before{content:''; display:block; width: 35px; height:3px; background:#222; position:absolute; bottom:12px; left:0;}
+    .userM-m-menuBtn-wrap .userM-m-menuBtn:after{content:''; display:block; width: 35px; height:3px; background:#222; position:absolute; top:12px; left:0;}
+    .logoBox{width: 25%; display:flex; align-items: center;}
+    .logoBox img{width: 100%; height:auto;}
+    .userM-search-box #btn_search{position:inherit; transform: inherit; top:0;left:0; width: inherit;}
+    .userM-search-box #btn_search:before{font-size:26px;}
+
+    /*menuList*/
+    .userM-menuList-wrap {position:fixed; top:0; bottom:0;left:0; right:0; z-index: 999999; display:none;}
+    .bg-cover {position:fixed; top:0;bottom:0; left:0; right:0;background:rgba(0,0,0,0.7);z-index: 99999;}
+    .closeBtn{position: fixed; top:20px; right:3%; border:0; background:none; font-size:40px; color:#fff; z-index: 999999; cursor: pointer;}
+    .closeBtn:before{content:'';}
+
+    .userM-menuList-wrap .menuList-Box-inner{width:80vw; height:100%; background:#fff; position: fixed; top:0;left:0; z-index: 999999;}
+    .userM-menuList-wrap .login-Box{width: 100%; padding:50px 8%; position:relative; border-bottom:2px solid #7d7d7d;}
+    .userM-menuList-wrap .login-Box .prof-img{width: 100px; height: 100px; border-radius: 50%; overflow: hidden;}
+    .userM-menuList-wrap .login-Box .prof-img img{width: 100%; height:100%; object-fit: cover;}
+    .userM-menuList-wrap .login-Box p.eng{position:absolute; top:20px; right:8%; margin:0; color:#444;}
+    .userM-menuList-wrap .login-Box p.eng:before{content: '\f0ac'; display: inline-block; font-size: 1em; font-weight: 900; font-family: "Font Awesome 6 Pro";margin-right: 5px;color: #666;}
+    .userM-menuList-wrap .login-Box .meunList-login-btn{display:flex; justify-content: space-between; align-items: center; margin-top:30px;}
+    .userM-menuList-wrap .login-Box .meunList-login-btn button{width:48%; height:50px; border-radius: 25px; border:0;font-weight: 500;}
+    .userM-menuList-wrap .login-Box .meunList-login-btn button:first-child{border:1px solid #dcdcdc; color:#444; background: #fff;}
+    .userM-menuList-wrap .login-Box .meunList-login-btn button:last-child{ background:#444; color:#fff;}
+
+    .menuList-Box-inner .menuList-Box {padding:0; margin:0;}
+    .menuList-Box-inner .menuList-Box li a{display:block; width:100%; height:80px; line-height: 80px; padding:0 8%; font-size:1.5em;  border-bottom:1px solid #dcdcdc; font-weight: 500;}
+    .menuList-Box-inner .menuList-Box li.on a{color:#e70012;}
+
+    .userM-m-search-wrap{position:fixed; top:0; bottom:0; left:0; right:0; z-index: 99999; background:#fff; display:none;}
+    .userM-m-search-wrap .search-box-inner{display: flex; justify-content:center; align-items: center; height:100px; border-bottom:1px solid #dcdcdc;}
+    .userM-m-search-wrap .search-box-inner .userM-search-box{width:60%;}
+    .userM-m-search-wrap .search-box-inner .userM-search-box #btn_search{position:absolute; top:50%; left:inherit; right:0; transform:translateY(-50%); width:60px;}
+    .userM-m-search-wrap .search-box-inner .userM-search-box  #btn_search:before{font-size: 20px;}
+    .userM-m-search-wrap .search-box-inner input{border:1px solid #dcdcdc; background:none; width:100%; height:50px; line-height: 50px; padding-right:60px; border-radius: 25px;}
+    .userM-m-search-wrap .closeBtn{color:#222; position:inherit; font-size: 30px; margin-left:10px;}
+
+    /*main - campaigns*/
+    #campaignListDiv .contentsDiv{width: 49%;}
+    #campaignListDiv .contentsDiv:nth-child(3n){margin-right:2%;}
+    #campaignListDiv .contentsDiv:nth-child(2n){margin-right:0;}
+
+
+    /*campaign - join*/
+    .campaign-join-wrap{padding-top:0;}
+    .campaign-join-wrap.auto{width:100%;}
+    .campaign-join-wrap #image_div{width:100%; }
+    .campaign-join-wrap #image_div #img_view img{border-radius: 0; box-shadow: none;}
+    /*.campaign-join-wrap #image_div #img_list{display:none;}*/
+
+
+    .campaign-join-wrap .join-contents-wrap{width: 94%; margin:50px auto 0;}
+    .campaign-join-wrap #contents #campaign_title{font-weight:600;}
+    #memberPictureDiv{border-top:0; padding:20px 0;}
+    .memberPic-wrap .campaignList-btn-wrap button{font-size:1em;}
+    .join-contents-wrap .campaign-info-title{font-weight:600;}
+
+    #campaign_information .campaign-info-textBox > div{padding:5px 0;}
+    #campaign_information .campaign-info-textBox > div .campaign-info-subTitle, #campaign_information .campaign-info-textBox > div span{font-size:1em; margin-top:5px}
+    #campaign_information .campaign-info-textBox > div .campaign-info-subTitle{ width:100%; font-weight:600; font-size:1.125em;}
+    #campaign_information .campaign-info-textBox > div .campaign-info-subTitle:after{display:none;}
+    #campaign_information .campaign-info-textBox > div:last-child .campaign-info-subTitle{margin-bottom:0;}
+
+    .campaign-join-wrap #button_div{justify-content: center;}
+    .campaign-join-wrap #button_div #btn_join{font-size:1em; height:50px; line-height: 49px; width: 160px;}
+
+    /*로그인 페이지 login.html*/
+    .login-page-wrap{width:80%;}
+    .login-page-wrap .login-id-title > div{font-size:1.125em;}
+    .signIn-text-wrap > div span,.loginP-join-text span{font-size:0.875em;}
+    .input-chk{width: 16px; height: 16px;}
+    .loginP-loginBtn button{width:160px; height:50px; font-size:1em;}
+
+    /*회원가입페이지 second form*/
+    .login-page-wrap2{width: 90%;}
+    #second_Message{font-size:2.188em; margin-bottom:60px;}
+    #second_Message span{display:none;}
+    #preferences{flex-wrap: wrap;}
+    #preferences span{width: 33.33%; margin-bottom: 10%;}
+
+    #btnNext{font-size:1em; height:50px; line-height: 49px; width: 160px; margin-top:30px;}
+
+    /*회원가입페이지 third form*/
+    .login-page-wrap3{width: 90%;}
+    #third_Message{font-size:2.188em; margin-bottom:30px;}
+    #sns_title{font-size:2.188em; margin-bottom:30px;}
+    #channel{width: 100%; margin: 0 auto 60px;}
+    .channel{width:100%;}
+    .channel div.sns-channel-text > div{font-size:1.125em;}
+    #btnStart{font-size:1em; height:50px; line-height: 49px; width: 160px; margin-top:30px;}
+
+
+    /*my page 왼쪽메뉴*/
+    .pc-side-menu{display:none;}
+    .m-side-menu{display:block;}
+    .myPage-wrap:after{display:none;}
+    .myP-left-menu{width:calc(100% + 6%); margin:0 -3%; }
+    .m-side-menu-bg{background:#f5f5f5; padding:0 3%; border-bottom:1px solid #dcdcdc;}
+
+    .m-profile-img{display:flex; justify-content: flex-start; align-items: center; border-bottom:1px solid #dcdcdc;}
+    #picture_profile{margin-right:30px; border:0; padding:30px 0;}
+    #picture_profile #imgm{width:80px; height:80px; border-radius: 50%;}
+    #picture_profile .profile-find-file{width: 30px; height:30px; right:-10px;}
+    #picture_profile .profile-find-file:before{font-size:16px;}
+
+    #nickname_div{border-bottom:0; width:calc(100% - 110px);}
+    #nickname_div span{font-size:1.875em; color:#222; font-weight:600; width:100%; display: inline-block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; line-height: 1.1;}
+
+    .m-info-cont{display:flex; justify-content: space-between; align-items: center; margin:30px 0;}
+    .m-info-cont > div{width:33.33%; text-align: center; border-right:1px solid #dcdcdc; }
+    .m-info-cont > div:last-child{border-right:0;}
+    .m-info-cont #Membership_div{justify-content: center; text-align: center;}
+    .m-info-cont div #msgList{width:100%; justify-content: center; text-align: center;}
+    .m-info-cont > div .title{font-size:0.875em; font-weight:600; position:relative; display:block; width:100%; padding-top:45px;}
+
+    .m-info-cont > div span.title:before{display:block; position:absolute; top:0; left:50%; transform:translateX(-50%); font-weight: 900; color:#888; font-family: "Font Awesome 6 Pro"; font-size:30px;}
+    .m-info-cont > div:nth-child(1) .title:before{content:'\f007';}
+    .m-info-cont > div:nth-child(2) .title:before{content:'\f075';}
+    .m-info-cont > div:nth-child(3) .title:before{content:'\f5a2';}
+
+    .myP-menuList-joining{margin-top:0; border-top:0;}
+    .left-menu-list{padding:20px 3%; display:flex; justify-content: space-between; align-items: center;}
+    .left-menu-list i{color:#888;}
+
+    /*mapage - My Information*/
+    .myP-right-menu{width: 100%;}
+    .page-title{font-size:1.875em; padding:20px 0; margin-top:30px; border-bottom:1px solid #dcdcdc;}
+    .myInfo-page-title{display: none;}
+    .myInfo-cont-wrap{margin-top:40px;}
+    .myP-right-menu .login-page-wrap{width:100%;}
+
+    #btnSave{width:160px; height:50px; font-size:1em;}
+
+    /*myPage- message*/
+    #message_list_div div{flex-wrap: wrap; border-bottom:1px solid #dcdcdc;}
+    #message_list_div div span{width:100%;}
+    #message_list_div div span:first-child{text-overflow: inherit; white-space: inherit; max-width: 100%; line-height: 1.3;}
+    #message_list_div div span.msg-date{font-size: 0.875em; padding-top:5px;}
+
+    /*myPage- point*/
+    #point_list_div div{flex-wrap: wrap; border-bottom:1px solid #dcdcdc;}
+    #point_list_div div span{width:100%;}
+    #point_list_div div span:first-child{text-overflow: inherit; white-space: inherit; max-width: 100%; line-height: 1.3;}
+    #point_list_div div span.msg-date{font-size: 0.875em; padding-top:5px;}
+
+    #pagination{margin-top:80px;}
+
+    /*mypage - message 읽기 페이지*/
+    #btn_List{height:50px; line-height: 49px; font-size:1em;}
+
+    .msgRead-contTitle-wrap{position:relative; padding:30px 0;}
+    .msgRead-contTitle-wrap #title_div{flex-wrap: wrap;}
+    .msgRead-contTitle-wrap #title_div .title{width:100%;}
+    .msgRead-contTitle-wrap #title_div .title span{font-size:1.25em; line-height: 1.3;}
+    .msgRead-contTitle-wrap #title_div #message_date{position: absolute; bottom:30px; right:0; font-size:0.875em;}
+    .msgRead-contTitle-wrap #sender_div{ margin-top:10px;}
+    .msgRead-contTitle-wrap #sender_div span {font-size:0.875em;}
+    #message_read_div #content{padding:30px 0; font-size:1em;}
+
+
+    /*mypage - joining*/
+    .myP-jCont-text .contTitle{font-size:1.5em;}
+    .myP-jCont-moreBtn{justify-content: center; margin-top:30px;}
+    .myP-jCont-moreBtn button{width:160px; height:50px; font-size:1em;}
+    #joining_campaign_list_div .subject span{font-size: 0.875em;}
+
+
+    /*notice - list*/
+    #notice_search_div{margin:50px 0 30px;}
+    .search-inner{width:80%;}
+    #notice_search_div #notice_Keyword{height:50px; line-height: 50px;}
+
+    .notice-table-title div, .notice_row div{font-size:0.875em;}
+    .notice-table-title div:nth-child(1),.notice_row div:nth-child(1){width:8%;}
+    .notice-table-title div:nth-child(2),.notice_row div:nth-child(2){width:52%;}
+    .notice-table-title div:nth-child(3),.notice_row div:nth-child(3){width:20%;}
+    .notice-table-title div:nth-child(4),.notice_row div:nth-child(4){width:20%; border-right:0;}
+    .notice-table-title div:nth-child(5),.notice_row div:nth-child(5){display:none;}
+
+    /*notice - read*/
+    #message_read_div #title_div > span.notice-title{font-size:1.25em;}
+    #message_read_div #writer_div span{font-size:0.875em;}
+
+
+    /*swiper img*/
+    .campaign-join-wrap #image_div #img_list{width:94%; margin:20px auto;}
+    .swiper-wrapper{align-items: flex-start;}
+
+}/* ruleset for 569px - 960px */
+
+@media screen and (max-width: 568px) {
+    /* ruleset for 375px - 568px */
+    /*header*/
+    .userM-m-gnb-wrap{height:80px;}
+    .userM-m-menuBtn-wrap .userM-m-menuBtn{width: 30px;}
+    .userM-m-menuBtn-wrap .userM-m-menuBtn:before{width: 30px; bottom:10px;}
+    .userM-m-menuBtn-wrap .userM-m-menuBtn:after{width: 30px; top:10px;}
+    .logoBox{width: 32%;}
+    .userM-search-box #btn_search:before{font-size:22px;}
+
+    .userM-menuList-wrap .menuList-Box-inner{width: 85vw;}
+    .userM-menuList-wrap .login-Box{padding:50px 5% 30px;}
+    .userM-menuList-wrap .login-Box .prof-img{width: 80px; height:80px;}
+    .closeBtn{font-size:35px;}
+    .userM-menuList-wrap .login-Box .meunList-login-btn{margin-top:20px;}
+    .userM-menuList-wrap .login-Box .meunList-login-btn button{height:45px; font-size: 0.938em;}
+    .userM-menuList-wrap .login-Box p.eng{font-size: 0.938em;}
+
+    .menuList-Box-inner .menuList-Box li a{padding:0 5%; font-size:1.125em; height:65px; line-height: 65px;}
+
+    .userM-m-search-wrap .search-box-inner{height:80px;}
+    .userM-m-search-wrap .search-box-inner .userM-search-box{width:80%;}
+    .userM-m-search-wrap .search-box-inner input{height:45px; line-height: 45px; font-size:0.875em;}
+
+
+    /*main-campaigns*/
+    #country .main-title{display:none;}
+    .campaign-country-list{margin:0 0 30px;}
+    .campaign-country-list li a{font-size:0.875em; padding:0 0.8em;}
+    .campaign-country-list li a span{width: 50px; height: 50px; }
+    .campaign-country-list li a:hover span, .campaign-country-list li.on a span{border:2px solid #222;}
+    #campaignListDiv .contentsDiv{width: 100%; margin-right:0; margin-bottom:4%;}
+    #campaignListDiv .contentsDiv:nth-child(3n){margin-right:0;}
+    .contentsDiv-text-wrap div.discount-price span{font-size:2em;}
+    .contentsDiv-text-wrap div.original-price span{font-size: 1em;}
+
+    /*campaign - join*/
+    .campaign-join-wrap #contents #campaign_title{font-size:1.5em;}
+    .join-contents-wrap .campaign-info-title{font-size:1.250em; margin-bottom:15px;}
+    #campaign_information .campaign-info-textBox > div .campaign-info-subTitle, #campaign_information .campaign-info-textBox > div span{font-size:0.875em;}
+    #campaign_information .campaign-info-textBox > div .campaign-info-subTitle{font-size: 1em;}
+    .screenShot-btn{bottom:0; top:inherit; right:50%; transform: translateX(50%);}
+
+    .memberPic-wrap .campaignList-btn-wrap button{font-size:0.875em; height:40px; line-height: 39px;}
+    #screenShot_div > div{padding-bottom:60px;}
+    .screenShot-img span{height:80px;}
+    .screenShot-img{margin-top:5px;}
+
+    .campaign-join-wrap #button_div #btn_join{font-size:0.875em; height:40px; line-height: 39px; width: 120px;}
+
+    /*로그인 페이지 login.html*/
+    .login-page-wrap{width: 90%;}
+    .login-page-wrap .login-id-title{margin-bottom:10px;}
+    .login-page-wrap #div_pw.login-id-title{margin-bottom:10px;}
+    .login-page-wrap .login-id-title:first-child{margin-bottom: 20px;}
+    .login-page-wrap .login-id-title > input{height:50px; font-size:0.875em;}
+    .loginP-loginBtn{margin:30px 0;}
+    .loginP-loginBtn button{font-size: 0.875em; height:40px; line-height: 39px; width: 120px;}
+
+    /*회원가입페이지 second form*/
+    .login-page-wrap2{width: 100%;}
+    #second_Message{font-size:1.5em; margin-bottom:40px;}
+    #preferences span label{font-size:0.875em; padding-top:60px;}
+    #preferences span label:before{font-size:35px;}
+
+    #btnNext{font-size:0.875em; height:40px; line-height: 39px; width:120px;}
+
+
+    /*회원가입페이지 third form*/
+    .login-page-wrap3{width: 100%;}
+    #third_Message, #sns_title{font-size:1.5em; margin-bottom:20px;}
+    #channel span label{font-size:0.875em; padding-top:50px;}
+    #channel span label:before{font-size:32px;}
+    .channel{width: 100%;}
+    .channel div.sns-channel-text{margin-bottom:20px;}
+    .channel div.sns-channel-text > input{height:50px; font-size:0.875em;}
+
+    #btnStart{font-size:0.875em; height:40px; line-height: 39px; width:120px;}
+
+    /*mypage - 왼쪽메뉴*/
+    #picture_profile #imgm{width:60px; height:60px;}
+    #nickname_div{width:calc(100% - 90px);}
+    #nickname_div span{font-size: 1.5em;}
+    .m-info-cont > div .title{font-size:0.75em; padding-top:40px; }
+    .m-info-cont > div span.title:before{font-size:25px}
+    .left-menu-list span.title{font-size:1em;}
+
+    /*mypage - my information information.html*/
+    .myP-right-menu .login-page-wrap{margin:30px auto 0;}
+    .information-tab-wrap span{font-size:1.125em;  padding-bottom:15px;}
+    .login-page-wrap .login-id-title select{font-size:0.875em; height:50px;}
+    .login-page-wrap .login-id-title .select_box .icon{font-size: 14px;}
+    .login-page-wrap .login-id-title .national-number-wrap{flex-wrap: wrap;}
+
+    .select_box.national-number{width:100%;}
+    .login-page-wrap .login-id-title input.phone_number{width: 100%; height:50px;}
+    #btnSave{width: 120px;  height:40px; font-size:0.875em;}
+
+    /*myPage- message*/
+    .page-title{font-size:1.5em;}
+    #message_list_div div span{font-size:1em;}
+
+    /*myPage- point*/
+    .page-title{font-size:1.5em;}
+    #point_list_div div span{font-size:1em;}
+
+    #pagination{margin-top:60px;}
+    #pagination a{font-size:0.875em;}
+
+    /*myPage -message 읽기*/
+    #btn_List{font-size:0.875em; height:40px; line-height: 39px;}
+    .msgRead-contTitle-wrap #title_div .title span{font-size:1.125em;}
+    #message_read_div #content{font-size:0.875em}
+    .msgRead-contTitle-wrap #sender_div span{font-size:0.813em}
+    .msgRead-contTitle-wrap #title_div #message_date{font-size:0.813em}
+    #message_read_div #content{font-size:0.875em}
+
+    /*mypage - joining*/
+    #joining_campaign_list_div .subject .title{font-size:1em; max-width:calc(100% - 100px);}
+    #joining_campaign_list_div .contents{padding:30px 15px;}
+    .myP-joining-cont-wrap{flex-wrap: wrap;}
+    .myP-joining-cont-img{width:100%; margin-bottom:30px;}
+    .myP-jCont-text{width:100%;}
+    .myP-jCont-text .contTitle{font-size:1.250em; padding-bottom:10px;}
+
+    .myP-jCont-moreBtn button{font-size:0.875em; height:40px; line-height: 39px; width:120px;}
+
+
+    /*notice - list*/
+    .search-inner{width:90%;}
+    #notice_search_div #notice_Keyword{height:45px; line-height: 45px; font-size:0.875em;}
+    .notice-table-title div, .notice_row div {height:50px; line-height: 50px;}
+    .notice-table-title div:nth-child(1),.notice_row div:nth-child(1){display:none;}
+    .notice-table-title div:nth-child(2),.notice_row div:nth-child(2){width:80%;}
+    .notice-table-title div:nth-child(3),.notice_row div:nth-child(3){width:20%; border-right:0;}
+    .notice-table-title div:nth-child(4),.notice_row div:nth-child(4){display:none}
+
+    /*notice - read*/
+    #message_read_div #title_div > span.notice-title{font-size:1.125em;}
+    #message_read_div #writer_div span{font-size:0.813em;}
+
+}/* ruleset for 375px - 568px */

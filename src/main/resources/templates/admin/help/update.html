@@ -1,0 +1,444 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <div class="d-none">Help 수정 (/admin/help/update.html)</div>
+        <div class="admin-insert-wrap">
+            <div id="title_div" class="title-div">
+                <input type="text" id="title" placeholder="제목을 입력해주세요" style="width: 100%;">
+            </div>
+            <div id="content_div" class="content-div">
+                <textarea id="content" cols="70" rows="30" placeholder="내용을 입력해주세요"></textarea>
+            </div>
+            <div id="image_form" class="image-form">
+                <form name="frm" id="frm" enctype="multipart/form-data" method="post">
+                    <div class="thum-img">
+                        <span><img id="click_img1" class="click_img noImg" num="0" src="/displayFile?fullName=/img/blank_img.png"></span>
+                        <span><img id="click_img2" class="click_img noImg" num="1" src="/displayFile?fullName=/img/blank_img.png"></span>
+                        <span><img id="click_img3" class="click_img noImg" num="2" src="/displayFile?fullName=/img/blank_img.png"></span>
+                        <span><img id="click_img4" class="click_img noImg" num="3" src="/displayFile?fullName=/img/blank_img.png"></span>
+                        <span><img id="click_img5" class="click_img noImg" num="4" src="/displayFile?fullName=/img/blank_img.png"></span>
+                    </div>
+                    <div class="hidden_div d-none">
+                        <input type="file" class="file_img" num="0" name="image1" hidden>
+                        <input type="file" class="file_img" num="1" name="image2" hidden>
+                        <input type="file" class="file_img" num="2" name="image3" hidden>
+                        <input type="file" class="file_img" num="3" name="image4" hidden>
+                        <input type="file" class="file_img" num="4" name="image5" hidden>
+                    </div>
+                </form>
+                <button id="btn_add_img" class="btn_add_img">이미지 추가</button><input type="file" id="multiple_img" multiple hidden/>
+            </div>
+            <div class="notice-btn-List">
+                <button id="btn-delete" class="admin-line-button">삭제</button>
+                <div id="btn-update" class="cursorPoint admin-black-button">수정</div>
+            </div>
+        </div>
+        <!-- Image FileName Hidden Input -->
+        <div name="hidden_div" class="d-none">
+            <input type="text" id="img1" class="original_img hidden-input" num="0"/>
+            <input type="text" id="img2" class="original_img hidden-input" num="1"/>
+            <input type="text" id="img3" class="original_img hidden-input" num="2"/>
+            <input type="text" id="img4" class="original_img hidden-input" num="3"/>
+            <input type="text" id="img5" class="original_img hidden-input" num="4"/>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        let no=[[${param.no}]][0];
+        let arrImage=new Array();
+        var formData=new FormData();
+
+        getNotice();
+
+        // db에 저장된 이미지 불러와서 뿌려주기
+        $(document).ready(function(){
+
+            $(".click_img").each(function(){
+                var idx = $(this).attr("num");
+                var pSpan = $(this).parent();
+
+                for(i=0; i<$(".click_img").length; i++){
+                    if(arrImage[i]!=null && arrImage[i]!=""){
+                        if(idx==i){
+                            $(this).attr("src", "/displayFile?fullName=/help/"+arrImage[i]);
+                            $(this).attr("fileName", arrImage[i]);
+                            $(this).addClass("yesImg");
+                            $(this).removeClass("noImg");
+                            pSpan.append("<span class='del'><i class=\"fa-solid fa-xmark\"></i></span>");
+                        }
+                    }else{
+                        if(idx==i){
+                            $(this).attr("src", "/displayFile?fullName=/img/blank_img.png");
+                            $(this).addClass("noImg");
+                            $(this).removeClass("yesImg");
+                        }
+                    }
+                }
+            });
+
+            $("#img1").val($("#click_img1").attr("fileName"));
+            $("#img2").val($("#click_img2").attr("fileName"));
+            $("#img3").val($("#click_img3").attr("fileName"));
+            $("#img4").val($("#click_img4").attr("fileName"));
+            $("#img5").val($("#click_img5").attr("fileName"));
+
+        });
+
+
+
+
+        /**************************** 게시글 스크립트 ****************************/
+
+        // Help 삭제
+        $("#btn-delete").on("click", function(){
+           if(!confirm("게시글을 삭제하시겠습니까?")) return;
+
+           $.ajax({
+              type:"post",
+              url:"/admin/api/help/delete",
+              data:{
+                  "bbs_seq":no
+              },
+              success:function (data) {
+                  if(data==1) {
+                      alert("게시글이 삭제되었습니다.");
+                      location.href="/admin/help";
+                  }
+              },
+               error:function() {
+                  alert("게시글 삭제에 실패했습니다.");
+               }
+           });
+        });
+
+        // Help 수정
+        $("#btn-update").on("click", function(){
+            var writer=[[${session.member_seq}]];
+            var title=$("#title").val();
+            var content=editor.getData();
+
+            if(title=="" || title==null){
+                alert("제목을 입력해주세요");
+                return;
+            }else if(content=="" || content==null){
+                alert("내용을 입력해주세요");
+            }
+
+            if(!confirm("게시글을 수정하시겠습니까?")) return;
+
+            var file1 = $("#click_img1").attr("fileName");
+            var file2 = $("#click_img2").attr("fileName");
+            var file3 = $("#click_img3").attr("fileName");
+            var file4 = $("#click_img4").attr("fileName");
+            var file5 = $("#click_img5").attr("fileName");
+
+            if(file1==undefined || $("#img1").val()!=file1) {
+                //alert("1");
+                deleteImage("/help/"+$("#img1").val());
+                $("#img1").val("");
+            }
+            if(file2==undefined || $("#img2").val()!=file2) {
+                //alert("2");
+                deleteImage("/help/"+$("#img2").val());
+                $("#img2").val("");
+            }
+            if(file3==undefined || $("#img3").val()!=file3) {
+                // alert("3");
+                deleteImage("/help/"+$("#img3").val());
+                $("#img3").val("");
+            }
+            if(file4==undefined || $("#img4").val()!=file4) {
+                // alert("4");
+                deleteImage("/help/"+$("#img4").val());
+                $("#img4").val("");
+            }
+            if(file5==undefined || $("#img5").val()!=file5) {
+                //alert("5");
+                deleteImage("/help/"+$("#img5").val());
+                $("#img5").val("");
+            }
+
+            //return;
+            let limitCnt="";
+            $(".click_img").each(function(){
+                limitCnt=$(this).attr("num");
+            });
+            formData.append("dir", "help");
+            formData.append("limit", limitCnt);
+
+            uploadImage();
+
+            var image1 = $("#img1").val();
+            var image2 = $("#img2").val();
+            var image3 = $("#img3").val();
+            var image4 = $("#img4").val();
+            var image5 = $("#img5").val();
+            //return;
+            var objNotice={
+                "bbs_seq":no,
+                "writer":writer,
+                "title":title,
+                "content":content,
+                "image1":image1,
+                "image2":image2,
+                "image3":image3,
+                "image4":image4,
+                "image5":image5
+            };
+
+            $.ajax({
+                type:"put",
+                url:"/admin/api/help/update",
+                data:objNotice,
+                async:false,
+                success:function(data){
+                    if(data==1){
+                        alert("게시글이 수정되었습니다.");
+                        location.href="/admin/help/read?no="+no;
+                    }else{
+                        alert("처리중에 오류가 발생했습니다.");
+                    }
+                },
+                error:function (){
+                    alert("server error");
+                }
+            });
+        });
+
+        function getNotice(){
+            $.ajax({
+                type:"get",
+                url:"/common/api/help/read",
+                data:{"bbs_seq":no},
+                async:false,
+                success:function(data){
+                    console.log(data);
+                    var title=data.title;
+                    var content=data.content;
+                    var highlight=data.highlight;
+                    $("#title").val(title);
+                    $("#content").val(content);
+                    if(highlight==1){
+                        $("#highlight").prop("checked", true);
+                    }
+                    arrImage=new Array(data.image1, data.image2, data.image3, data.image4, data.image5);
+                },
+                error:function (){
+                    alert("ajax error!");
+                }
+            });
+        }
+
+        /**************************** 멀티플 이미지 업로드 테스트용 스크립트 ****************************/
+
+        $("#btn_add_img").on("click", function(e){
+            e.preventDefault();
+            $("#multiple_img").click();
+        });
+        var files;
+        $("#multiple_img").on("change", function(){
+            var noImgCnt=$(".noImg").length;
+
+            //이미지 첨부 개수 제한
+            var x = document.getElementById("multiple_img");
+            var txt = "";
+            if ('files' in x) {
+                if (x.files.length==0) {
+
+                }else if (x.files.length > noImgCnt) {
+                    alert("현재 이미지를 첨부할 수 있는 빈칸이 "+ noImgCnt + "개밖에 없습니다.");
+                    document.getElementById("multiple_img").value = "";
+                    return;
+                }else { //이미지가 첨부 되었을 때
+                    files=Array.from($("#multiple_img")[0].files); // Array.from 메소드 사용해서 배열화 시키기
+                    var html = "";
+                    var cnt = 0;
+                    $.each(files, function(index, file){
+                        $(".noImg").each(function(){
+                            var num = $(this).attr("num");
+                            var strImage = "image"+num;
+                            var pSpan = $(this).parent();
+                            pSpan.find(".del").remove(); // x아이콘의 중복을 방지 하기 위해 기존 x아이콘 제거
+                            pSpan.append("<span class='del'><i class=\"fa-solid fa-xmark\"></i></span>"); // x아이콘 추가
+                            $(this).attr("src", URL.createObjectURL(file));
+                            $(this).attr("fileName", file.name); // 미리보기 img태그안에 fileName이라는 attr 추가 (첨부한 파일명)
+                            $(this).removeClass("noImg");
+                            $(this).addClass("yesImg");
+                            formData.append(strImage, file)
+                            return false;
+                        });
+                    });
+                }
+            }
+
+        });
+
+        /**************************** 이미지 스크립트 ****************************/
+
+
+
+        // 미리보기 이미지 제거
+        $(frm).on("click", ".del", function(){
+            var pDiv = $(this).parent().parent();
+            var pSpan = $(this).parent();
+            var cNum = pSpan.find(".click_img").attr("num");
+            pSpan.find(".click_img").attr("src","/displayFile?fullName=/img/blank_img.png");
+            pSpan.find(".click_img").removeAttr("fileName");
+            pSpan.remove();
+
+            var newNum=0;
+            $(".click_img").each(function(){
+                newNum = Number($(this).attr("num"));
+            });
+            newNum = newNum+1;
+
+            var newSpan="";
+            newSpan+="<span><img class="+"'click_img noImg' num='"+newNum+"' src="+"'/displayFile?fullName=/img/blank_img.png' width="+"'50' height='50'/></span>";
+            pDiv.append(newSpan);
+
+
+            var strImg="image"+cNum;
+
+            // $(".file_img").each(function(){
+            //     var fNum = $(this).attr("num");
+            //     if(cNum==fNum){
+            //         strImg = "image"+cNum;
+            //     }
+            //     $(this).attr("src", "/displayFile?fullName=/icon/add.png");
+            // });
+
+
+            formData.delete(strImg);
+        });
+
+        $("#console").on("click", function(){
+
+            // key 확인하기
+            for (var key of formData.keys()) {
+                console.log(key);
+            }
+
+            // value 확인하기
+            for (var value of formData.values()) {
+                console.log(value);
+            }
+
+        });
+
+        //이미지 삭제
+        function deleteImage(fullName){
+            $.ajax({
+                type:"get",
+                url:"/deleteFile",
+                data:{"fullName":fullName},
+                async:false,
+                success:function(){}
+            });
+        }
+
+        // 이미지 업로드
+        function uploadImage(){
+            $.ajax({
+                type:"post",
+                url:"/uploadFile",
+                enctype:'multipart/form-data',
+                processData:false,
+                contentType:false,
+                async:false,
+                data:formData,
+                success:function(data){
+                    //console.log(data);
+                    var arrData=new Array(data.img1, data.img2, data.img3, data.img4, data.img5);
+                    var arrInput=new Array(); // 먼저 뿌릴 배열
+                    // var arrRemain=new Array(); // arrInput에 들어가지 못하고 남겨진 return data (arrInput이 뿌려진 후에 뿌려질 예정)
+                    // var arrOriginal=new Array();
+                    //console.log("arrData="+arrData);
+
+                    $(".original_img").each(function (){
+                        arrInput.push($(this).val());
+                        $(this).val("");
+                    })
+
+                    arrInput.forEach(function (arg){
+                        $(".original_img").each(function(){
+                            if($(this).val()==""){
+                                $(this).val(arg);
+                                return false;
+                            }
+                        });
+                    });
+
+                    arrData.forEach(function (arg){
+                        $(".original_img").each(function(){
+                            if($(this).val()==""){
+                                $(this).val(arg);
+                                return false;
+                            }
+                        });
+                    });
+
+                }
+            });
+        }
+
+    </script>
+    <script>
+        let editor;
+        const editorCnt = document.querySelectorAll( '#content' ).length;
+        if( editorCnt == 1 ) {
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    toolbar: {
+                        items: [
+                            'heading',
+                            '|',
+                            'bold',
+                            'italic',
+                            'blockQuote',
+                            '|',
+                            'link',
+                            'undo',
+                            'redo',
+                            '|',
+                            'outdent',
+                            'numberedList',
+                            'bulletedList',
+                            'indent',
+                        ]
+                    },
+                    language: "ko",
+                    fontSize: {
+                        options: [16,18,'default',22,24,26,28,30,32,34,36,40,44,48,60,72]
+                    },
+                    link : {
+                        addTargetToExternalLinks: true,
+                        decorators: [
+                            {
+                                mode: 'auto',
+                                label: '새창 링크',
+                                attributes: {
+                                    target: '_blank',
+                                }
+                            }
+                        ]
+                    }
+                })
+                .then( newEditor => {
+                    editor = newEditor;
+                })
+                .catch( error => {
+                    console.log( error );
+                });
+        }
+    </script>
+</th:block>
+</body>
+
+</html>

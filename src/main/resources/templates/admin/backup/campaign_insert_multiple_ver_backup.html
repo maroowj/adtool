@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <title>캠페인 인서트</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+
+    <style>
+	div {
+	        margin-bottom:10px;
+	    }
+    .input {
+            margin-left: 5px;
+            }
+
+
+	</style>
+
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="body" style="overflow:hidden; width:500px;">
+        <h1>캠페인 생성 (/campaign/campaign_insert_multiple.html)</h1>
+        <div id="image_form" style="float:left">
+            <form name="frm" id="frm" enctype="multipart/form-data" method="post">
+                <div><img id="preview_img" src="/displayFile?fullName=/icon/add.png" width="100" height="100"/></div>
+                <div>
+                    <span><img id="click_img1" class="click_img noImg" num="0" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                    <span><img id="click_img2" class="click_img noImg" num="1" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                    <span><img id="click_img3" class="click_img noImg" num="2" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                    <span><img id="click_img4" class="click_img noImg" num="3" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                    <span><img id="click_img5" class="click_img noImg" num="4" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                    <input type="file" class="file_img" num="0" name="image1">
+                    <input type="file" class="file_img" num="1" name="image2">
+                    <input type="file" class="file_img" num="2" name="image3">
+                    <input type="file" class="file_img" num="3" name="image4">
+                    <input type="file" class="file_img" num="4" name="image5">
+                </div>
+            </form>
+            <button id="btn_add_img">이미지 추가</button><input type="file" id="multiple_img" multiple hidden/>
+            <button id="console">콘솔</button>
+        </div>
+
+        <div id="text_form" style="float:right;">
+            <div><span>Title</span><input type="text" name="campaign_title" id="campaign_title" class="input input-h40r w80pro big-text3 ma-t-dot5"/></div>
+            <div>
+                <span>Brand / Project</span>
+                <input type="text" name="brand" id="brand_name" class="input input-h40r w100pro big-text3 ma-t-dot5" readonly/>
+                <input type="text" name="brand_seq" id="brand_seq" placeholder="brand_seq (나중에 히든처리)" readonly/>
+                <button id="btnBrandSearch">검색</button>
+            </div>
+            <div>
+                <span>Country</span>
+                <select id="campaign_country">
+                    <option value="Singapore">Singapore</option>
+                    <option value="Malaysia">Malaysia</option>
+                    <option value="Philippines">Philippines</option>
+                </select>
+            </div>
+            <div><span>Original Price</span><input type="text" name="original_price" id="original_price" class="input"/></div>
+            <div><span>Discount Price</span><input type="text" name="discount_price" id="discount_price" class="input"/></div>
+            <div>
+                <span>Type</span>
+                <select id="type">
+                    <option value="Regular">Regular</option>
+                    <option value="Offer">Offer</option>
+                    <option value="Voucher">Voucher</option>
+                    <option value="None">None</option>
+                </select>
+            </div>
+            <div>
+                <span>Need number</span>
+                <input type="text" name="need_number" id="need_number" class="input"/>
+                <input type="text" id="multiple_number" class="input" readonly placeholder="1.5배수"/>
+            </div>
+            <div>
+                <span>Description</span><br/>
+                <textarea id="campaign_description"></textarea>
+            </div>
+            <div>
+                <div>
+                <label><input type="radio" class="reservation" name="reservation" value="now">현재</label>
+                <label><input type="radio" class="reservation" name="reservation" value="reservation">예약</label>
+                </div>
+                <div id="reservation_div" hidden>
+                    <input type="date" id="publish_date">
+                    <select id="hour"></select>
+                    <span>:</span>
+                    <select id="minute"></select>
+                    <button id="consoleChk">chk</button>
+                </div>
+            </div>
+            <div>
+
+            </div>
+
+            <div>
+                <input type="button" id="btnInsert" value="발행" class="d-block btn-h40r w100pro big-text letterdot5 pa-2em rrr template_bg1 ma-t-dot5"/>
+            </div>
+        </div>
+
+        <div id="brand_div">
+            <div>
+                <span>브랜드 검색</span>
+                <input type="text" id="brand_keyword" placeholder="브랜드를 검색하세요."/>
+                <button id="brand_search">검색</button>
+                <button id="brand_insert">+추가</button>
+            </div>
+            <div id="brand_list_div"></div>
+            <script id="brand_list_script" type="text/x-handlebar-template">
+                {{#each .}}
+                <div>
+                    <label>
+                        <input type="radio" name="brand" brand_seq={{brand_seq}} brand_name={{brand_name}}><span>{{brand_name}}</span>
+                    </label>
+                </div>
+                {{/each}}
+            </script>
+            <div>
+                <button id="brand_add">적용하기</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        var formData = new FormData();
+        var arrDel=new Array();
+
+        /**************************** 캠페인 스크립트 ****************************/
+        // 1.5배수 표시
+        $("#need_number").on("keyup", function(){
+            var multiple = Math.ceil($(this).val() * 1.5);
+            if($(this).val()==""){
+                $("#multiple_number").val("");
+            }else{
+                $("#multiple_number").val(multiple);
+            }
+        });
+
+        // 현재 or 예약 radio 선택 시
+        $(".reservation").on("change", function(){
+            var stat = $(this).val();
+            if(stat=="reservation"){
+                $("#reservation_div").show();
+            }else{
+                $("#reservation_div").hide();
+            }
+        });
+
+        //캠페인 추가
+        $("#btnInsert").on("click", function(){
+            var campaign_title = $("#campaign_title").val();
+            var campaign_country = $("#campaign_country").val();
+            var brand_seq = $("#brand_seq").val();
+            var original_price = $("#original_price").val();
+            var discount_price = $("#discount_price").val();
+            var type = $("#type").val();
+            var need_number = $("#need_number").val();
+            var multiple_number = $("#multiple_number").val();
+            var campaign_description = $("#campaign_description").val();
+
+            var reservation=$(".reservation:checked").val();
+            if(reservation=="" || reservation==null){
+                alert("발행 시점을 선택해주세요");
+                return;
+            }
+
+            if (campaign_title == "") {
+                alert("캠페인 제목을 입력하세요");
+                return;
+            }else if(campaign_country == "") {
+                alert("국가를 선택하세요");
+                return;
+            }else if(original_price == "") {
+                alert("원가를 입력하세요");
+                return;
+            }else if(discount_price == "") {
+                alert("할인가격을 입력하세요");
+                return;
+            }else if(need_number == "") {
+                alert("모집 인원을 입력하세요");
+                return;
+            }
+
+            if(reservation=="reservation"){
+                var hour=$("#hour").val();
+                var minute=$("#minute").val();
+
+                if($("#publish_date").val()==null || $("#publish_date").val()==""){
+                    alert("날짜를 선택해주세요!");
+                    return;
+                }
+                if(hour=="" || hour==null){
+                    alert("시간을 선택해주세요!");
+                    return;
+                }
+                if(minute=="" || minute==null){
+                    alert("분을 선택해주세요!");
+                    return;
+                }
+                publish_date=noTime(selDate)+" "+hour+":"+minute+":00";
+                // 시간 비교하기
+                var clickDate=new Date(publish_date);
+
+
+                if(clickDate < now){
+                    alert("현재 시간보다 이전의 시간은 선택할 수 없습니다.")
+                    $("#minute").focus();
+                    return;
+                }
+            }
+
+            formData.append("dir", "campaign");
+            $.ajax({
+                type:"post",
+                url:"/uploadFile",
+                enctype:'multipart/form-data',
+                processData:false,
+                contentType:false,
+                async:false,
+                data:formData,
+                success:function(data){
+                    var campaign_img1=data.img1;
+                    var campaign_img2=data.img2;
+                    var campaign_img3=data.img3;
+                    var campaign_img4=data.img4;
+                    var campaign_img5=data.img5;
+
+                    var objParams = {
+                        "campaign_title":campaign_title,
+                        "brand_seq":brand_seq,
+                        "campaign_country":campaign_country,
+                        "original_price":original_price,
+                        "discount_price":discount_price,
+                        "need_number":need_number,
+                        "multiple_number":multiple_number,
+                        "type":type,
+                        "campaign_description":campaign_description,
+                        "campaign_img1":campaign_img1,
+                        "campaign_img2":campaign_img2,
+                        "campaign_img3":campaign_img3,
+                        "campaign_img4":campaign_img4,
+                        "campaign_img5":campaign_img5
+                    }
+
+                    if(reservation=="now"){
+                        nowInsert(objParams);
+                    }else if(reservation=="reservation"){
+                        objParams.publish_date=publish_date;
+                        reservationInsert(objParams);
+                    }
+                }
+            });
+        });
+
+        // 현재 발행 function
+        function nowInsert(objParams){
+            $.ajax({
+                type:"post",
+                url:"/admin/api/campaign/insert",
+                data:objParams,
+                async:false,
+                success:function(){
+                    location.reload();
+                },
+                error:function (){
+                    alert("now error");
+                }
+            });
+        }
+
+        // 예약 발행 function
+        function reservationInsert(objParams){
+            $.ajax({
+                type:"post",
+                url:"/admin/api/reservation_campaign/insert",
+                data:objParams,
+                async:false,
+                success:function(){
+                    location.reload();
+                },
+                error:function(){
+                    alert("reservation error");
+                }
+            });
+        }
+
+        /**************************** 브랜드 스크립트 ****************************/
+
+        getBrandList();
+
+        // 적용하기 버튼튼
+        $("#brand_dd").on("click", function(){
+            var brand_seq = $("input:radio[name='brand']:checked").attr("brand_seq");
+            var brand_name = $("input:radio[name='brand']:checked").attr("brand_name");
+            $("#brand_seq").val(brand_seq);
+            $("#brand_name").val(brand_name);
+        });
+
+        $("#brand_keyword").on("keydown", function(e){
+            if(e.keyCode==13) {
+                $("#brand_search").click();
+            }
+        });
+
+        $("#brand_search").on("click", function(){
+            getBrandList();
+        });
+
+        // keyup 시 문자간 공백(spaceBar) 제거
+        $("#brand_keyword").on("keyup", function(){
+            var before_keyword=$("#brand_keyword").val();
+            var after_keyword=noBlank(before_keyword);
+        })
+
+        // 띄어쓰기(blank-공백) 제거 function (중복 키워드 검색 필터링 시 공백으로 인한 예외 방지)
+        function noBlank(before_keyword){
+            var after_keyword=before_keyword.replaceAll(" ", "");
+            $("#brand_keyword").val(after_keyword);
+            return after_keyword;
+        }
+
+        // 브랜드 추가
+        $("#brand_insert").on("click", function(){
+            var brand_name = $("#brand_keyword").val();
+            if(brand_name==""){
+                alert("브랜드명/프로젝트명을 입력하세요");
+                return;
+            }
+            var duplicateChk=duplicate_check(brand_name);
+
+            if(duplicateChk!=0){
+                alert("입력하신 키워드는 이미 존재합니다.");
+                $("#brand_search").click();
+                return;
+            }else{
+
+                if(!confirm(brand_name+"을(를) 추가하시겠습니까?")) return;
+
+                $.ajax({
+                    type:"post",
+                    url:"/admin/api/brand/insert",
+                    data:
+                        {
+                            "brand_name":brand_name
+                        },
+                    success:function(){
+                        $("#brand_keyword").val("");
+                        getBrandList();
+                    }
+                });
+            }
+        });
+
+        // 브랜드/프로젝트 리스트 불러오기
+        function getBrandList(){
+            var brand_keyword = $("#brand_keyword").val();
+
+            $.ajax({
+                type:"get",
+                url:"/admin/api/brand/list",
+                data:
+                    {
+                        "keyword":brand_keyword
+                    },
+                success:function(data){
+                    var template=Handlebars.compile($("#brand_list_script").html());
+                    $("#brand_list_div").html(template(data));
+                }
+            });
+        };
+
+        // 브랜드/프로젝트 중복 검사 function
+        function duplicate_check(brand_name){
+            var chk=0;
+            $.ajax({
+                type:"get",
+                url:"/admin/api/brand/list",
+                data:{"keyword":""},
+                async:false,
+                success:function(data){
+                    console.log(data);
+                    for(i=0; i<data.length; i++){
+                        var data_name=data[i].brand_name.replaceAll(" ", "");
+                        console.log(data_name);
+                        if(brand_name==data_name){
+                            chk++;
+                            return false;
+                        }
+                    }
+                }
+            });
+            return chk;
+        }
+    </script>
+    <script th:inline="javascript">
+        /*************** 멀티플 이미지 업로드 테스트용 스크립트 ***************/
+
+        $("#btn_add_img").on("click", function(e){
+            e.preventDefault();
+            $("#multiple_img").click();
+        });
+        var files;
+        $("#multiple_img").on("change", function(){
+            var noImgCnt=$(".noImg").length;
+
+            //이미지 첨부 개수 제한
+            var x = document.getElementById("multiple_img");
+            var txt = "";
+            if ('files' in x) {
+                if (x.files.length==0) {
+
+                }else if (x.files.length > noImgCnt) {
+                    alert("현재 이미지를 첨부할 수 있는 빈칸이 "+ noImgCnt + "개밖에 없습니다.");
+                    document.getElementById("multiple_img").value = "";
+                    return;
+                }else { //이미지가 첨부 되었을 때
+                    files=Array.from($("#multiple_img")[0].files); // Array.from 메소드 사용해서 배열화 시키기
+                    var html = "";
+                    var cnt = 0;
+                    $.each(files, function(index, file){
+                        $(".noImg").each(function(){
+                            var num = $(this).attr("num");
+                            var strImage = "image"+num;
+                            var pSpan = $(this).parent();
+                            pSpan.find(".del").remove(); // x아이콘의 중복을 방지 하기 위해 기존 x아이콘 제거
+                            pSpan.append("<span class='del'>x</span>"); // x아이콘 추가
+                            $(this).attr("src", URL.createObjectURL(file));
+                            $(this).removeClass("noImg");
+                            $(this).addClass("yesImg");
+                            arrDel = arrDel.filter(function(item) { // n번째 input에 제거된 파일이 있다면, 제가 되었다는 값을 저장한 배열에서 n번째 값 제거
+                                return item !== num;
+                            });
+                            formData.append(strImage, file)
+                            return false;
+                        });
+                    });
+                }
+            }
+            previewImg() // 미리보기(큰화면) 띄우기
+        });
+
+        /**************************** 이미지 스크립트 ****************************/
+
+
+        // 큰 미리보기 이미지 출력 (추가되는 이미지 중에 가장 앞에 있는 이미지 띄우기)
+        function previewImg(){
+            var defaultSrc="/displayFile?fullName=/icon/add.png";
+            $(".click_img").each(function (){
+               if($(this).attr("src")!=defaultSrc){
+                   $("#preview_img").attr("src", $(this).attr("src"));
+                   return false;
+               }else{
+                   $("#preview_img").attr("src", defaultSrc);
+               }
+            });
+        }
+
+        // 미리보기 클릭 시
+        $(".click_img").on("click", function(){
+            var cAttr = $(this).attr("num");
+            $(".file_img").each(function(){
+                var fAttr = $(this).attr("num");
+                if(cAttr == fAttr) {
+                    $(this).click();
+                }
+            });
+        });
+
+        // 이미지 첨부 시
+        // 개별 이미지 첨부 시
+        $(".file_img").on("change", function(){
+            var img = $(this)[0].files[0]; // input file을 클릭한 뒤 첨부한 파일.
+            //alert(img);
+            var fNum = $(this).attr("num"); // input file 태그 안에 있는 attr("num")
+            var strImg = "image"+fNum; // 나중에 formData로 보낼 key 이름 ex: image0, image1......
+            formData.delete(strImg); // 새로 첨부하면 해당 key와 value를 formData에서 삭제.
+            if(img==null){ // input file을 클릭한 뒤, 첨부하지 않고 취소를 누르면 첨부파일이 날아감.
+                $(".click_img").each(function(){ // 클릭하는 미리보기 img 태그 each문
+                    var cNum = $(this).attr("num"); // 클릭하는 미리보기 img 태그 안에 있는 attr("num");
+                    var pSpan = $(this).parent();
+                    if(fNum == cNum) { // 첨부하지 않은 n번째 input file태그와 클릭하는 미리보기 img 태그의 순서가 일치할 때
+                        pSpan.find(".del").remove(); // x 아이콘 지워주기
+                        $(this).attr("src","/displayFile?fullName=/icon/add.png"); // 미리보기의 화면 default로 바꿔주기
+
+                        $(this).addClass("noImg");
+                        $(this).removeClass("yesImg");
+                    }
+                });
+            }else{ // input file에 첨부한 파일이 존재하면,
+                $(".click_img").each(function(){
+                    var cNum = $(this).attr("num");
+                    var pSpan = $(this).parent();
+                    if(fNum == cNum) {
+                        pSpan.find(".del").remove(); // x아이콘의 중복을 방지 하기 위해 기존 x아이콘 제거
+                        $(this).attr("src", URL.createObjectURL(img)); // 미리보기용 url만들어서 src 값에 적용
+                        $(this).attr("fileName", img.name); // 미리보기 img태그안에 fileName이라는 attr 추가 (첨부한 파일명)
+                        pSpan.append("<span class='del'>x</span>"); // x아이콘 추가
+                        arrDel = arrDel.filter(function(item) { // n번째 input에 제거된 파일이 있다면, 제가 되었다는 값을 저장한 배열에서 n번째 값 제거
+                            return item !== cNum;
+                        });
+                        $(this).addClass("yesImg");
+                        $(this).removeClass("noImg");
+                    }
+                });
+            }
+            previewImg() // 미리보기(큰화면) 띄우기
+            formData.append(strImg, img); // formData에 첨부한 파일 추가
+        });
+
+        // 미리보기 이미지 제거
+        $(frm).on("click", ".del", function(){
+            var pSpan = $(this).parent();
+            var cNum = pSpan.find(".click_img").attr("num");
+            pSpan.find(".click_img").attr("src","/displayFile?fullName=/icon/add.png");
+            pSpan.find(".click_img").removeAttr("fileName");
+            $(this).remove();
+            var strImg="";
+            $(".file_img").each(function(){
+                var fNum = $(this).attr("num");
+                if(cNum==fNum){
+                    strImg = "image"+fNum;
+                }
+                $(this).attr("src", "/displayFile?fullName=/icon/add.png");
+            });
+
+            pSpan.find(".click_img").addClass("noImg");
+            pSpan.find(".click_img").removeClass("yesImg");
+
+            previewImg() // 미리보기(큰화면) 띄우기
+            arrDel.push(cNum);
+            formData.delete(strImg);
+        });
+
+        $("#console").on("click", function(){
+            // key 확인하기
+            for (var key of formData.keys()) {
+                console.log(key);
+            }
+
+            // value 확인하기
+            for (var value of formData.values()) {
+                console.log(value);
+            }
+        });
+    </script>
+    <script th:inline="javascript">
+        /**************************** 예약 시간 스크립트 ****************************/
+        setTimeBox();
+        var now = new Date();
+        var strToday=noTime(now);
+        var selDate="";
+        var publish_date="";
+
+        // 달력에서  날짜 변경 시
+        $("#publish_date").on("change", function(){
+           selDate=new Date($(this).val());
+           var compareDate=new Date($(this).val()); // 비교용 날짜
+           compareDate.setDate(compareDate.getDate()+1);
+
+           if(compareDate < now){
+               alert("오늘 날짜보다 이전 날짜는 선택할 수 없습니다.");
+               $("#publish_date").val(strToday);
+               return;
+           }
+        });
+
+        //시간 뿌려주기
+        function setTimeBox() {
+            // 월 뿌려주기(1월부터 12월)
+            var hh= new Date().getHours()+"";
+            var mm= new Date().getMinutes()+"";
+            if(hh.length==1){
+                hh=0+hh;
+            }
+            if(mm.length==1){
+                mm=0+mm;
+            }
+            $("#hour").append("<option value='' hidden>시간</option>");
+            for(h=1; h<= 24; h++) {
+                h=h+"";
+                if(h.length==1){
+                    h="0"+h;
+                }
+                $("#hour").append("<option value='"+ h +"'>" + h + "</option>");
+            }
+            $("#minute").append("<option value='' hidden>분</option>");
+            for(m=0; m<=59;) {
+                if(m==0 || m==5){
+                    m="0"+m;
+                }
+                $("#minute").append("<option value='"+ m +"'>" + m + "</option>");
+                m=Number(m);
+                m=m+5;
+            }
+        }
+
+        //날짜 형식 setting (문자열)
+        function noTime(today){
+            var year=today.getFullYear()+"";
+            var month=(today.getMonth()+1)+"";
+            var day=today.getDate()+"";
+
+            if(month.length == 1){
+                month=0+month;
+            }
+            if(day.length == 1){
+                day=0+day;
+            }
+            return year+"-"+month+"-"+day;
+        }
+
+
+        function fullTime(today){
+            var year=today.getFullYear()+"";
+            var month=(today.getMonth()+1)+"";
+            var day=today.getDate()+"";
+            var hour=today.getHours()+"";
+            var minute=today.getMinutes()+"";
+            var second=today.getSeconds()+"";
+
+            if(month.length == 1){
+                month=0+month;
+            }
+            if(day.length == 1){
+                day=0+day;
+            }
+            if(hour.length == 1){
+                hour=0+hour;
+            }
+            if(minute.length == 1){
+                minute=0+minute;
+            }
+            return year+"-"+month+"-"+day+" "+hour+":"+minute;
+        }
+
+    </script>
+</th:block>
+
+</body>
+
+
+</html>

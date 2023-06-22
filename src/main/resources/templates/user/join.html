@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/userLayout}">
+<head>
+    <title>회원가입</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div class="auto user-join-wrap">
+        <div >
+            <h1 class="d-none">회원가입 (/join.html)</h1>
+            <div class="login-page-wrap">
+                <div id="first_form">
+                    <div id="id_form" class="login-id-title">
+                        <div>Email<span style="color: red;"> *</span></div>
+                        <input type="text" name="member_id" id="member_id" placeholder="Enter your email ID"/>
+                        <div class="pass-form-notice">
+                            <span id="id_prompt"></span>
+                        </div>
+                    </div>
+
+                    <div id="name_form" class="login-id-title">
+                        <div>Name<span style="color: red;"> *</span></div>
+                        <input type="text" name="member_name" id="member_name" placeholder="Enter your name"/>
+                    </div>
+
+                    <div id="pass_form" >
+                        <div id="pass" class="login-id-title">
+                            <div>Password<span style="color: red;"> ＊</span></div>
+                            <input type="password" class="big-text no-border" name="member_pass" id="member_pass" placeholder="Enter your password"/>
+                            <div id="pass_condition_div" class="pass-form-notice d-none" style="margin-top: 5px;">
+                                <span id="pass_condition" style="color:red;">※ Use 8 to 16 English characters use uppercase and lowercase letters, numbers, special characters.</span>
+                            </div>
+                        </div>
+
+                        <div id="pass-check" class="input-h50r login-id-title">
+                            <div>Password (repeat)<span style="color: red;"> ＊</span></div>
+                            <input type="password" class="big-text no-border" id="member_pass_conf" placeholder="Enter your password repeat">
+                            <div id="pass_confirm_div" class="pass-form-notice d-none" style="margin-top: 5px;">
+                                <span id="pass_confirm" style="color:red;">※ Password do not match.</span>
+                            </div>
+                            <span id="pass-confirm_prompt"></span>
+                        </div>
+                    </div>
+
+                    <div id="country_form" class="login-id-title">
+                        <div>Country<span style="color: red;"> ＊</span></div>
+                        <div class="select_box">
+                            <select id="country" class="info-country">
+                                <option value="Malaysia">Malaysia</option>
+                                <option value="Philippines">Philippines</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="Taiwan">Taiwan</option>
+                                <option value="Japan">Japan</option>
+                                <option value="South Korea">South Korea</option>
+                            </select>
+                            <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                        </div>
+<!--                        <input type="text" name="recommender" id="country" placeholder="If you have a recommender, Enter the ID (E-mail address)"/>-->
+                    </div>
+
+                    <div id="recommender_form" class="login-id-title">
+                        <div>Recommender</div>
+                        <input type="text" name="recommender" id="recommender" th:value="${recommender}" placeholder="If you have a recommender, Enter the ID (E-mail address)"/>
+                        <div class="pass-form-notice">
+                            <span style="color:grey;">※ If you complete your first campaign, you and the recommender can be rewarded.</span>
+                        </div>
+                        <div class="pass-form-notice" style="margin-top: 5px;">
+                            <span style="color:grey;">※ Please enter email correctly. You cannot receive compensation if you enter wrong email.</span>
+                        </div>
+                    </div>
+
+                    <div id="terms_form">
+                        <label><input type="checkbox" id="termsChk" style="width: 40px; height: 15px;">
+                            I agree to the <span id="user_agreement" style="text-decoration: underline; cursor: pointer;">user agreement</span>,
+                            <span id="privacy_policy" style="text-decoration: underline; cursor: pointer;">privacy policy</span> of Adtool.
+                        </label>
+                    </div>
+
+                    <div class="loginP-loginBtn">
+                        <button id="btnJoin" style="cursor: default;" disabled>Join us</button>
+                        <button id="chk" class="d-none">chk</button>
+                    </div>
+                    <div id="match_div" class="pass-form-notice d-none" style="margin-top: -30px;">
+                        <span style="color:red;">※ If the join up button is not pressed, check the password form(uppercase + lowercase + special characters).</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <!----------------- second form ------------------>
+            <div class="login-page-wrap2">
+                <div id="second_form">
+                    <div id="second_Message">
+                        Get your Chance of Korea products festival<span class="m-message"> Just choose your preference</span>!
+                    </div>
+                    <div id="preferences">
+                        <span><input type="radio" name="preferences" class="preferences" value="Beauty" id="beauty"><label for="beauty">Beauty</label></span>
+                        <span><input type="radio" name="preferences"  class="preferences" value="Food" id="food"><label for="food">Food</label></span>
+                        <span><input type="radio" name="preferences"  class="preferences" value="Pet" id="pet"><label for="pet">Pet</label></span>
+                        <span><input type="radio" name="preferences"  class="preferences" value="Baby" id="baby"><label for="baby">Baby</label></span>
+                        <span><input type="radio" name="preferences"  class="preferences" value="Fashion" id="fashion"><label for="fashion">Fashion</label></span>
+                        <span><input type="radio" name="preferences"  class="preferences" value="Daily_supplies" id="daliy-supplies"><label for="daliy-supplies">Daily supplies</label></span>
+                    </div>
+                    <button id="btnNext">Next</button>
+                </div>
+            </div>
+
+            <!----------------- third form ------------------>
+            <div class="login-page-wrap3">
+                <div id="third_form">
+                    <div id="third_Message">
+                        Have you social media channels?
+                    </div>
+                    <div id="channel">
+                        <span><input type="radio" name="sns" class="sns" value="Instagram" id="sns-instagram" checked><label for="sns-instagram">Instagram</label></span>
+                        <span><input type="radio" name="sns" id="sns-facebook" class="sns" value="Facebook"><label for="sns-facebook">Facebook</label></span>
+                        <span><input type="radio" name="sns" class="sns" value="Youtube" id="sns-youtube"><label for="sns-youtube">Youtube</label></span>
+                        <span><input type="radio" name="sns" class="sns" value="Tiktok" id="sns-tiktok"><label for="sns-tiktok">Tiktok</label></span>
+                    </div>
+                    <div id="sns_title"></div>
+                    <div id="instagram" class="channel" channel="Instagram">
+                        <div class="sns-channel-text">
+                            <div>URL</div>
+                            <input type="text" id="instagram_url" placeholder="Enter your Instagram url"/>
+                        </div>
+                        <div class="sns-channel-text">
+                            <div>FOLLOWERS</div>
+                            <input type="text" id="instagram_followers" placeholder="The number of Followers (Only numbers)"/>
+                        </div>
+                    </div>
+                    <div id="facebook" class="channel" channel="Facebook">
+                        <div class="sns-channel-text">
+                            <div>URL</div>
+                            <input type="text" id="facebook_url" placeholder="Enter your Facebook url"/>
+                        </div>
+                        <div class="sns-channel-text">
+                            <div>FOLLOWERS</div>
+                            <input type="text" id="facebook_followers" placeholder="The number of Followers (Only numbers)"/>
+                        </div>
+                    </div>
+                    <div id="youtube" class="channel" channel="Youtube">
+                        <div class="sns-channel-text">
+                            <div>URL</div>
+                            <input type="text" id="youtube_url" placeholder="Enter your Youtube url"/>
+                        </div>
+                        <div class="sns-channel-text">
+                            <div>SUBSCRIBES</div>
+                            <input type="text" id="youtube_subscribes" placeholder="The number of Subscribes (Only numbers)"/>
+                        </div>
+                    </div>
+                    <div id="tiktok" class="channel" channel="Tiktok">
+                        <div class="sns-channel-text">
+                            <div>URL</div>
+                            <input type="text" id="tiktok_url" placeholder="Enter your Tiktok url"/>
+                        </div>
+                        <div class="sns-channel-text">
+                            <div>FOLLOWERS</div>
+                            <input type="text" id="tiktok_followers" placeholder="The number of Followers (Only numbers)"/>
+                        </div>
+                    </div>
+                    <button id="btnStart">Let's start</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- modal start -->
+        <div id="user_agreement_modal" class="modal">
+            <div class="modal-wrap">
+                <div class="modal-title">
+                    <div class="title">Terms and Conditions</div>
+<!--                    <span class="closeBtn"><i class="fa-solid fa-xmark"></i></span>-->
+                </div>
+                <div class="modal-inner">
+                    <div class="modal-terms-wrap" id="user_agreement_desc"></div>
+                    <div class="modal-button">
+                        <button class="black-btn saveBtn">Close</button>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-cover"></div>
+        </div>
+
+        <div id="privacy_policy_modal" class="modal">
+            <div class="modal-wrap">
+                <div class="modal-title">
+                    <div class="title">Terms and Conditions</div>
+<!--                    <span class="closeBtn"><i class="fa-solid fa-xmark"></i></span>-->
+                </div>
+                <div class="modal-inner">
+                    <div class="modal-terms-wrap" id="privacy_policy_desc"></div>
+                    <div class="modal-button">
+                        <button class="black-btn saveBtn">Close</button>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-cover"></div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        var chkID = false;
+        var chkPass = false;
+        var chkPassconf=false;
+        var valdOk = null;
+        var dupleOk = null;
+        var termsChk = false;
+        var chkRecommendID = true;
+
+        var grade = [[${session.member_grade}]];
+        console.log(grade);
+
+        $(document).ready(function(){
+            let noRecommender = [[${noRecommender}]];
+            if(noRecommender == true) {
+                alert("You have a wrong recommend URL.\nCheck Your URL please.");
+                location.href="/join";
+            }
+
+
+            if(grade==null) {
+                $("#first_form").show();
+                $("#second_form").hide();
+                $("#third_form").hide();
+            }else if(grade=="0"){
+                $("#first_form").hide();
+                $("#second_form").show();
+                $("#third_form").hide();
+            }else{
+                $("#first_form").hide();
+                $("#second_form").hide();
+                $("#third_form").show();
+            }
+        });
+
+        $("#first_form").hide();
+        //$("#second_form").hide();
+
+        third_form();
+
+        $(".sns").on("change", function(){
+            third_form();
+        });
+
+        function third_form(){
+            var select = $(".sns:checked").val();
+            $("#sns_title").html(select);
+            $(".channel").each(function(){
+                var channel = $(this).attr("channel");
+                if(select == channel){
+                    $(this).show();
+                }else{
+                    $(this).hide();
+                }
+            });
+        }
+
+
+
+        // (1st) join us 버튼 클릭 시
+        $("#btnJoin").on("click", function(){
+
+            if(!$("#termsChk").prop("checked")) {
+                alert("Check the user agreement and privacy policy please");
+                return;
+            }
+
+            var id = $("#member_id").val();
+            var pw = $("#member_pass").val();
+            var name = $("#member_name").val();
+            var recommender = $("#recommender").val();
+            var country = $("#country").val();
+            if(name=="") {
+                alert("Enter your name please");
+                return;
+            }
+
+            if(recommender!="") {
+                if(!chkEmail(recommender)) {
+                    chkRecommendID=false;
+                }
+            }else{
+                chkRecommendID=true;
+            }
+
+            if(chkRecommendID==false) {
+                alert("Check your Recommender ID\n※ Accept e-mail address only");
+                return;
+            }
+
+
+            $.ajax({
+                type : "post",
+                url : "/common/api/member/insert",
+                data : {
+                    "member_id":id,
+                    "member_password":pw,
+                    "member_name":name,
+                    "recommender": recommender,
+                    "country":country
+                },
+                success : function(data) {
+                    if(data==0) {
+                        alert("This email is joined already");
+                        location.href="/login";
+                    }else if(data==1) {
+                        $("#first_form").hide();
+                        $("#second_form").show();
+                    }
+                }
+            });
+        });
+
+        // (2nd) Next 버튼 클릭 시
+        $("#btnNext").on("click", function(){
+            var member_id = $("#member_id").val();
+            if(member_id==""){
+                member_id= [[${session.member_id}]];
+            }
+
+            //console.log(member_id);
+
+            var preferences = $(".preferences:checked").val();
+
+            if(preferences==null){
+                alert("Choose your preferences");
+                return;
+            }
+
+            $.ajax({
+                type:"patch",
+                url:"/common/api/member/update",
+                data:{
+                    "member_id":member_id,
+                    "step":"2",
+                    "preferences":preferences,
+                    "member_grade": "1"
+                },
+                success:function(){
+                    $("#second_form").hide();
+                    $("#third_form").show();
+                }
+            });
+        });
+
+        // (3rd) Let's start 버튼 클릭 시
+        $("#btnStart").on("click", function(){
+            var member_id = $("#member_id").val();
+            if(member_id==""){
+                member_id= [[${session.member_id}]];
+            }
+
+            var instagram_url = $("#instagram_url").val();
+            var instagram_followers = $("#instagram_followers").val();
+            var youtube_url = $("#youtube_url").val();
+            var youtube_subscribes = $("#youtube_subscribes").val();
+            var facebook_url = $("#facebook_url").val();
+            var facebook_followers = $("#facebook_followers").val();
+            var tiktok_url = $("#tiktok_url").val();
+            var tiktok_followers = $("#tiktok_followers").val();
+
+
+            $.ajax({
+                type:"patch",
+                url:"/common/api/member/update",
+                data:{
+                    "instagram_url":instagram_url,
+                    "instagram_followers":instagram_followers,
+                    "youtube_url":youtube_url,
+                    "youtube_subscribes":youtube_subscribes,
+                    "facebook_url":facebook_url,
+                    "facebook_followers":facebook_followers,
+                    "tiktok_url":tiktok_url,
+                    "tiktok_followers":tiktok_followers,
+                    "member_id":member_id,
+                    "step":"3",
+                    "member_grade":"2"
+                },
+                success:function(data){
+                    alert("join success");
+                    location.href="/login";
+                }
+            });
+        });
+
+        $("#chk").on("click", function(){
+            console.log("chkID= "+chkID);
+            console.log("chkPass= "+chkPass);
+            console.log("chkPassconf= "+chkPassconf);
+        });
+
+        // 아이디 이메일 양식 검증 및 중복 확인
+        $("#member_id").on("keyup", function(e) {
+            var id = $("#member_id").val();
+            var mpw = $("#member_password").val();
+
+            if (chkEmail(id)) {
+                valdOk = true;
+            } else {
+                valdOk = null;
+            }
+
+            if(id==""){
+                $("#id_prompt").hide();
+            }else{
+                $("#id_prompt").show();
+            }
+
+            $.ajax({
+                type : "post",
+                url : "/common/api/member/read/duplicate_check",
+                data : {
+                    "member_id" : id,
+                },
+                success : function(data) {
+                    if (data.result == 0 || data.result == 3) {
+                        dupleOk = true;
+                    } else {
+                        dupleOk = null;
+                    }
+
+                    if (!dupleOk) {
+                        $("#id_prompt").html("※ This email is joined already"); //중복된 이메일(이미래 21-09-29 수정)
+                        $("#id_prompt").css("color", "red");
+                    } else {
+                        if (dupleOk && valdOk) {
+                            chkID = true;
+                            $("#id_prompt").html("※ You can use this email");
+                            $("#id_prompt").css("color", "green");//이메일 검증(이미래 21-09-29 수정)
+                        } else{
+                            $("#id_prompt").html("※ This is not a valid format");
+                            $("#id_prompt").css("color", "red");
+                        }
+                    }
+                    if(chkID&&chkPass&&chkPassconf){
+                        $("#btnJoin").attr("disabled", false);
+                        $("#btnJoin").css("cursor", "pointer");
+                        $("#match_div").addClass("d-none");
+                    }
+                }
+            });
+        });
+
+        // 비밀번호 체크
+        $("#member_pass").on("keyup", function(e) {
+            var pass = $("#member_pass").val();
+            var passcf = $("#member_pass_conf").val();
+
+            if(chkSpecial(pass) && checkNum(pass) && checkEngUp(pass) && checkEngDown(pass) && chklength(pass)){
+                chkPass=true;
+                $("#pass_condition_div").addClass("d-none");
+                // $("#pass_condition").css("color","green");
+            }else{
+                $("#pass_condition_div").removeClass("d-none");
+                // $("#pass_condition").css("color","red");
+            }
+
+            if (pass == passcf) {
+                chkPassconf=true;
+                $("#pass_confirm_div").addClass("d-none");
+            }
+            if (pass == "") {
+                chkPass=false;
+            }
+            if (pass != passcf) {
+                chkPassconf=false;
+                $("#pass_confirm_div").removeClass("d-none");
+            }
+            if(chkID&&chkPass&&chkPassconf){
+                $("#btnJoin").attr("disabled", false);
+                $("#btnJoin").css("cursor", "pointer");
+                $("#match_div").addClass("d-none");
+
+            }else{
+                $("#btnJoin").attr("disabled", true);
+                $("#btnJoin").css("cursor", "default");
+                $("#match_div").removeClass("d-none");
+            }
+
+        });
+
+        $("#member_pass").on("click", function(){
+            var pass = $("#member_pass").val();
+            if(chkSpecial(pass) && checkNum(pass) && checkEngUp(pass) && checkEngDown(pass) && chklength(pass)){
+                chkPass=true;
+                // $("#pass_condition").css("color","green");
+                $("#pass_confirm_div").addClass("d-none");
+            }else{
+                // $("#pass_condition").css("color","red");
+                chkPass=false;
+                $("#pass_confirm_div").removeClass("d-none");
+            }
+        });
+
+        $("#member_pass_conf").on("keyup", function(e) {
+            var pass = $("#member_pass").val();
+            var passcf = $("#member_pass_conf").val();
+
+            if (pass == passcf) {
+                chkPassconf=true;
+                $("#pass_confirm_div").addClass("d-none");
+            }else{
+                chkPassconf=false;
+                $("#pass_confirm_div").removeClass("d-none");
+            }
+
+            if(chkID&&chkPass&&chkPassconf){
+                $("#btnJoin").attr("disabled", false);
+                $("#btnJoin").css("cursor", "pointer");
+                $("#match_div").addClass("d-none");
+
+            }else{
+                $("#btnJoin").attr("disabled", true);
+                $("#btnJoin").css("cursor", "default");
+                $("#match_div").removeClass("d-none");
+            }
+        });
+
+        /*************** 유효성 function *******************/
+
+        // 글자 수 체크
+        function chklength(str) {
+            if(str.length>=8 && str.length<=16){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
+        // 이메일 주소 체크
+        function chkEmail(str) {
+            var filter = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+            if (filter.test(str)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // 특수 문자 체크
+        function chkSpecial(str) {
+            var special_pattern = (/[`~!@#$%^&*|\\\'\";:\/?]/gi);
+            if (special_pattern.test(str) == true) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // 숫자 체크
+        function checkNum(str) {
+            const regExp = /[0-9]/;
+            if (regExp.test(str)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // 대문자 체크
+        function checkEngUp(str) {
+            const regExp = /[A-Z]/;
+            if (regExp.test(str)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // 소문자 체크
+        function checkEngDown(str) {
+            const regExp = /[a-z]/;
+            if (regExp.test(str)) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        /* 모달창 */
+        $('#user_agreement').on('click',function(){
+            $('#user_agreement_modal').css('display','block');
+
+        });
+        $('#privacy_policy').on('click',function(){
+            $('#privacy_policy_modal').css('display','block');
+
+        });
+
+        $('.closeBtn, .bg-cover,.saveBtn').on('click',function (){
+            $('.modal').css('display','none');
+            $("#termsChk").prop("checked", false);
+        });
+    </script>
+    <script>
+        let user_agreement_script = "";
+        user_agreement_script += "<h1><b style='font-size: 1.5em;'>User Agreement</b></h1><br/>";
+        user_agreement_script +="<p>The following describes the terms on which Adtool Group offers you access to our services.</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>Scope</b><br/><br/><p>Before you become a member of the Website, you must read and accept all of the terms and conditions in, and linked to, this User Agreement and Privacy Policy. We strongly recommend that, as you read this User Agreement, you also access and read the linked information. By accepting this User Agreement, you agree that this User Agreement and Privacy Policy will apply whenever you use our Website and services, or when you use the tools we make available to interact with our Website and services.</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>Your Account</b><br/><br/><p>If you use this Website, you are responsible for maintaining the confidentiality of your account with Adtool (\"Account\") and password and for restricting access to your computer, and you agree to accept responsibility for all activities that occur under your account or password.If you are under 18 years old, you may use this Website only with authorization from a parent or legal guardian.\n" +
+            "Adtool reserves the right to terminate Your membership and refuse to provide you with access to the Website if it is brought to our notice or if it is discovered that you are under the age of 18 years.\n" +
+            "The Company reserves the right to refuse service, terminate accounts, remove or edit content, or cancel orders at its sole discretion.\n</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>Using this Website</b><br/><br/><p>While using this Website, you will not :<br/>" +
+            "&nbsp;&nbsp;- post content or items in an inappropriate category or areas on our Website or services;<br/>" +
+            "&nbsp;&nbsp;- manipulate the price of any item or interfere with other user's listings;<br/>" +
+            "&nbsp;&nbsp;- circumvent or manipulate our fee structure, the billing process, or fees owed to the Company;<br/>" +
+            "&nbsp;&nbsp;- post false, inaccurate, misleading, defamatory, or libellous content (including personal information);<br/>" +
+            "&nbsp;&nbsp;- take any action that may undermine the feedback or ratings systems;<br/>" +
+            "&nbsp;&nbsp;- transfer your Account to another party without the Company's consent;<br/>" +
+            "&nbsp;&nbsp;- distribute or post spam, chain letters, or pyramid schemes;<br/>" +
+            "&nbsp;&nbsp;- distribute viruses or any other technologies that may harm the Website, or the interests or property of users of the Website;<br/>" +
+            "&nbsp;&nbsp;- copy, modify, or distribute content from the Website and the Company's copyrights and trademarks; or<br/>" +
+            "&nbsp;&nbsp;- harvest or otherwise collect information about users, including email addresses, without their consent; or<br/>" +
+            "&nbsp;&nbsp;- use existing user accounts or create new user accounts in order to circumvent or avoid buying or selling limits, restrictions, holds or other policy consequences<br/><br/>" +
+            "Violations of this policy may result in a range of actions, including:<br/>" +
+            "&nbsp;&nbsp;- Loss of Settlement Amount<br/>" +
+            "&nbsp;&nbsp;- Limits placed on account privileges<br/>" +
+            "&nbsp;&nbsp;- Account suspension / termination<br/>" +
+            "&nbsp;&nbsp;- Criminal charges / claim for damages</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>Purchase and Payment</b><br/><br/><p>You should carefully read the item detail page and review information such as price, option price, rule, and terms and conditions before purchasing an item.<br/>" +
+            "We take no responsibility and assume no liability for any loss or damages to a buyer arising from shipping information and/or payer information entered by the buyer or wrong remittance by the buyer in connection with the payment for the items purchased. We reserve the right to check whether a buyer is duly authorized to use a certain payment method, and may suspend the transaction until such authorization is confirmed or cancel the relevant transaction where such confirmation is not available.\n</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>Service Fees</b><br/><br/><p>Joining this Website is free, we do not charge buyers any fees for purchasing.</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>Content</b><br/><br/><p>You may post reviews, comments, photos and other content; submit suggestions, ideas, comments, questions, or other information, so long as the content is not illegal, obscene, threatening, defamatory, invasive of privacy, infringing of intellectual property rights, or otherwise injurious to third parties or objectionable and does not consist of or contain software viruses, political campaigning, commercial solicitation, chain letters, mass mailings or any form of \"spam.\" You may not use a false e-mail address, impersonate any person or entity, or otherwise mislead as to the origin of a card or other content. The Company reserves the right (but not the obligation) to remove or edit such content but does not regularly review posted content.<br/>" +
+            "If you do post content or submit material, and unless we indicate otherwise, you are deemed to have granted the Company a nonexclusive, royalty-free, perpetual, irrevocable, and fully sublicensable right to use, reproduce, modify, adapt, publish, translate, create derivative works from, distribute, and display such content throughout the world in any media. You are deemed to have granted the Company and sublicensees the right to use the name that you submit in connection with such content if they choose. You represent and warrant that you own or otherwise control all of the rights to the content that you post; that the content is accurate; that use of the content you supply does not violate this policy and will not cause injury to any person or entity; and that you will indemnify the Company for all claims resulting from content you supply. The Company has the right but not the obligation to monitor and edit any activity or content.</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>Other Businesses</b><br/><br/><p>Parties other than the Company operate stores, provide services, sell products or list advertisement on this Website, and this site may link to sites of affiliated companies and certain other companies. The Company is not responsible for examining or evaluating and does not warrant the products of such business or individual or the content of their web sites. The Company does not assume any responsibility or liability for the actions, product and content of all these and any other third parties. You should carefully review their privacy statements and other conditions of use.</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>Access and Interference</b><br/><br/><p>Our Website contains robot exclusion headers. Much of the information on the sites is updated on a real-time basis and is proprietary or is licensed to the Company by our users or third parties. You agree that you will not use any robot, spider, scraper or other automated means to access the sites for any purpose without our express written permission.<br/>" +
+            "Additionally, you agree that you will not:<br/>" +
+            "&nbsp;&nbsp;- take any action that imposes or may impose (in our sole discretion) an unreasonable or disproportionately large load on our infrastructure;<br/>" +
+            "&nbsp;&nbsp;- copy, reproduce, modify, create derivative works from, distribute, or publicly display any content (except for Your Information) from the Website without the prior expressed written permission of the Company and the appropriate third party, as applicable;<br/>" +
+            "&nbsp;&nbsp;- interfere or attempt to interfere with the proper working of the Website or any activities conducted on the Website; or<br/>" +
+            "&nbsp;&nbsp;- bypass our robot exclusion headers or other measures we may use to prevent or restrict access to the Website.</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>Privacy</b><br/><br/><p>We do not sell or rent your personal information to third parties for their marketing purposes without your explicit consent. We use your information only as described in our Privacy Policy. We view the protection of users' privacy as a very important community principle. We store and process your information on computers that are protected by physical as well as technological security devices. You can access and modify the information you provide us and choose not to receive certain communications by signing-in to your account. We use third parties to verify and certify our privacy principles. For a complete description of how we use and protect your personal information, see our Privacy Policy. If you object to your Information being transferred or used in this way please do not use our services. For the avoidance of doubt, If Adtool has reasonable grounds to believe that any User is in breach of any of the terms of this Agreement, Adtool reserves the right, in its sole and absolute discretion, to cooperate fully with governmental authorities, private investigators, all the rightful owner(s) or interest holder(s) and/or injured third parties in the investigation of any potential or ongoing criminal or civil wrongdoing. Further, Adtool may disclose the User's identify and contact information, or such other transaction-related data, if requested by a government or law enforcement body, private investigator, rightful owner or interest holder and/or any injured third party or as a result of a subpoena or other legal action, or if Adtool is of the view, in its sole and absolute discretion, that it would be in its best interest to do so. Adtool shall not be liable for damages or results arising from such disclosure, and the User(s) agrees not to bring an action or claim against Adtool for such disclosure.</p><br/>";
+        user_agreement_script += "<b style='font-size: 1.15em;'>General</b><br/><br/><p>If any provision of this Agreement is held to be invalid or unenforceable, such provision shall be struck and the remaining provisions shall be enforced. Headings are for reference purposes only and do not limit the scope or extent of such a section. Our failure to act with respect to a breach by you or others does not waive our right to act with respect to subsequent or similar breaches. We do not guarantee we will take action against all breaches of this Agreement.<br/>" +
+            "We may amend any of the Agreement’s terms at our sole discretion by posting the revised terms on our website. Your continued use of our services after the effective date of the revised Agreement constitutes your acceptance of the terms. This Agreement may not be otherwise amended except in a writing signed by you and us.\n</p><br/>";
+        user_agreement_script += "<br/><b style='font-size: 1.15em;'>Updates To This Agreement</b><br/><br/><p>Last Update: 10 Jun 2022</p><br/>";
+
+
+        $("#user_agreement_desc").html(user_agreement_script);
+    </script>
+    <script>
+        let privacy_policy_script="";
+        privacy_policy_script += "<h1><b style='font-size: 1.5em;'>Privacy Policy</b></h1><br/>";
+        privacy_policy_script +="<p>We, Adtool and its affiliates (together \"Adtool Group\" or the \"Company\"), take your personal information seriously and use or keep it confidential. In order to protect your private information, we have established this Privacy Policy (the \"Policy\") in accordance with best practices in the industry and applicable laws and regulations. This Policy describes how we handle your personal information for our services on the Adtool website and its related sites, services and tools (the \"Website\").<br/><br/>" +
+            "By accepting the Policy and the User Agreement in registration, you expressly consent to our collection, storage, use and disclosure of your personal information as described in this Policy. This Policy is effective on Jun 10, 2022 for current users, and immediately upon acceptance by new users.\n</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Collection</b><br/><br/><p>You can browse our sites without telling us who you are or revealing any personal information about yourself. Once you give us your personal information, you are not anonymous to us. If you choose to provide us with personal information, you consent to the transfer and storage of that information on our servers.<br/>" +
+            "We may collect and store the following personal information:<br/>" +
+            "&nbsp;&nbsp;- email address, physical contact information, the date of birth and gender information, and (depending on the service used) sometimes financial information, such as credit card or bank account numbers;<br/>" +
+            "&nbsp;&nbsp;- transactional information based on your activities on the Website (such as buying, selling, bidding, item and content you generate or that relates to your account);<br/>" +
+            "&nbsp;&nbsp;- postage, billing and other information you provide to purchase or dispatch an item;<br/>" +
+            "&nbsp;&nbsp;- community discussions, chats, dispute resolution, correspondence through our Website, and correspondence sent to us;<br/>" +
+            "&nbsp;&nbsp;- other information from your interaction with our Website, services, content and advertising, including computer and connection information, statistics on page views, traffic to and from the Website, ad data, IP address and standard web log information;<br/>" +
+            "&nbsp;&nbsp;- additional information we ask you to submit to authenticate yourself or if we believe you are violating site policies (for example, we may ask you to send us an ID or bill to verify your address, or to answer additional questions online to help verify your identity or ownership of an item you list);<br/>" +
+            "&nbsp;&nbsp;- information from other companies, such as demographic and navigation data; and<br/>" +
+            "&nbsp;&nbsp;- other supplemental information from third parties (for example, if you incur a debt to the Company, we will generally conduct a credit check by obtaining additional information about you from a credit bureau, as permitted by law).</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Marketing</b><br/><br/><p>We don't sell or rent your personal information to third parties for their marketing purposes without your explicit consent. We may combine your information with information we collect from other companies and use it to improve and personalise our services, content and advertising.</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Use</b><br/><br/><p>Our primary purpose in collecting personal information is to provide you with a safe, smooth, efficient and customized experience. You agree that we may use your personal information to:<br/>" +
+            "&nbsp;&nbsp;- Provide the services and customer support you request;<br/>" +
+            "&nbsp;&nbsp;- Resolve disputes, collect fees, and troubleshoot problems;<br/>" +
+            "&nbsp;&nbsp;- Prevent potentially prohibited or illegal activities, and enforce our User Agreement;<br/>" +
+            "&nbsp;&nbsp;- Customize, measure and improve our services, content and advertising;<br/>" +
+            "&nbsp;&nbsp;- Tell you about our services and those of our corporate family;<br/>" +
+            "&nbsp;&nbsp;- Send you targeted marketing, service updates, and promotional offers; and<br/>" +
+            "&nbsp;&nbsp;- Compare information for accuracy, and verify it with third parties.</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Our Disclosure of Your Information</b><br/><br/><p>We may disclose personal information to respond to legal requirements, enforce our policies, respond to claims that a listing or other content violates the rights of others, or protect anyone's rights, property, or safety. Such information will be disclosed in accordance with applicable laws and regulations.</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Share of Your Information</b><br/><br/><p>We may share your personal information with:<br/>" +
+            "&nbsp;&nbsp;- Third-party service providers under contract who help with our business operations: We employ other companies and individuals to perform functions on our behalf. Examples include fulfilling orders, delivering packages, sending postal mail and e-mail, removing repetitive information from customer lists, analyzing data, providing marketing assistance, providing search results and links(including paid listings and links), processing credit card payments, investigating frauds and providing customer service. They have access to personal information needed to perform their functions, but may not use it for other purposes.<br/>" +
+            "&nbsp;&nbsp;- Other third parties to whom you explicitly ask us to send your information (or about whom you are otherwise explicitly notified and consent to when using a specific service).<br/>" +
+            "&nbsp;&nbsp;- Law enforcement or other governmental officials, in response to a verified request relating to a criminal investigation or alleged illegal activity. In such events, we will disclose information relevant to the investigation, such as name, city, postal code, telephone number, email address, User ID history, IP address, fraud complaints, and purchasing and listing history;<br/>" +
+            "&nbsp;&nbsp;- Brand Protection Program participants under confidentiality agreement, as we in our sole discretion believe necessary or appropriate in connection with an investigation of fraud, intellectual property infringement, piracy, or other unlawful activity. In such events, we will disclose name, street address, city, postal code,country, phone number, email address and company name; and<br/>" +
+            "&nbsp;&nbsp;- Other business entities, should we plan to merge with or be acquired by that business entity. (Should such a combination occur, we will require that the new combined entity follow this privacy policy with respect to your personal information. If your personal information will be used contrary to this policy, you will receive prior notice.)<br/>" +
+            "For the avoidance of doubt, If Adtool has reasonable grounds to believe that any User is in breach of any of the terms of this Policy, Adtool reserves the right, in its sole and absolute discretion, to cooperate fully with governmental authorities, private investigators, all the rightful owner(s) or interest holder(s) and/or injured third parties in the investigation of any potential or ongoing criminal or civil wrongdoing. Further, Adtool may disclose the User's identify and contact information, or such other transaction-related data, if requested by a government or law enforcement body, private investigator, rightful owner or interest holder and/or any injured third party or as a result of a subpoena or other legal action, or if Adtool is of the view, in its sole and absolute discretion, that it would be in its best interest to do so. Adtool shall not be liable for damages or results arising from such disclosure, and the User(s) agrees not to bring action or claim against Adtool for such disclosure.</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Using Information from this Website</b><br/><br/><p>We enable you to share personal information to complete transactions. When users are involved in a transaction, they may have access to each other's name, user ID, email address and other contact and postage information. In all cases, you must comply with data protection laws, and give other users a chance to remove themselves from your database and a chance to review what information you have collected about them.<br/>" +
+            "You agree to use user information only for:<br/>" +
+            "&nbsp;&nbsp;- fulfillment of the transaction through this website and purposes related to the transaction;<br/>" +
+            "&nbsp;&nbsp;- using services offered through this website (e.g. escrow, postage and fraud complaints); or<br/>" +
+            "&nbsp;&nbsp;- other purposes that a user expressly chooses.</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Cookies</b><br/><br/><p>We use \"cookies\" (small files placed on your hard drive) on certain of our pages to help analyse our web page flow; customise our services, content and advertising; measure promotional effectiveness, and promote trust and safety.<br/>" +
+            "A few important things you should know about cookies are that:<br/>" +
+            "&nbsp;&nbsp;- We offer certain features that are available only through the use of cookies.<br/>" +
+            "&nbsp;&nbsp;- We use cookies to help identify you and maintain your signed-in status.<br/>" +
+            "&nbsp;&nbsp;- Most cookies are \"session cookies,\" meaning that they are automatically deleted from your hard drive at the end of a session.<br/>" +
+            "&nbsp;&nbsp;- You are always free to decline our cookies if your browser permits, although doing so may interfere with your use of some of our sites or services.<br/>" +
+            "&nbsp;&nbsp;- You may encounter cookies from third parties on certain pages of the Website that we do not control. (For example, if you view a web page created by another user, there may be a cookie placed by that web page.)</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>No Spam, Spyware or Spoofing</b><br/><br/><p>We and our users do not tolerate spam. You may not use our communication tools to send spam or otherwise send content that would violate our User Agreement. We automatically scan and may manually filter messages to check for spam, viruses, phishing attacks and other malicious activity or illegal or prohibited content, but we do not permanently store messages sent through these tools. We do not rent or sell these email addresses.</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Account Protection</b><br/><br/><p>Your password is the key to your account. Use unique numbers and letters and do not disclose your password to anyone. If you do share your password or your personal information with others, remember that you are responsible for all actions taken in the name of your account. If you lose control of your password, you may lose substantial control over your personal information and may be subject to legally binding actions taken on your behalf. Therefore, if your password has been compromised for any reason, you should immediately notify us and change your password.<br/>" +
+            "We will never ask for your password by phone or e-mail, so if you receive such an inquiry, please report the incident to the Security & Resolution Center or the Personal Information Manager.<br/>" +
+            "If you access our Website from a shared computer or a computer in an internet cafe, a PC room or a library, certain information about you, such as your user ID, activity or reminders from the Website, may also be visible to other individuals who use the computer after you. To protect your personal information or communication from being disclosed to others, you should log out and close the web browser after using our Website.</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Accessing, Reviewing and Changing Your Personal Information</b><br/><br/><p>You can see, review and change most of your personal information by signing on to the Website. Generally, we will not manually modify your personal information because it is very difficult to verify your identity remotely. You must promptly update your personal information if it changes or is inaccurate. Once you make a public posting, you may not be able to change or remove it. Upon your request to the customer service, we will close your account and remove your personal information from view as soon as reasonably possible, based on your account activity and in accordance with applicable law. We do retain personal information from closed accounts to comply with law, prevent fraud, collect any fees owed, resolve disputes, troubleshoot problems, assist with any investigations, enforce our User Agreement, and take other actions otherwise permitted by law.</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Security</b><br/><br/><p>Your information is stored on our servers. We treat data as an asset that must be protected and use lots of tools (encryption, passwords, physical security, etc.) to protect your personal information against unauthorised access and disclosure. However, as you probably know, third parties may unlawfully intercept or access transmissions or private communications, and other users may abuse or misuse your personal information that they collect from the site. Therefore, although we work very hard to protect your privacy, we do not promise, and you should not expect, that your personal information or private communications will always remain private</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Third Parties</b><br/><br/><p>Except as otherwise expressly included in this Policy, this document addresses only the use and disclosure of information we collect from you. If you disclose your information to others, whether they are buyers or sellers on our Website or other sites throughout the Internet, different rules may apply to their use or disclosure of the information you disclose to them. We do not control the privacy policies of third parties, and you are subject to the privacy policies of those third parties where applicable. We encourage you to ask questions before you disclose your personal information to others.</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>Personal Information Manager</b><br/><br/><p>The Personal Information Manager is responsible for taking reasonable endeavours to protect user information and preventing unauthorized disclosure. The Personal Information Manager is not responsible for damage or loss of information due to unexpected incident due to hacking or other risks inherent to the network that may occur despite technical safeguards. The Personal Information Manager is not responsible for any dispute arising from the users' posts.<br/>" +
+            "If you have any suggestions or complaints, you may contact us by e-mail at adtool.campaign@gmail.com</p><br/>";
+        privacy_policy_script += "<b style='font-size: 1.15em;'>General</b><br/><br/><p>We may amend this Policy at any time by posting the amended terms on this Website. All amended terms automatically take effect 14 days after they are initially posted.</p><br/>";
+
+        $("#privacy_policy_desc").html(privacy_policy_script);
+    </script>
+
+</th:block>
+</body>
+</html>

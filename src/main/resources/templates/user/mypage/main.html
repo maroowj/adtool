@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>My Page</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+</head>
+<body>
+<th:block th:fragment="myPage">
+    <div>
+        <h1 class="d-none">마이페이지 (/user/mypage/main.html)</h1>
+
+            <div id="side_menu">
+                <div class="pc-side-menu">
+                    <form id="frm" enctype="multipart/form-data" method="post">
+                        <div id="picture_profile">
+                            <div class="picture-profile-inner">
+                                <img id="img" src="" />
+                                <label for="image" class="profile-find-file">파일선택</label>
+                                <input type="file" id="image" name="image1" class="d-none">
+                            </div>
+                        </div>
+                    </form>
+                    <div id="point_div" class="left-menu-list myP-menuList myP-menuList-point">
+                        <div class="cursorPoint" onclick="location.href='/mypage/point'">
+                            <span class="title">US Dollar <br/>(Withdrawable Amount)</span>
+                            <span class="totalPoint"></span>
+                        </div>
+                    </div>
+                    <div id="nickname_div" class="left-menu-list">
+                        <span class="title">Nickname</span>
+                        <span th:if="${vo.member_nickname}!=null" th:text="${vo.member_nickname}" class="nickname"></span>
+                        <span th:if="${vo.member_nickname}==null" th:text="${vo.member_name}" ></span>
+                    </div>
+                    <div id="Membership_div" class="left-menu-list">
+                        <span class="title">Membership</span>
+                        <span id="membership"></span>
+                    </div>
+                    <!--left-menu-->
+
+                    <div  class="left-menu-list myP-menuList on">
+                        <span id="info" style="cursor:pointer" onClick="location.href='/mypage/info'" class="title">My Information</span>
+                    </div>
+                    <div id="Message_div"  class="left-menu-list myP-menuList myP-menuList-message">
+                        <div id="msgList" style="cursor:pointer" onClick="location.href='/mypage/message_list'">
+                            <span class="title">Message</span>
+                            <span id="cnt"></span>
+                        </div>
+                    </div>
+                    <div  class="left-menu-list myP-menuList2">
+                        <span id="resetPass" style="cursor:pointer" class="title resetPass">Reset Password</span>
+                    </div>
+
+
+                    <div class="left-menu-list myP-menuList myP-menuList-joining">
+                        <span id="joining" style="cursor:pointer" onClick="location.href='/mypage/joining_campaign'" class="title">Joining Campaign</span>
+                    </div>
+                    <div class="left-menu-list myP-menuList myP-menuList-ended">
+                        <span id="ended" style="cursor:pointer"  onClick="location.href='/mypage/ended_campaign'" class="title">Ended Campaign</span>
+                    </div>
+                </div>
+                <!--PC 버전-->
+                <div class="m-side-menu">
+                    <div class="m-side-menu-bg">
+                        <form id="frm" enctype="multipart/form-data" method="post">
+                            <div class="m-profile-img">
+                                <div id="picture_profile">
+                                    <div class="picture-profile-inner">
+                                        <img id="imgm" src="" />
+                                        <label for="image" class="profile-find-file">파일선택</label>
+                                        <input type="file" id="image" name="image1" class="d-none">
+                                    </div>
+                                </div>
+                                <div id="nickname_div">
+                                    <span th:if="${vo.member_nickname}!=null" th:text="${vo.member_nickname}"></span>
+                                    <span th:if="${vo.member_nickname}==null" th:text="${vo.member_name}"></span>
+                                </div>
+                                <div id="point_div">
+                                    <label class="cursorPoint"><span class="totalPoint"></span>&nbsp;point</label>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="m-info-cont">
+                            <div class="myP-menuList on">
+                                <span id="info" style="cursor:pointer" onClick="location.href='/mypage/info'" class="title">My Information</span>
+                            </div>
+                            <div id="Message_div">
+                                <div id="msgList " style="cursor:pointer" class="t-center myP-menuList myP-menuList-message" onClick="location.href='/mypage/message_list'">
+                                    <span class="title">Message</span>
+                                </div>
+                            </div>
+                            <div id="Membership_div">
+                                <span class="title">Membership</span>
+                                <span id="membership"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="left-menu-list myP-menuList myP-menuList-joining">
+                        <span id="joining" style="cursor:pointer" onClick="location.href='/mypage/joining_campaign'" class="title">Joining Campaign</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                    <div class="left-menu-list myP-menuList myP-menuList-ended">
+                        <span id="ended" style="cursor:pointer"  onClick="location.href='/mypage/ended_campaign'" class="title">Ended Campaign</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </div>
+                <!--모바일 버전-->
+            </div>
+
+        <!-- modal start -->
+        <div id="resetPwd" class="modal">
+            <div class="modal-wrap" id="before">
+                <div class="modal-title">
+                    <div class="title2">──── RESET YOUR PASSWORD ────</div>
+                    <span class="closeBtn"><i class="fa-solid fa-xmark"></i></span>
+                </div>
+                <div class="modal-inner">
+                    <div id="brand_list_div" class="modal-description-wrap">
+                        <span>
+                            Please enter your current password to reset your password.
+                        </span>
+                        <br/>
+                        <br/>
+                        <span>
+                            If the password is correct, you will go to the reset password page.
+                        </span>
+                    </div>
+                    <div class="search-box-wrap">
+                        <div class="email-box">
+                            <input type="password" id="currentPwd" placeholder="Enter your current password."/>
+                        </div>
+                    </div>
+
+                    <div class="modal-button" style="margin-top: 20px;">
+                        <button id="confirm" class="black-btn">Confirm</button>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-cover"></div>
+        </div>
+        <!-- modal end -->
+
+    </div>
+    <script th:inline="javascript">
+        var member_seq = [[${session.member_seq}]];
+        var member_picture=[[${vo.member_picture}]];
+        var formData = new FormData();
+        var page=1;
+        var totalPoint;
+        if(member_picture!=null && member_picture!="") {
+            $("#img").attr("src", "/displayFile?fullName=/member/"+member_seq+"/"+member_picture);
+            $("#imgm").attr("src", "/displayFile?fullName=/member/"+member_seq+"/"+member_picture);
+        }else {
+            $("#img").attr("src", "/displayFile?fullName=/img/profile_basic.png");
+            $("#imgm").attr("src", "/displayFile?fullName=/img/profile_basic.png");
+        }
+
+
+        $("#image").on("change", function(){
+
+            formData.delete('image0');
+            formData.delete('dir');
+
+            if(member_picture != null) {
+                deleteImage("/member/"+member_seq+"/"+member_picture);
+            }
+
+            var file = $("#image")[0].files[0];
+            formData.append("image0", file);
+            formData.append("dir", "member/"+member_seq+"/")
+
+            $.ajax({
+                type:"post",
+                url:"/uploadFile",
+                enctype:'multipart/form-data',
+                processData:false,
+                contentType:false,
+                async:false,
+                data:formData,
+                success:function(data){
+                    $.ajax({
+                        type:"patch",
+                        url:"/common/api/member/update",
+                        async:false,
+                        data:{
+                            "member_seq":member_seq,
+                            "member_picture":data.img1,
+                            "step":"picture"
+                        },
+                        success:function(){
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        });
+
+        //이미지 삭제
+        function deleteImage(fullName){
+            $.ajax({
+                type:"get",
+                url:"/deleteFile",
+                data:{"fullName":fullName},
+                success:function(){}
+            });
+        }
+
+        notReadCount(member_seq);
+        // 읽지 않은 메시지 개수 표시
+        function notReadCount(member_seq){
+            $.ajax({
+                type:"get",
+                url:"/user/api/message/read/not_read_count",
+                data:{
+                    "member_seq":member_seq
+                },
+                success:function(data){
+                    $("#cnt").html("<span>"+data+"</span>");
+                },
+                error:function (){
+                    alert("ajax error!");
+                }
+            });
+        };
+
+        /*menu 'on'일때 css 설정*/
+        $('.myP-menuList').click(function (){
+            $('.myP-menuList').removeClass('on');
+            $(this).addClass('on');
+        });
+
+
+        $(document).ready(function(){
+            var link = document.location.href;
+            if(link.includes("message")) {
+                $(".myP-menuList").removeClass("on");
+                $(".myP-menuList-message").addClass("on");
+            }else if(link.includes("joining")) {
+                $(".myP-menuList").removeClass("on");
+                $(".myP-menuList-joining").addClass("on");
+            }else if(link.includes("ended")) {
+                $(".myP-menuList").removeClass("on");
+                $(".myP-menuList-ended").addClass("on");
+            }else if(link.includes("point")) {
+                $(".myP-menuList").removeClass("on");
+                $(".myP-menuList-point").addClass("on");
+            }
+
+            getPoint();
+        });
+
+        // 포인트 불러오기
+        function getPoint(){
+            $.ajax({
+                type:"get",
+                url:"/user/api/point",
+                data:{
+                    "member_seq":member_seq,
+                    "page":page
+                },
+                success:function(data) {
+                    totalPoint = data.totalPoint;
+                    var pointList = data.list;
+                    $(".totalPoint").html(totalPoint);
+
+                    if(pointList.length==0) {
+                        $("#point_list_div").html("<div><span>You don't have point histories</span></div>");
+                    }else {
+                        var template=Handlebars.compile($("#point_list_script").html());
+                        $("#point_list_div").html(template(data));
+
+                        //페이징 목록 출력
+                        var str="";
+                        var prev=data.pm.startPage-1;
+                        var next=data.pm.endPage+1;
+
+                        if(data.pm.prev){
+                            str +="<a href='" + prev + "'>prev</a>";
+                        }else{
+                            str +="<a href='javascript:;'></a>";
+                        }
+                        for(var i=data.pm.startPage;i<=data.pm.endPage; i++){
+                            if(i==page){
+                                str += "<a class='active' href='" + i + "'>" + i + "</a>";
+                            }else{
+                                str += "<a href='" + i + "'>" + i + "</a>";
+                            }
+                        }
+                        if(data.pm.next) {
+                            str +="<a href='" + next + "'>next</a>";
+                        }else{
+                            str +="<a href='javascript:;'></a>";
+                        }
+                        $("#pagination").html(str);
+                    }
+
+                },
+                error:function() {
+                    console.log("ajax error : point");
+                }
+            });
+        }
+
+        /*비밀번호 모달창*/
+        $('.resetPass').on('click',function(){
+            $('.modal').css('display','block');
+        });
+        $('.closeBtn, .bg-cover, .sendBtn').on('click',function (){
+            $("#currentPwd").val("");
+            $('.modal').css('display','none');
+        });
+
+        $("#confirm").on("click", function (){
+             let currentPwd = $("#currentPwd").val();
+             let mid = [[${session.member_id}]];
+             if(currentPwd=="") {
+                 alert("Enter your current password.");
+                 return;
+             }
+
+            $.ajax({
+                type:"post",
+                url:"/user/api/password/confirm",
+                data:{
+                    "member_id":mid,
+                    "member_password":currentPwd
+                },
+                success:function(data){
+                    if(data == 2){
+                        location.href="/mypage/reset-password";
+                    }else {
+                        alert("Check your password.");
+                    }
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

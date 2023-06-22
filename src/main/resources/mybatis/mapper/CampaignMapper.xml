@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CampaignMapper">
+	<select id="campaign_all_list_by_country_and_status" resultType="com.muzi.adtool.domain.CampaignVO">
+		<if test="status=='end'">
+			select * from campaign where status='end'
+			and campaign_title like concat('%', #{keyword}, '%')
+			and withdrawal=0
+			limit #{pageStart}, #{perPageNum}
+		</if>
+		<if test="status!='end'">
+			select * from campaign where (status='recruit' or status='progress')
+			and campaign_title like concat('%', #{keyword}, '%')
+			and withdrawal=0
+		</if>
+	</select>
+
+	<select id="totalCount" resultType="int">
+		select count(*) from campaign where campaign_country like concat('%', #{campaign_country}, '%')
+								 and status like concat('%', #{status} ,'%')
+								 and campaign_title like concat('%', #{keyword}, '%')
+								 and withdrawal=0
+	</select>
+
+	<select id="campaign_read_by_seq" resultType="com.muzi.adtool.domain.CampaignVO">
+		select c.*, b.brand_name from campaign c left join brand b on c.brand_seq=b.brand_seq where campaign_seq=#{campaign_seq}
+	</select>
+
+	<insert id="campaign_insert">
+		insert into campaign(campaign_seq, brand_seq, campaign_title, campaign_country, type, need_number,
+		multiple_number, campaign_description, status, original_price, discount_price,
+		campaign_img1, campaign_img2, campaign_img3, campaign_img4, campaign_img5, campaign_img6,
+		campaign_img7, campaign_img8, campaign_img9, campaign_img10)
+		values(#{campaign_seq}, #{brand_seq}, #{campaign_title}, #{campaign_country}, #{type}, #{need_number},
+		#{multiple_number}, #{campaign_description}, #{status}, #{original_price}, #{discount_price},
+		#{campaign_img1}, #{campaign_img2}, #{campaign_img3}, #{campaign_img4}, #{campaign_img5}, #{campaign_img6},
+		#{campaign_img7}, #{campaign_img8}, #{campaign_img9}, #{campaign_img10})
+	</insert>
+
+	<update id="campaign_update">
+		update campaign set campaign_title=#{campaign_title}, campaign_country=#{campaign_country}, type=#{type},
+		need_number=#{need_number}, multiple_number=#{multiple_number}, campaign_description=#{campaign_description},
+		original_price=#{original_price}, discount_price=#{discount_price}, brand_seq=#{brand_seq},
+		campaign_img1=#{campaign_img1}, campaign_img2=#{campaign_img2},
+		campaign_img3=#{campaign_img3}, campaign_img4=#{campaign_img4}, campaign_img5=#{campaign_img5},
+		campaign_img6=#{campaign_img6}, campaign_img7=#{campaign_img7}, campaign_img8=#{campaign_img8},
+		campaign_img9=#{campaign_img9}, campaign_img10=#{campaign_img10}
+		where campaign_seq=#{campaign_seq}
+	</update>
+
+	<update id="campaign_status_update">
+		update campaign set status=#{status} where campaign_seq=#{campaign_seq}
+	</update>
+
+	<update id="campaign_delete">
+		update campaign set withdrawal=1 where campaign_seq=#{campaign_seq}
+	</update>
+
+	<update id="campaign_update_image_order">
+		update campaign set campaign_img1=#{campaign_img1}, campaign_img2=#{campaign_img2},
+							campaign_img3=#{campaign_img3}, campaign_img4=#{campaign_img4}, campaign_img5=#{campaign_img5},
+							campaign_img6=#{campaign_img6}, campaign_img7=#{campaign_img7}, campaign_img8=#{campaign_img8},
+							campaign_img9=#{campaign_img9}, campaign_img10=#{campaign_img10}
+		where campaign_seq=#{campaign_seq};
+	</update>
+
+	<update id="campaign_end">
+		update campaign set status='end' where campaign_seq=#{campaign_seq}
+	</update>
+
+	<update id="campaignDeleteByBrandSeq">
+		update campaign set withdrawal=1 where brand_seq=#{brand_seq}
+	</update>
+
+
+	<select id="reservationCampaignList" resultType="com.muzi.adtool.domain.Reservation_campaignVO">
+		select * from reservation_campaign where publish_date=#{searchDate} and publish_status=0 and withdrawal=0
+	</select>
+
+	<update id="updatePublishStatus">
+		update reservation_campaign set publish_status=1 where re_campaign_seq=#{re_campaign_seq}
+	</update>
+</mapper>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>캠페인 업데이트</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+
+    <style>
+	div {
+	        margin-bottom:10px;
+	    }
+    .input {
+            margin-left: 5px;
+            }
+	</style>
+
+</head>
+<body>
+<div id="body" style="overflow:hidden; width:500px;">
+    <div id="image_form" style="float:left">
+        <form name="frm" id="frm" enctype="multipart/form-data" method="post">
+            <div>이미지 미리보기</div>
+            <div>
+                <span><img id="click_img1" class="click_img" num="0" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                <span><img id="click_img2" class="click_img" num="1" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                <span><img id="click_img3" class="click_img" num="2" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                <span><img id="click_img4" class="click_img" num="3" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                <span><img id="click_img5" class="click_img" num="4" src="/displayFile?fullName=/icon/add.png" width="50" height="50"/></span>
+                <input type="file" class="file_img" num="0" name="image1" >
+                <input type="file" class="file_img" num="1" name="image2" >
+                <input type="file" class="file_img" num="2" name="image3" >
+                <input type="file" class="file_img" num="3" name="image4" >
+                <input type="file" class="file_img" num="4" name="image5" >
+            </div>
+        </form>
+        <button id="btn">버튼</button>
+        <button id="console">콘솔</button>
+    </div>
+
+    <div id="text_form" style="float:right;">
+        <div><span>Title</span><input type="text" name="campaign_title" id="campaign_title" class="input input-h40r w80pro big-text3 ma-t-dot5"/></div>
+        <div>
+            <span>Brand / Project</span>
+            <input type="text" name="brand_name" id="brand_name" class="input input-h40r w100pro big-text3 ma-t-dot5" readonly/>
+            <input type="text" name="brand_seq" id="brand_seq" placeholder="brand_seq (나중에 히든처리)" readonly/>
+            <button id="btnBrandSearch">검색</button>
+        </div>
+        <div>
+            <span>Country</span>
+            <select id="campaign_country">
+                <option value="Singapore">Singapore</option>
+                <option value="Malaysia">Malaysia</option>
+                <option value="Philippines">Philippines</option>
+            </select>
+        </div>
+        <div><span>Original Price</span><input type="text" name="original_price" id="original_price" class="input"/></div>
+        <div><span>Discount Price</span><input type="text" name="discount_price" id="discount_price" class="input"/></div>
+        <div>
+            <span>Type</span>
+            <select id="type">
+                <option value="Regular">Regular</option>
+                <option value="Offer">Offer</option>
+                <option value="Voucher">Voucher</option>
+                <option value="None">None</option>
+            </select>
+        </div>
+        <div>
+            <span>Need number</span>
+            <input type="text" name="need_number" id="need_number" class="input"/>
+            <input type="text" id="multiple_number" class="input" readonly placeholder="1.5배수"/>
+        </div>
+        <div>
+            <span>Description</span><br/>
+            <textarea id="campaign_description"></textarea>
+        </div>
+        <div><input type="button" id="btnInsert" value="등록" class="d-block btn-h40r w100pro big-text letterdot5 pa-2em rrr template_bg1 ma-t-dot5"/></div>
+    </div>
+
+    <div id="brand_div" style="float:left;">
+        <div>
+            <span>브랜드 검색</span>
+            <input type="text" id="brand_keyword" placeholder="브랜드를 검색하세요."/>
+            <button id="brand_search">검색</button>
+            <button id="brand_insert">+추가</button>
+        </div>
+        <div id="brand_list_div"></div>
+        <script id="brand_list_script" type="text/x-handlebar-template">
+            {{#each .}}
+            <div>
+                <label>
+                    <input type="radio" name="brand" brand_seq={{brand_seq}} brand_name={{brand_name}}><span>{{brand_name}}</span>
+                </label>
+            </div>
+            {{/each}}
+        </script>
+        <div>
+            <button id="brand_add">적용하기</button>
+        </div>
+    </div>
+</div>
+
+<!-- Image FileName Hidden Input -->
+<input type="text" id="img1" class="original_img"/>
+<input type="text" id="img2" class="original_img"/>
+<input type="text" id="img3" class="original_img"/>
+<input type="text" id="img4" class="original_img"/>
+<input type="text" id="img5" class="original_img"/>
+
+</body>
+
+<script th:inline="javascript">
+
+    var campaign_seq = [[${campaign_seq}]];
+    var arrImage = new Array([[${vo.campaign_img1}]], [[${vo.campaign_img2}]], [[${vo.campaign_img3}]], [[${vo.campaign_img4}]], [[${vo.campaign_img5}]]);
+    var formData=new FormData();
+
+    getCampaignRead();
+
+    $(document).ready(function(){
+        $(".click_img").each(function(){
+            var idx = $(this).attr("num");
+            var pSpan = $(this).parent();
+
+            for(i=0; i<$(".click_img").length; i++){
+                if(arrImage[i]!=null && arrImage[i]!=""){
+                    console.log("notNull="+i)
+                    if(idx==i){
+                        $(this).attr("src", "/displayFile?fullName=/campaign/"+arrImage[i]);
+                        $(this).attr("fileName", arrImage[i]);
+                        pSpan.append("<span class='del'>x</span>");
+                    }
+                }else{
+                    if(idx==i){
+                        $(this).attr("src", "/displayFile?fullName=/icon/add.png");
+                    }
+                }
+            }
+        });
+
+        $("#img1").val($("#click_img1").attr("fileName"));
+        $("#img2").val($("#click_img2").attr("fileName"));
+        $("#img3").val($("#click_img3").attr("fileName"));
+        $("#img4").val($("#click_img4").attr("fileName"));
+        $("#img5").val($("#click_img5").attr("fileName"));
+    });
+
+     $(".file_img").on("change", function(){
+        var img = $(this)[0].files[0];
+        //alert(img);
+        var fNum = $(this).attr("num");
+        var strImg = "image"+fNum;
+        formData.delete(strImg);
+        if(img==null){
+            $(".click_img").each(function(){
+                var cNum = $(this).attr("num");
+                var pSpan = $(this).parent();
+                if(fNum == cNum) {
+                    pSpan.find(".del").remove();
+                    $(this).attr("src","/displayFile?fullName=/icon/add.png");
+                }
+            });
+        }else{
+            $(".click_img").each(function(){
+                var cNum = $(this).attr("num");
+                var pSpan = $(this).parent();
+
+                if(fNum == cNum) {
+                    pSpan.find(".del").remove();
+                    $(this).attr("src", URL.createObjectURL(img));
+                    $(this).attr("fileName", img.name);
+                    pSpan.append("<span class='del'>x</span>");
+
+                }
+            });
+        }
+        formData.append(strImg, img);
+    });
+
+
+
+
+    // 1.5배수 표시
+    $("#need_number").on("keyup", function(){
+        var multiple = Math.ceil($(this).val() * 1.5);
+        if($(this).val()==""){
+            $("#multiple_number").val("");
+        }else{
+            $("#multiple_number").val(multiple);
+        }
+    });
+
+    //캠페인 추가
+    $("#btnInsert").on("click", function(){
+        var campaign_title = $("#campaign_title").val();
+        var campaign_country = $("#campaign_country").val();
+        var brand_seq = $("#brand_seq").val();
+        var original_price = $("#original_price").val();
+        var discount_price = $("#discount_price").val();
+        var type = $("#type").val();
+        var need_number = $("#need_number").val();
+        var multiple_number = $("#multiple_number").val();
+        var campaign_description = $("#campaign_description").val();
+
+        if (campaign_title == "") {
+            alert("캠페인 제목을 입력하세요");
+            return;
+        }else if(campaign_country == "") {
+            alert("국가를 선택하세요");
+            return;
+        }else if(original_price == "") {
+            alert("원가를 입력하세요");
+            return;
+        }else if(discount_price == "") {
+            alert("할인가격을 입력하세요");
+            return;
+        }else if(need_number == "") {
+            alert("모집 인원을 입력하세요");
+            return;
+        }
+        //return;
+
+
+    });
+
+
+
+    function getCampaignRead(){
+        $.ajax({
+            type: "get",
+            url: "/common/api/campaign/read",
+            data:
+                {
+                "campaign_seq":campaign_seq
+                },
+            success:function(result){
+                var cvo=result.cvo;
+                $("#campaign_title").val(cvo.campaign_title);
+                $("#campaign_country").val(cvo.campaign_country);
+                $("#brand_seq").val(cvo.brand_seq);
+                $("#brand_name").val(cvo.brand_name);
+                $("#original_price").val(cvo.original_price);
+                $("#discount_price").val(cvo.discount_price);
+                $("#type").val(cvo.type);
+                $("#need_number").val(cvo.need_number);
+                $("#multiple_number").val(cvo.multiple_number);
+                $("#campaign_description").val(cvo.campaign_description);
+            }
+        });
+    }
+
+    /************ 브랜드 스크립트 ***************/
+
+    getBrandList();
+
+    $("#brand_add").on("click", function(){
+        var brand_seq = $("input:radio[name='brand']:checked").attr("brand_seq");
+        var brand_name = $("input:radio[name='brand']:checked").attr("brand_name");
+        $("#brand_seq").val(brand_seq);
+        $("#brand_name").val(brand_name);
+    });
+
+    $("#brand_keyword").on("keydown", function(e){
+        if(e.keyCode==13) {
+            $("#brand_search").click();
+        }
+    });
+
+    $("#brand_search").on("click", function(){
+        getBrandList();
+    });
+
+    $("#brand_insert").on("click", function(){
+        var brand_name = $("#brand_keyword").val();
+        $.ajax({
+            type:"post",
+            url:"/admin/api/brand/insert",
+            data:
+                {
+                "brand_name":brand_name
+                },
+            success:function(){
+                $("#brand_keyword").val("");
+                getBrandList();
+            }
+        });
+    });
+
+    function getBrandList(){
+        var brand_keyword = $("#brand_keyword").val();
+
+        $.ajax({
+            type:"get",
+            url:"/admin/api/brand/list",
+            data:
+                {
+                "keyword":brand_keyword
+                },
+            success:function(data){
+                var template=Handlebars.compile($("#brand_list_script").html());
+                $("#brand_list_div").html(template(data));
+            }
+        });
+    };
+
+    /*********** 이미지 스크립트 **************/
+    var delChk = true;
+
+
+    $(".click_img").on("click", function(){
+        var cNum = $(this).attr("num");
+        $(".file_img").each(function(){
+            var fNum = $(this).attr("num");
+            if(cNum == fNum) {
+                $(this).click();
+           }
+        });
+    });
+
+    $(frm).on("click", ".del", function(){
+        var pSpan = $(this).parent();
+        var cNum = pSpan.find(".click_img").attr("num");
+        pSpan.find(".click_img").attr("src","/displayFile?fullName=/icon/add.png");
+        pSpan.find(".click_img").removeAttr("fileName");
+        $(this).remove();
+        var strImg="";
+        $(".file_img").each(function(){
+            var fNum = $(this).attr("num");
+            if(cNum==fNum){
+                strImg = "image"+fNum;
+            }
+            $(this).attr("src", "/displayFile?fullName=/icon/add.png");
+        });
+        formData.delete(strImg);
+    });
+
+
+
+
+    $("#btn").on("click", function(){
+        var campaign_title = $("#campaign_title").val();
+        var campaign_country = $("#campaign_country").val();
+        var brand_seq = $("#brand_seq").val();
+        var original_price = $("#original_price").val();
+        var discount_price = $("#discount_price").val();
+        var type = $("#type").val();
+        var need_number = $("#need_number").val();
+        var multiple_number = $("#multiple_number").val();
+        var campaign_description = $("#campaign_description").val();
+
+        var file1 = $("#click_img1").attr("fileName");
+        var file2 = $("#click_img2").attr("fileName");
+        var file3 = $("#click_img3").attr("fileName");
+        var file4 = $("#click_img4").attr("fileName");
+        var file5 = $("#click_img5").attr("fileName");
+
+        /*
+        $(".original_img").each(function(){
+            var origin = $(this).val();
+            $(".click_img").each(function(){
+                var file = $(this).attr("fileName");
+                if(origin==file){
+                }
+            });
+        });
+        */
+        //return;
+        if(file1==undefined || $("#img1").val()!=file1) {
+            //alert("1");
+            deleteImage("/campaign/"+$("#img1").val());
+            $("#img1").val("");
+        }
+        if(file2==undefined || $("#img2").val()!=file2) {
+            //alert("2");
+            deleteImage("/campaign/"+$("#img2").val());
+            $("#img2").val("");
+        }
+        if(file3==undefined || $("#img3").val()!=file3) {
+           // alert("3");
+            deleteImage("/campaign/"+$("#img3").val());
+            $("#img3").val("");
+        }
+        if(file4==undefined || $("#img4").val()!=file4) {
+            // alert("4");
+            deleteImage("/campaign/"+$("#img4").val());
+            $("#img4").val("");
+        }
+        if(file5==undefined || $("#img5").val()!=file5) {
+            //alert("5");
+            deleteImage("/campaign/"+$("#img5").val());
+            $("#img5").val("");
+        }
+
+        formData.append("dir", "campaign");
+
+        uploadImage();
+
+        var image1 = $("#img1").val();
+        var image2 = $("#img2").val();
+        var image3 = $("#img3").val();
+        var image4 = $("#img4").val();
+        var image5 = $("#img5").val();
+
+        $.ajax({
+            type:"put",
+            url:"/admin/api/campaign/update",
+            data:{
+                "campaign_seq":campaign_seq,
+                "campaign_title":campaign_title,
+                "brand_seq":brand_seq,
+                "campaign_country":campaign_country,
+                "original_price":original_price,
+                "discount_price":discount_price,
+                "need_number":need_number,
+                "multiple_number":multiple_number,
+                "type":type,
+                "campaign_description":campaign_description,
+                "campaign_img1":image1,
+                "campaign_img2":image2,
+                "campaign_img3":image3,
+                "campaign_img4":image4,
+                "campaign_img5":image5
+            },
+            async:false,
+            success:function(){
+                alert("수정");
+                location.reload();
+            }
+        });
+    });
+
+    $("#console").on("click", function(){
+
+        // key 확인하기
+		for (var key of formData.keys()) {
+			   console.log(key);
+		}
+
+		// value 확인하기
+		for (var value of formData.values()) {
+		      console.log(value);
+		}
+
+    });
+
+
+    //이미지 삭제
+	function deleteImage(fullName){
+		$.ajax({
+			type:"get",
+			url:"/deleteFile",
+			data:{"fullName":fullName},
+            async:false,
+			success:function(){}
+		});
+	}
+
+	function uploadImage(){
+	    $.ajax({
+	        type:"post",
+	        url:"/uploadFile",
+	        enctype:'multipart/form-data',
+            processData:false,
+            contentType:false,
+            async:false,
+            data:formData,
+            success:function(data){
+                //console.log(data);
+                var arrData=new Array(data.img1, data.img2, data.img3, data.img4, data.img5);
+
+                arrData.forEach(function (arg){
+                    $(".original_img").each(function(){
+                        if($(this).val()==""){
+                            $(this).val(arg);
+                            return false;
+                        }
+                    });
+                });
+            }
+	    });
+	}
+
+</script>
+</html>

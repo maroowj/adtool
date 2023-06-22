@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<th:block layout:fragment="content">
+    <div id="body" class="auto">
+        <h2 class="page-title message-title">포인트 관리<span class="d-none">(/admin/point_list.html)</span></h2>
+
+        <div class="manageM-search-wrap">
+            <div id="member_search_div">
+                <div class="select_box">
+                    <select id="pointSearchType">
+                        <option value="member_id">아이디</option>
+                        <option value="member_name">이름</option>
+                    </select>
+                    <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                </div>
+                <div class="search-box">
+                    <input id="pointKeyword" type="text"/><button id="pointBtnSearch">찾기</button>
+                </div>
+                <div class="select_box" style="margin-left: 20px;">
+                    <select id="status">
+                        <option value="all" selected>전체</option>
+                        <option value="save">적립</option>
+                        <option value="request">요청</option>
+                        <option value="exchange">출금</option>
+                        <option value="withdrawal">회수</option>
+                    </select>
+                    <span class="icon"><i class="fa-solid fa-chevron-down"></i></span>
+                </div>
+            </div>
+            <div class="select_box">
+                <select id="perPageNum" style="border:1px solid #dcdcdc; border-radius: 25px; height:40px; width: 160px; padding:0 1em; appearance: none; background:none;">
+                    <option value="10" selected>10개씩 보기</option>
+                    <option value="30">30개씩 보기</option>
+                    <option value="50">50개씩 보기</option>
+                    <option value="100">100개씩 보기</option>
+                </select>
+                <span class="icon" style="position:absolute; top:50%; right:1em; transform: translateY(-50%); z-index: -1;"><i class="fa-solid fa-chevron-down"></i></span>
+            </div>
+
+        </div>
+
+        <div class="joined-table-wrap auto">
+            <table id="point_list_table">
+                <colgroup>
+                    <col style ="width:5%">
+                    <col style ="width:20%">
+                    <col style ="width:15%">
+                    <col style ="width:15%">
+                    <col style ="width:10%">
+                    <col style ="width:40%">
+                    <col style ="width:12.5%">
+                    <col style ="width:20%">
+                    <col style ="width:20%">
+                    <col style ="width:12.5%">
+                </colgroup>
+                <thead>
+                <tr id="order">
+                    <td>순번</td>
+                    <td>이메일 주소(아이디)</td>
+                    <td>이름</td>
+                    <td>국가</td>
+                    <td>입출금여부</td>
+                    <td>상세내역</td>
+                    <td>금액</td>
+                    <td>요청일</td>
+                    <td>처리일</td>
+                    <td>Send</td>
+                </tr>
+                </thead>
+                <tbody class="t-center" id="point_list_tbody"></tbody>
+                <script id="point_list_tbody_script" type="text/x-handlebars-template">
+                    {{#each .}}
+                        <tr pSeq="{{point_seq}}">
+                            <td class="rownum"></td>
+                            <td>{{member_id}}</td>
+                            <td>{{member_name}}</td>
+                            <td>{{country}}</td>
+                            <td>{{{strType type}}}</td>
+                            <td>{{detail}}</td>
+                            <td>{{point}}</td>
+                            <td>{{request_date}}</td>
+                            <td>{{response_date}}</td>
+                            <td>{{{btn type status}}}</td>
+                        </tr>
+                    {{/each}}
+                </script>
+            </table>
+        </div>
+        <div id="pagination"></div>
+    </div>
+
+<script th:inline="javascript">
+    var status = $("#status").val();
+    var page=1;
+    var perPageNum=$("#perPageNum").val();
+
+    getPointList();
+
+    $("#pointKeyword").on("keydown", function(e){
+        if(e.keyCode==13){
+            $("#pointBtnSearch").click();
+        }
+    });
+    $("#pointBtnSearch").on("click", function (){
+        getPointList();
+    });
+
+    $("#point_list_tbody").on("click", ".sBtn", function(){
+
+        var point_seq = $(this).parent().parent().attr("pSeq");
+        var sendChk = $(this).attr("sendChk");
+        var updateStatus=0;
+        if(sendChk=="send") {
+            updateStatus=1;
+        }else {
+            updateStatus=0;
+        }
+
+        if(updateStatus==1) {
+            if(!confirm("출금 처리를 하시겠습니까?")) return;
+        }else {
+            if(!confirm("출금 처리를 취소 하시겠습니까?")) return;
+        }
+
+        $.ajax({
+            type:"post",
+            url:"/admin/api/point/exchange",
+            data:{
+                "point_seq":point_seq,
+                "status":updateStatus
+            },
+            success:function(data) {
+                if(updateStatus==1) {
+                    alert("출금 처리되었습니다.");
+                    getPointList();
+                }else {
+                    alert("취소 처리되었습니다.");
+                    getPointList()
+                }
+            },
+            error:function(){
+                console.log("exchange error");
+            }
+        });
+    });
+
+
+    // 포인트 지급 select-box 선택 시
+    $("#point_status").on("change", function (){
+       getMemberList();
+    });
+
+    // 페이지 버튼 클릭 시
+    $("#pagination").on("click", "a", function(e){
+        e.preventDefault();
+        page=$(this).attr("href");
+        getPointList();
+    });
+
+    // type 변경 시
+    $("#status").on("change", function(){
+       status = $(this).val();
+       getPointList();
+    });
+
+    // 보기 개수 변경 시
+    $("#perPageNum").on("change", function(){
+       perPageNum = $(this).val();
+       getPointList();
+    });
+
+    function getPointList(){
+        searchType = $("#pointSearchType").val();
+        keyword = $("#pointKeyword").val();
+
+        $.ajax({
+            type:"get",
+            url:"/admin/api/point/list",
+            data:{
+                "searchType":searchType,
+                "keyword":keyword,
+                "status":status,
+                "page":page,
+                "perPageNum":perPageNum
+            },
+            success:function(data){
+                var list = data.list;
+                var template=Handlebars.compile($("#point_list_tbody_script").html())
+                $("#point_list_tbody").html(template(list));
+
+                var totalCount = data.pm.totalCount;
+                rowNum(totalCount, page, perPageNum);
+
+                //페이징 목록 출력
+                var str="";
+                var prev=data.pm.startPage-1;
+                var next=data.pm.endPage+1;
+
+                if(data.pm.prev){
+                    str +="<a href='" + prev + "'>prev</a>";
+                }else{
+                    str +="<a href='javascript:;'></a>";
+                }
+                for(var i=data.pm.startPage;i<=data.pm.endPage; i++){
+                    if(i==page){
+                        str += "<a class='active' href='" + i + "'>" + i + "</a>";
+                    }else{
+                        str += "<a href='" + i + "'>" + i + "</a>";
+                    }
+                }
+                if(data.pm.next) {
+                    str +="<a href='" + next + "'>next</a>";
+                }else{
+                    str +="<a href='javascript:;'></a>";
+                }
+                $("#pagination").html(str);
+            },
+            error:function (){
+               alert("ajax error");
+            }
+        });
+    }
+
+    // 행에 순번 매기는 function
+    function rowNum(totalCount, page, perPageNum){
+        var cnt= totalCount - ((page-1)*perPageNum);
+
+        $(".rownum").each(function (){
+            $(this).html(cnt);
+            cnt--;
+        });
+    }
+
+    Handlebars.registerHelper("date", function(join_date){
+        if(join_date!=null) {
+            return join_date.substring(0, 10);
+        }else {
+            return "-";
+        }
+    });
+
+    Handlebars.registerHelper("strType", function(type){
+       if(type=="적립") {
+           return "<p style='color:blue;'>"+type+"</p>";
+       }else {
+           return "<p style='color:red;'>"+type+"</p>";
+       }
+   });
+
+    Handlebars.registerHelper("btn", function(type, status){
+        if(type=="요청" || type=="출금") {
+            if(status==0) {
+                return "<button class='sBtn' sendChk='send' style='background:#e70012;'>SEND</button>";
+            }else {
+                return "<button class='sBtn' sendChk='done'>DONE</button>";
+            }
+        }else {
+            return "-";
+        }
+    });
+</script>
+
+</th:block>
+</html>
