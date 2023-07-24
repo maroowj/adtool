@@ -20,12 +20,16 @@
   * Back-End: Spring Boot, Java, MyBatis, MariaDB
   * Front-End: JavaScript, jQuery
 
-
 * 📅 DB
   * 테이블 정의서 : https://docs.google.com/document/d/1st21qukFUlUPDubiymRQGz0GIPatiGZo/edit
   * ERD
   ![adtool_erd](https://github.com/maroowj/adtool/assets/77284101/4409f80d-6cb2-4f51-a377-111de67acf30)
 
+* 💡부가기능
+  * Spring-mail-start 라이브러리를 사용하여 메일 보내기 기능 자체 구현 (비밀번호 찾기 기능)
+  * Spring-Batch, Quartz 라이브러리를 이용한 캠페인 예약 발행 기능 구현
+  * apach-poi, commons-io 라이브러리를 사용한 테이블 엑셀 다운로드 기능 구현
+  * session 및 쿠키를 활용한 로그인 및 로그인 저장 기능 구현
 
 * ✏️ 시나리오
   * 관리자
@@ -44,6 +48,11 @@
 
    
 * 💻구동 화면
+  * 관리자
+![admin_index](https://github.com/maroowj/adtool/assets/77284101/9598532f-0526-4b9e-a8c3-b470c3351108)
+![admin_campaign_insert](https://github.com/maroowj/adtool/assets/77284101/b24226f6-d7a7-4e99-885c-3316200c82c0)
+![admin_joiner_list](https://github.com/maroowj/adtool/assets/77284101/272b7be4-4971-4551-a2c7-b4cf6551662b)
+
   * 사용자
 ![user_index](https://github.com/maroowj/adtool/assets/77284101/e2436f8d-2915-4a92-a006-2b83db48df96)
 ![campaign_details](https://github.com/maroowj/adtool/assets/77284101/e3d22061-848d-489b-88de-b5be73a87e7c)
@@ -51,14 +60,5 @@
 ![user_login](https://github.com/maroowj/adtool/assets/77284101/80cbe0f9-2028-4605-bcb9-4eb82bd807c1)
 ![user_my_page](https://github.com/maroowj/adtool/assets/77284101/0c60cb3c-0aa8-4ddc-af3f-04452d6105fb)
 ![user_joining_campaign](https://github.com/maroowj/adtool/assets/77284101/101a91f1-d982-4644-96a9-e66136e3a8c4)
-  * 관리자
-![admin_index](https://github.com/maroowj/adtool/assets/77284101/9598532f-0526-4b9e-a8c3-b470c3351108)
-![admin_campaign_insert](https://github.com/maroowj/adtool/assets/77284101/b24226f6-d7a7-4e99-885c-3316200c82c0)
-![admin_joiner_list](https://github.com/maroowj/adtool/assets/77284101/272b7be4-4971-4551-a2c7-b4cf6551662b)
-
-
-* 💡부가기능
-  * Spring-mail-start 라이브러리를 사용하여 메일 보내기 기능 자체 구현 (비밀번호 찾기 기능)
-  * Spring-shceduler 기능을 이용한 캠페인 예약 발행 기능 구현
-  * apach-poi, commons-io 라이브러리를 사용한 테이블 엑셀 다운로드 기능 구현
+  
 
