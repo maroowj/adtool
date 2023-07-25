@@ -26,6 +26,7 @@
   ![adtool_erd](https://github.com/maroowj/adtool/assets/77284101/4409f80d-6cb2-4f51-a377-111de67acf30)
 
 * 💡부가기능
+  * Spring-MVC 패턴
   * Spring-mail-start 라이브러리를 사용하여 메일 보내기 기능 자체 구현 (비밀번호 찾기 기능)
   * Spring-Batch, Quartz 라이브러리를 이용한 캠페인 예약 발행 기능 구현
   * apach-poi, commons-io 라이브러리를 사용한 테이블 엑셀 다운로드 기능 구현
